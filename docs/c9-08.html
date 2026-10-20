@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>종합 모의 문제 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k9"><a href="index.html#c9">← 보드</a><span>batch · epoch · step과 EarlyStopping · 8/9</span></div><h1>종합 모의 문제</h1>
+<p><b>문제 1.</b> 학습 샘플 20,000개, <a class="w" href="words.html#w124" data-w="124">batch_size</a> 64로 학습할 때 1 <a class="w" href="words.html#w122" data-w="122">epoch</a>의 <a class="w" href="words.html#w125" data-w="125">step</a> 수는?</p>
+<ul>
+  <li>① 312</li>
+  <li>② 313</li>
+  <li>③ 320</li>
+  <li>④ 64</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 20,000 ÷ 64 = 312.5이고 올림하면 313이에요(마지막 <a class="w" href="words.html#w123" data-w="123">배치</a>는 32장).</p></details>
+<p><b>문제 2.</b> <a class="w" href="words.html#w126" data-w="126">EarlyStopping</a>(<a class="w" href="words.html#w128" data-w="128">monitor</a>='<a class="w" href="words.html#w133" data-w="133">val_loss</a>', <a class="w" href="words.html#w127" data-w="127">patience</a>=4, <a class="w" href="words.html#w129" data-w="129">restore_best_weights</a>=True)에서 val_loss가 epoch 6에서 최소였고 이후 개선이 없었다. 옳은 설명은?</p>
+<ul>
+  <li>① epoch 6 끝에 멈추고 epoch 6의 <a class="w" href="words.html#w25" data-w="25">가중치</a>가 남는다</li>
+  <li>② epoch 10 끝에 멈추고 epoch 6의 가중치가 남는다</li>
+  <li>③ epoch 10 끝에 멈추고 epoch 10의 가중치가 남는다</li>
+  <li>④ epoch 4 끝에 멈추고 epoch 4의 가중치가 남는다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 6 + 4 = 10 epoch 끝에 멈추고, restore_best_weights=True라 가장 좋았던 epoch 6의 가중치로 복원돼요.</p></details>
+<p><b>문제 3.</b> <a class="w" href="words.html#w104" data-w="104">Dropout</a>을 쓴 모델에서 첫 epoch의 학습 <a class="w" href="words.html#w79" data-w="79">정확도</a>가 <a class="w" href="words.html#w134" data-w="134">검증 정확도</a>보다 낮게 나왔다. 가장 알맞은 설명은?</p>
+<ul>
+  <li>① 모델이 <a class="w" href="words.html#w97" data-w="97">과적합</a>되었다</li>
+  <li>② <a class="w" href="words.html#w9" data-w="9">검증 데이터</a>가 <a class="w" href="words.html#w8" data-w="8">학습 데이터</a>에 섞였다</li>
+  <li>③ 학습 때는 일부 <a class="w" href="words.html#w23" data-w="23">뉴런</a>이 꺼진 상태로, 검증 때는 모든 뉴런을 켠 상태로 측정되기 때문이다</li>
+  <li>④ <a class="w" href="words.html#w64" data-w="64">학습률</a>이 너무 크다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>③이에요. 학습 지표는 Dropout으로 약해진 모델에서, 검증 지표는 전부 켠 모델에서 나와서 정상적으로 생기는 현상이에요.</p></details>
+<p><b>문제 4.</b> EarlyStopping의 monitor로 val_accuracy보다 val_loss를 일반적으로 더 선호하는 이유로 알맞은 것은?</p>
+<ul>
+  <li>① val_loss는 계산 속도가 더 빠르다</li>
+  <li>② val_loss는 예측 확률의 품질(<a class="w" href="words.html#w60" data-w="60">과신</a>)까지 반영해 과적합을 더 일찍 드러낸다</li>
+  <li>③ val_accuracy는 검증 세트가 필요 없다</li>
+  <li>④ val_loss는 항상 증가한다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 정확도는 순위만 보지만 <a class="w" href="words.html#w51" data-w="51">손실</a>은 확률의 품질까지 보기 때문에 틀린 샘플에 대한 과신을 먼저 포착해요.</p></details>
+<p><b>문제 5.</b> 학습 코드에서 EarlyStopping 객체를 만들고도 학습이 일찍 멈추지 않았다. 가장 먼저 의심할 곳은?</p>
+<ul>
+  <li>① <a class="w" href="words.html#w42" data-w="42">은닉 유닛</a> 수</li>
+  <li>② <a class="w" href="words.html#w114" data-w="114">fit</a>에 <a class="w" href="words.html#w118" data-w="118">callbacks</a>=[early_stop]을 넘겼는지, <a class="w" href="words.html#w132" data-w="132">validation_data</a>를 줬는지</li>
+  <li>③ <a class="w" href="words.html#w44" data-w="44">Flatten</a> 층의 위치</li>
+  <li>④ 데이터의 <a class="w" href="words.html#w100" data-w="100">정규화</a></li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 콜백은 만들기만 해서는 작동하지 않고 fit의 callbacks에 연결해야 해요. 또 validation_data가 없으면 val_* 지표가 없어서 monitor할 수 없어요.</p></details>
+<p><b>문제 6 (서술).</b> 아래 상황에서 "현상 → 근거 → 멈출 epoch → EarlyStopping 설정 → 완화 방법"을 쓰세요. 상황 — 학습 손실은 20 epoch 내내 줄고, 검증 손실은 epoch 9에서 최소였다가 이후 계속 올랐다.</p>
+<details class="check"><summary>모범 답안 보기</summary>
+<p>(현상) 과적합이에요. (근거) 학습 손실은 계속 감소하는데 검증 손실은 epoch 9 이후 증가해 두 곡선의 간격이 벌어져요. 모델이 훈련 데이터를 암기하고 있어요. (멈출 epoch) 검증 손실이 최소인 epoch 9예요. (설정) <code>EarlyStopping(monitor='val_loss', mode='min', patience=3, restore_best_weights=True)</code>로 연결하면 epoch 12 끝에 멈추고 epoch 9의 가중치가 남아요. (완화) Dropout 비율을 높이고, <a class="w" href="words.html#w102" data-w="102">L2</a>를 적용하고, <a class="w" href="words.html#w106" data-w="106">데이터 증강</a>이나 유닛 수 축소를 해요.</p></details>
+
+<div class="done"><a class="go" href="c9-09.html">다음 카드 → 이 장 3줄 요약</a><div class="pn"><a href="c9-07.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c9"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.18–28) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

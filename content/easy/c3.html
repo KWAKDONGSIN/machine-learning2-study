@@ -1,0 +1,253 @@
+<!-- 3장: 출력층 설계·Softmax·Cross-Entropy. 문제 유형별 출력 뉴런 수·활성화·손실 표, Softmax 성질과 실무 활용, CE=-log(정답 확률) 곡선, Softmax+CE 기울기 ŷ-y와 코드 loss_grad=a-y_true를 설명해요 -->
+<h2>출력층 설계 · Softmax · Cross-Entropy — 점수를 확률로, 확률을 채점으로</h2>
+<p class="lead">은닉층은 문제와 상관없이 같은 부품을 쓰지만, 출력층은 문제 유형이 정해요. 교수님이 "시험에 내기 너무 좋은 주제"라고 직접 말한 표가 이 장의 첫 소단원이에요. 이어서 점수(로짓)를 확률로 바꾸는 Softmax, 그 확률을 채점하는 Cross-Entropy, 그리고 둘을 합친 기울기가 왜 단순한지를 배워요.</p>
+
+<h3>3-1. 문제 유형이 출력층 세트를 정해요 ★★★</h3>
+<p>출력층에서 정할 것은 세 가지예요. <b>출력 뉴런 수</b>, <b>출력층 활성화 함수</b>, <b>손실 함수</b>이고, 이 셋은 항상 세트로 움직여요. 교수님은 "무조건 이런 문제가 나오면 반드시 이게 나온다"는 식으로 외우라고 했어요.</p>
+<table>
+  <tr><th style="width:21%">문제 유형</th><th style="width:13%">출력 뉴런 수</th><th style="width:20%">활성화</th><th style="width:21%">손실</th><th>예</th></tr>
+  <tr><td><b>이진 분류</b></td><td>1</td><td>Sigmoid (확률 1개)</td><td>Binary Cross-Entropy</td><td>이탈, 부도, 스팸 여부, 카드 승인</td></tr>
+  <tr><td><b>다중 클래스</b><br>(정답 하나만)</td><td>K (클래스 수)</td><td>Softmax (합 = 1)</td><td>Categorical Cross-Entropy</td><td>붓꽃 3품종, 손글씨 10자</td></tr>
+  <tr><td><b>멀티라벨</b><br>(정답 여러 개)</td><td>K</td><td>Sigmoid × K (각각 독립)</td><td>Binary CE × K</td><td>영화 장르 태그, 사진 속 물체들</td></tr>
+  <tr><td><b>회귀</b></td><td>1 (또는 m)</td><td>Linear (없음)</td><td>MSE / MAE</td><td>집값, 수요량, 체류 시간</td></tr>
+</table>
+<figure class="slide"><img src="slides/a_c3_output_table.jpg" alt="문제 유형별 출력 뉴런 수 출력층 활성화 손실 함수 표"><figcaption>교수님 슬라이드 — 문제 유형이 출력층 세트를 결정해요</figcaption></figure>
+<p>왜 이렇게 짝지어질까요? 이유를 한 줄씩 알아 두면 외우기 쉬워요.</p>
+<ul>
+  <li><b>이진</b> — 확률 하나(p)만 있으면 나머지는 1 − p라서 뉴런 1개와 Sigmoid(0~1)면 충분해요.</li>
+  <li><b>다중 클래스</b> — 정답이 딱 하나라서 확률을 다 더하면 1이 되어야 해요. 그래서 합이 1이 되도록 만드는 Softmax를 써요.</li>
+  <li><b>멀티라벨</b> — 정답이 여러 개일 수 있어서 합이 1일 필요가 없어요. 라벨마다 "이 라벨이 있나 없나"를 따로 묻는 이진 분류 K개로 생각해요.</li>
+  <li><b>회귀</b> — 집값처럼 어떤 크기의 숫자도 나올 수 있어야 해서 값을 누르는 활성화를 쓰지 않아요(Linear).</li>
+</ul>
+<div class="box eg"><span class="t">비유 — 답안지 양식</span>
+  <p>이진 분류는 "O/X" 한 칸, 다중 클래스는 "보기 중 하나만 고르는 객관식", 멀티라벨은 "해당하는 것을 모두 체크", 회귀는 "숫자를 직접 적는 주관식"이에요. 답안지 양식(출력층)이 문제 종류에 따라 달라지는 거예요.</p>
+</div>
+<p>교수님이 7주차에 한 말을 정리하면 "시그모이드는 모양부터 이진 분류처럼 생겼고(양 끝이 0 또는 1), 소프트맥스는 다중 분류에 써요. 다중 분류의 손실이 Categorical Cross-Entropy예요"예요. 시그모이드로 3개 이상을 하나만 고르는 것은 안 맞아요.</p>
+<p>Keras에서는 이렇게 문자열로 써요. 손실 이름은 <b>정답 라벨의 모양</b>에 따라 골라요(강의 Chapter 3의 코드 빈칸에서 철자까지 맞게 써야 해요).</p>
+<table>
+  <tr><th style="width:42%">상황</th><th>출력층 / 손실 문자열</th></tr>
+  <tr><td>이진 분류 (IMDB 리뷰 긍정/부정)</td><td><code>Dense(1, activation='sigmoid')</code> / <code>loss='binary_crossentropy'</code></td></tr>
+  <tr><td>다중 클래스, 라벨이 정수 (0~9)</td><td><code>Dense(10, activation='softmax')</code> / <code>loss='sparse_categorical_crossentropy'</code></td></tr>
+  <tr><td>다중 클래스, 라벨이 원-핫 [0,1,0]</td><td><code>Dense(K, activation='softmax')</code> / <code>loss='categorical_crossentropy'</code></td></tr>
+  <tr><td>멀티라벨</td><td><code>Dense(K, activation='sigmoid')</code> / <code>loss='binary_crossentropy'</code></td></tr>
+</table>
+<div class="box tip"><span class="t">외우기 팁 — 이렇게 고르세요</span>
+  <p>문제 문장에서 "정답이 몇 개인가"를 먼저 보세요. 2가지 중 하나면 Sigmoid + Binary, 여러 개 중 하나면 Softmax + Categorical, 여러 개가 동시에 정답이 될 수 있으면 Sigmoid × K, 숫자 자체를 맞히면 Linear + MSE예요. 라벨이 정수면 sparse가 붙어요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>스팸 여부를 판정하는 이진 분류는 출력 뉴런 1개에 Sigmoid, 손실은 Binary Cross-Entropy를 쓴다. 손글씨 숫자 10개 중 하나를 고르는 다중 클래스 분류는 출력 뉴런 10개에 Softmax, 손실은 Categorical Cross-Entropy(정수 라벨이면 sparse_categorical_crossentropy)를 쓴다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 영화 한 편에 "액션", "코미디", "로맨스" 태그가 동시에 붙을 수 있는 문제의 출력층은?</summary>
+  <p>멀티라벨이라서 뉴런 K개에 Sigmoid를 각각 쓰고 손실은 Binary CE예요. 태그가 여러 개 동시에 정답일 수 있어서 합이 1인 Softmax는 맞지 않아요.</p>
+</details>
+
+<h3>3-2. Softmax — 점수(로짓)를 확률로 바꿔요</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>Softmax</b>는 출력층의 점수(<b>로짓, logit</b>)를 "모두 0~1이고 합이 1인 확률 분포"로 바꿔 주는 함수예요. 식은 <code>Softmax(zᵢ) = e^(zᵢ) / Σⱼ e^(zⱼ)</code>예요.</p>
+</div>
+<p>로짓은 출력층의 가중합이에요. 아직 확률이 아닌 보통의 실수라서 음수도, 1보다 큰 수도 있어요.</p>
+<p> 교수님은 "모델이 1.478, −3 같은 값을 뱉으면 사람이 해석을 못 한다. 부장님에게 '결과가 1.478입니다' 하면 '그래서 어쩌라고' 한다"고 했어요. 그래서 합이 1인 확률로 바꿔 줘요.</p>
+<div class="box eg"><span class="t">비유 — 점수를 득표율로</span>
+  <p>후보 세 명의 점수가 2.0, 1.0, 0.1이라면 각 점수에 e를 거듭제곱해서(음수가 없는 양수로 만들고 격차를 키움) 전체 합으로 나눠 득표율로 바꾸는 거예요. 득표율을 다 더하면 항상 100%(= 1)예요.</p>
+</div>
+<p>강의자료의 대표 예제예요. 로짓 <code>z = [2.0, 1.0, 0.1]</code>이에요.</p>
+<div class="code">e^z = [7.39, 2.72, 1.11]    (합 약 11.2)
+Softmax = [7.39, 2.72, 1.11] / 11.2 ≈ [0.66, 0.24, 0.10]</div>
+<p>1번 클래스가 66%, 2번이 24%, 3번이 10%예요. 점수가 가장 큰 클래스가 확률도 가장 커요. 그리고 0.66 + 0.24 + 0.10 = 1이에요.</p>
+<figure class="slide"><img src="slides/a_c3_softmax.jpg" alt="로짓 막대와 softmax 확률 막대 그래프 A B C"><figcaption>교수님 슬라이드 — A 로짓(합이 1이 아님) → B 확률(합 = 1) → C 로짓을 3배로 키우면 확신이 커짐</figcaption></figure>
+<p>그림 읽는 법은 이래요. A는 로짓 막대(2.0, 1.0, 0.1)이고 합이 3.1이라서 아직 확률이 아니에요. B는 순위를 그대로 두고 합이 1이 되게 나눈 확률이에요. C는 로짓을 3배로 키운 결과로, 1등 확률이 0.95까지 올라가지만 순위는 그대로예요.</p>
+<p>코드로는 이렇게 써요.</p>
+<div class="code">import numpy as np
+
+z = np.array([2.0, 1.0, 0.1])      # 각 클래스의 로짓
+
+def softmax(z):
+    exp_z = np.exp(z - np.max(z))  # 안정성을 위해 최댓값을 빼 줌
+    return exp_z / np.sum(exp_z)
+
+softmax_output = softmax(z)
+print(f'Softmax 출력 확률: {softmax_output}')</div>
+<table>
+  <tr><th style="width:40%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>z = np.array([2.0, 1.0, 0.1])</code></td><td>로짓 3개예요 (클래스 3개)</td></tr>
+  <tr><td><code>np.exp(z - np.max(z))</code></td><td>가장 큰 값(2.0)을 먼저 빼고 e의 거듭제곱을 해요. 숫자가 너무 커지는 것(overflow)을 막아요</td></tr>
+  <tr><td><code>exp_z / np.sum(exp_z)</code></td><td>각각을 전체 합으로 나눠요. 그래서 합이 1이 돼요</td></tr>
+</table>
+<p>실행 결과는 <code>[0.659 0.242 0.099]</code>처럼 나와요. 소수 둘째 자리로 반올림하면 손계산 값 [0.66, 0.24, 0.10]과 같아요. 강의자료 슬라이드에는 긴 소수가 조금 다르게 적혀 있지만 실제로 실행하면 이 값이 나오고, 시험도 소수 둘째 자리까지만 봐요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax는 출력층의 로짓 벡터를 각 클래스가 정답일 확률로 바꾸는 함수이며, 모든 출력이 0과 1 사이이고 합이 1인 확률 분포가 된다. 지수 함수 때문에 큰 로짓은 더 크게, 작은 로짓은 더 작게 반영된다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — Softmax 출력 세 개를 모두 더하면 얼마인가요?</summary>
+  <p>항상 1이에요. 각각을 전체 합으로 나누었기 때문이에요.</p>
+</details>
+
+<h3>3-3. Softmax의 성질 — 옳은 것과 틀린 것 가리기 ★★</h3>
+<p>시험에는 "Softmax의 성질 중 옳은 것/틀린 것을 고르시오"가 나와요. 성질은 다섯 개로 정리돼요.</p>
+<ul>
+  <li><b>① 합 = 1, 모두 0~1</b> — 확률 분포예요. 음수도, 1을 넘는 값도 나오지 않아요.</li>
+  <li><b>② 로짓에 같은 상수를 더해도 결과가 같아요</b> — 분자와 분모에 같은 e^c가 곱해져 약분되기 때문이에요. 코드의 <code>z − max(z)</code>가 이 성질을 이용해요.</li>
+  <li><b>③ 로짓을 키우면 확신이 커지지만 순위는 그대로예요</b> — 값 차이가 벌어져서 1등의 확률이 더 커져요. 1등·2등·3등의 순서는 안 바뀌어요.</li>
+  <li><b>④ 큰 로짓은 더 크게 반영돼요</b> — 지수 함수라서 점수 차가 확률 차로 증폭돼요.</li>
+  <li><b>⑤ 클래스끼리 경쟁해요</b> — 합이 1이라서 한 클래스의 확률이 오르면 다른 클래스의 확률은 내려가요.</li>
+</ul>
+<p>②와 ③은 숫자로 확인해 두세요. (모두 실제로 계산한 값이에요.)</p>
+<table>
+  <tr><th style="width:36%">입력 로짓</th><th style="width:36%">Softmax 결과</th><th>설명</th></tr>
+  <tr><td>[2.0, 1.0, 0.1]</td><td>[0.66, 0.24, 0.10]</td><td>기준</td></tr>
+  <tr><td>[102.0, 101.0, 100.1] (모두 +100)</td><td>[0.66, 0.24, 0.10]</td><td>상수를 더해도 <b>불변</b></td></tr>
+  <tr><td>[6.0, 3.0, 0.3] (3배)</td><td>[0.95, 0.05, 0.00]</td><td>확신 <b>커짐</b>, 순위는 그대로</td></tr>
+</table>
+<p>"더하기"와 "곱하기"를 헷갈리지 마세요. 로짓에 <b>더하는 것</b>은 결과를 안 바꾸고, 로짓에 <b>곱해서 키우는 것</b>은 확률을 더 극단으로 만들어요. 이것이 시험의 단골 함정이에요.</p>
+<p>이 성질은 LLM의 <b>temperature</b>에도 쓰여요. 로짓을 T로 나눈 뒤 Softmax를 하는데, T가 작으면 로짓을 키운 것과 같아서 확신이 커지고(결정적), T가 크면 확률이 평평해져요(다양). 참고로만 알아 두세요.</p>
+<table>
+  <tr><th style="width:56%">보기</th><th style="width:10%">판정</th><th>이유</th></tr>
+  <tr><td>모든 로짓에 같은 수를 더해도 확률은 변하지 않는다</td><td><b>옳음</b></td><td>e^c가 분자·분모에서 약분돼요</td></tr>
+  <tr><td>로짓을 모두 3배로 하면 가장 큰 클래스의 확률은 더 커진다</td><td><b>옳음</b></td><td>격차가 벌어져서 확신이 커져요</td></tr>
+  <tr><td>로짓을 키우면 1등과 2등의 순위가 바뀔 수 있다</td><td><b>틀림</b></td><td>순서는 유지돼요</td></tr>
+  <tr><td>Softmax 출력의 합은 클래스 수와 같다</td><td><b>틀림</b></td><td>합은 항상 1이에요</td></tr>
+  <tr><td>각 클래스의 확률은 서로 독립이다</td><td><b>틀림</b></td><td>합이 1이라 서로 경쟁해요. 독립은 Sigmoid × K(멀티라벨)</td></tr>
+  <tr><td>로짓이 음수이면 확률도 음수가 될 수 있다</td><td><b>틀림</b></td><td>e의 거듭제곱은 항상 양수라서 확률은 0보다 커요</td></tr>
+</table>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax 출력은 모두 0과 1 사이이며 합이 1이다. 모든 로짓에 같은 상수를 더해도 결과는 변하지 않고, 로짓을 키우면 확신은 커지지만 클래스의 순위는 유지된다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — "로짓에 10을 더하면 확률이 바뀐다"는 옳을까요?</summary>
+  <p>틀려요. 같은 상수를 더하면 분자와 분모에 같은 e¹⁰이 곱해져 약분되어 확률은 그대로예요.</p>
+</details>
+
+<h3>3-4. 확률을 실무에서 쓰는 법 — 임계값·보류·Top-k·과신</h3>
+<p>Softmax의 확률은 "가장 큰 값이 답"으로 끝나지 않아요. 확신의 크기를 활용해요. 결정 자체는 argmax 한 줄이지만, 1등과 2등이 얼마나 차이 나는지가 실무 가치예요.</p>
+<table>
+  <tr><th style="width:24%">용도</th><th>어떻게 쓰나</th></tr>
+  <tr><td><b>임계값 + 보류</b></td><td>최대 확률이 임계값(예 0.8)보다 낮으면 자동 판정을 하지 않고 <b>"보류"</b>로 사람에게 넘겨요. 의료 영상 판독, 서류 분류가 이 방식이에요. 틀린 자동 결정보다 보류가 더 싸기 때문이에요.</td></tr>
+  <tr><td><b>Top-k</b></td><td>확률 순으로 상위 k개(예 5개)를 보여 줘요. 추천·검색은 1등만 필요한 게 아니에요.</td></tr>
+  <tr><td><b>클래스 불균형</b></td><td>희귀 클래스(불량 1%)는 확률이 작게 나오기 쉬워요. 그래서 임계값을 클래스마다 다르게 하거나, 손실에 가중치를 줘요.</td></tr>
+  <tr><td><b>과신 주의</b></td><td>Softmax 출력은 "확률처럼 생긴 점수"예요. 0.9라고 해서 실제로 90% 맞는다는 보장은 없어요(과신 경향). 필요하면 보정(캘리브레이션)을 해요.</td></tr>
+</table>
+<div class="box eg"><span class="t">비유 — 자동 판정과 사람 검토</span>
+  <p>CT 영상을 기계가 먼저 보고, 확신이 높은 것은 자동으로 통과시키고 애매한 것은 영상의학과 전문의가 다시 봐요. "확률이 0.5와 0.51"처럼 아슬아슬한 건 기계에게 맡기지 않는 거예요.</p>
+</div>
+<p>주관식에서는 "문제 상황 → 출력층·지표·임계값·전처리 결정"을 근거와 함께 쓰라고 해요. 이 소단원의 문장이 그 근거로 쓰여요. 예를 들어 "오판의 비용이 큰 의료·서류 분류에서는 최대 확률이 임계값 미만이면 보류하고 사람이 검토한다"고 쓰면 돼요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax 확률은 최대 확률이 임계값보다 낮으면 자동 판정 대신 사람 검토로 보류하는 데 쓰이고, Top-k 추천이나 클래스별 임계값 조정에도 쓰인다. 다만 출력 확률이 실제 정답률과 일치한다는 보장은 없어서(과신 경향) 필요하면 보정해야 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 최대 확률이 0.55인 샘플을 자동으로 판정해도 될까요? (임계값 0.8 기준)</summary>
+  <p>안 돼요. 0.8보다 낮아서 "보류"로 사람이 확인해요. 틀린 자동 판정보다 사람이 보는 비용이 더 싸다고 보는 경우예요.</p>
+</details>
+
+<h3>3-5. Cross-Entropy — 정답 확률을 채점해요 ★★★</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>Cross-Entropy(CE)</b>는 예측 확률이 정답을 얼마나 잘 맞혔는지를 재는 손실이에요. 식은 <code>L = −Σ yᵢ log(ŷᵢ)</code>이고, 정답이 원-핫이면 <b>L = −log(정답 클래스의 예측 확률)</b>이 돼요.</p>
+</div>
+<p><b>원-핫(one-hot) 벡터</b>는 정답 칸만 1이고 나머지는 모두 0인 벡터예요.</p>
+<p> 클래스가 3개이고 정답이 2번이면 <code>y = [0, 1, 0]</code>이에요. 0을 곱한 항은 사라지므로 합에서 정답 클래스 항 하나만 남아요. 그래서 CE는 <b>정답에 준 확률 하나만</b> 봐요.</p>
+<p>강의자료의 예예요. 예측이 <code>ŷ = [0.66, 0.24, 0.10]</code>이고 정답이 클래스 2번이에요.</p>
+<div class="code">L = −log(0.24) ≈ 1.427     (정답에 0.24밖에 안 줬으니 손실이 커요)
+정답이 1번이었다면  L = −log(0.66) ≈ 0.416</div>
+<figure class="slide"><img src="slides/a_c3_ce_curve.jpg" alt="정답 확률에 따른 손실 곡선 마이너스 로그 곡선"><figcaption>교수님 슬라이드 — 정답 확률이 낮을수록 벌점이 급격히 커져요 (로그의 성질)</figcaption></figure>
+<p><b>이 곡선이 왜 이런 모양인지</b>가 시험 포인트예요. 그래프를 읽는 법은 세 가지예요.</p>
+<ul>
+  <li>정답 확률 p가 <b>1에 가까우면</b> 손실이 0에 가까워요. 곡선 오른쪽 끝이 바닥에 붙어 있어요.</li>
+  <li>p가 <b>0에 가까워질수록</b> 손실이 급격히 커져요. 곡선 왼쪽이 하늘로 솟아요(p가 0이면 무한대).</li>
+  <li>곡선은 <b>직선이 아니에요</b>. 낮은 확률 구간이 훨씬 가팔라서 "자신 있게 틀릴수록" 벌점이 폭증해요.</li>
+</ul>
+<table>
+  <tr><th>정답 확률 p</th><th>0.9</th><th>0.66</th><th>0.5</th><th>0.24</th><th>0.1</th></tr>
+  <tr><td>손실 −log p</td><td>0.105</td><td>0.416</td><td>0.693</td><td>1.427</td><td>2.303</td></tr>
+</table>
+<p>같은 "0.1만큼 올리기"라도 효과가 달라요. 확률을 0.1에서 0.2로 올리면 손실이 2.30에서 1.61로 0.69나 줄지만, 0.8에서 0.9로 올리면 0.22에서 0.11로 0.12만 줄어요. 모델은 "크게 틀린 샘플"을 먼저 고치게 돼요.</p>
+<p>정답에 0.9를 주면 0.105, 0.1을 주면 2.302로 <b>약 22배</b> 차이예요. 오답 클래스에 확률이 어떻게 나뉘어 있는지는 손실에 영향이 없고, 정답 확률 하나만 봐요. 배치 전체의 손실은 샘플별 손실의 평균이에요.</p>
+<p>숫자를 이렇게 읽는 감각도 알아 두세요. 학습 로그의 손실값을 해석할 때 써요.</p>
+<table>
+  <tr><th style="width:22%">손실 값</th><th style="width:22%">의미</th><th>읽는 법</th></tr>
+  <tr><td><b>ln 2 ≈ 0.693</b></td><td>정답 확률 0.5</td><td>두 개 중 반반 찍는 수준</td></tr>
+  <tr><td><b>ln 10 ≈ 2.303</b></td><td>정답 확률 0.1</td><td>10개 중 하나 찍는 수준 (10개 클래스를 아무렇게나 찍을 때의 손실)</td></tr>
+  <tr><td><b>0.105</b></td><td>정답 확률 0.9</td><td>정답에 90% 확신</td></tr>
+</table>
+<p>손실이 2.30 근처에서 안 내려가면 "아직 찍는 수준에서 못 벗어났다"는 뜻이에요. 입력 정규화 누락, 학습률 문제, 활성화 함수 누락 등을 의심해요.</p>
+<div class="box eg"><span class="t">비유 — 자신 있게 틀린 학생에게 큰 벌점</span>
+  <p>정답이 3번인데 "3번일 확률 10%"라고 쓴 학생과 "3번일 확률 70%"라고 쓴 학생이 있어요. 둘 다 최종 답은 3번이 아니었지만, 처음 학생이 훨씬 큰 감점을 받아요. 정확도는 맞았나 틀렸나만 세지만, CE는 <b>얼마나 확신했는가</b>까지 채점해요.</p>
+</div>
+<p>정확도와 달리 CE는 미분이 가능해서 학습 신호로 쓸 수 있어요. 코드로 확인해 볼게요. 예측 <code>[0.66, 0.24, 0.10]</code>, 정답은 <code>y_true = [1, 0, 0]</code>(1번 클래스)이에요.</p>
+<div class="code">predictions = np.array([0.66, 0.24, 0.10])   # Softmax 출력
+y_true = np.array([1, 0, 0])                 # 정답: 1번 클래스 (원-핫)
+
+def cross_entropy(y_true, predictions):
+    return -np.sum(y_true * np.log(predictions))
+
+loss = cross_entropy(y_true, predictions)
+print(f'Cross-Entropy 손실: {loss}')</div>
+<table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>y_true * np.log(predictions)</code></td><td>같은 칸끼리 곱해요. 결과는 [1×log 0.66, 0×log 0.24, 0×log 0.10]이라 정답 칸만 남아요</td></tr>
+  <tr><td><code>np.sum(...)</code></td><td>모두 더해요. 사실상 log 0.66 하나예요</td></tr>
+  <tr><td><code>-np.sum(...)</code></td><td>log 값은 음수라서 앞에 −를 붙여 양수 벌점으로 만들어요</td></tr>
+</table>
+<p>실행 결과는 <code>Cross-Entropy 손실: 0.4155</code> 정도예요(−log 0.66 ≈ 0.416). 강의자료에 적힌 0.427은 실제 실행 값과 조금 달라요. 정답 클래스에 0.66을 줬으니 0.9를 줬을 때(0.105)보다는 크고, 0.1을 줬을 때(2.30)보다는 훨씬 작아요.</p>
+<p>예측이 정확히 0이면 log(0)이 −∞가 돼요. 그래서 실무 코드는 <code>np.clip(P, eps, 1−eps)</code>로 아주 작은 수(eps) 아래로 내려가지 않게 막아요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Cross-Entropy는 정답이 원-핫일 때 L = −log(정답 확률)이며, 정답 확률이 낮을수록 손실이 급격히 커지는 곡선이므로 자신 있게 틀릴수록 큰 벌점을 준다. 손실이 ln 2(0.693)면 두 개 중 반반 찍는 수준이고, ln 10(2.303)이면 열 개 중 하나를 찍는 수준이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 정답 확률이 0.5에서 0.1로 떨어지면 손실은 커질까요, 작아질까요? 얼마나 달라지나요?</summary>
+  <p>커져요. 0.693에서 2.303으로, 약 3배 이상 커져요. 정답 확률이 작을수록 곡선이 가파르게 올라가요.</p>
+</details>
+
+<h3>3-6. Softmax + CE의 기울기는 "예측 − 정답" ★★</h3>
+<p>왜 Softmax와 CE는 짝꿍처럼 붙어 다닐까요? 교수님과 강의자료가 든 이유는 세 가지예요.</p>
+<ul>
+  <li><b>확률적 해석</b> — Softmax가 출력을 확률처럼 읽게 만들어요.</li>
+  <li><b>학습 효율</b> — CE는 정답 클래스의 확률을 높일수록 손실이 줄게 설계돼서, 정답 확률을 최대화하는 쪽으로 학습이 유도돼요.</li>
+  <li><b>수학적 간결성</b> — 둘을 합쳐서 한 번에 미분하면 아주 간단한 식이 나와요.</li>
+</ul>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p>손실을 로짓으로 미분한 기울기는 <code>∂L/∂zᵢ = ŷᵢ − yᵢ</code> (예측 − 정답)이에요.</p>
+</div>
+<p>식이 간단하면 컴퓨터가 덜 계산해도 돼요. 교수님은 "덧셈·뺄셈 한 번이 나눗셈·곱셈 여러 번보다 CPU 자원과 전력을 덜 먹는다"고 했어요.</p>
+<p> 은닉층이 50개 있어도 출력층의 기울기는 이 한 줄이에요. 증명은 체인 룰로 하는데 시험 범위가 아니니 결과만 알면 돼요.</p>
+<p>이 기울기가 무슨 뜻인지 숫자로 봐요. 예측 <code>ŷ = [0.66, 0.24, 0.10]</code>, 정답이 2번 클래스라 <code>y = [0, 1, 0]</code>이에요.</p>
+<div class="code">ŷ − y = [0.66 − 0, 0.24 − 1, 0.10 − 0] = [0.66, −0.76, 0.10]</div>
+<ul>
+  <li>정답 칸(2번)은 <b>−0.76 (음수)</b>예요. 경사하강은 기울기를 빼므로 이 클래스의 점수가 <b>올라가요</b>.</li>
+  <li>오답 칸(1번 0.66, 3번 0.10)은 <b>양수</b>예요. 점수가 <b>내려가요</b>. 많이 틀린 1번이 더 크게 내려가요.</li>
+  <li>예측이 정답에 가까울수록 기울기가 작아져요. 정답 확률이 0.9면 −0.1이고, 0.1이면 −0.9예요.</li>
+</ul>
+<p>즉 "틀린 만큼 고친다"는 아주 직관적인 식이에요. 이 식이 코드의 <b>한 줄</b>로 나와요. 강의자료의 경사하강 한 스텝 코드예요.</p>
+<div class="code">def update_weights(x, y_true, w, b, learning_rate=0.1):
+    a, z = simple_nn_forward(x, w, b)   # 순전파
+    loss_grad = a - y_true              # 예측값과 실제값의 차이
+    w_grad = loss_grad * x
+    b_grad = loss_grad
+    w -= learning_rate * w_grad
+    b -= learning_rate * b_grad
+    return w, b, loss_grad</div>
+<table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>a, z = simple_nn_forward(x, w, b)</code></td><td>입력을 넣어 가중합 z와 출력 a를 구해요 (순전파)</td></tr>
+  <tr><td><code>loss_grad = a - y_true</code></td><td>★ <b>예측 − 정답</b>. Softmax(또는 Sigmoid) + CE의 기울기 ∂L/∂z 그대로예요</td></tr>
+  <tr><td><code>w_grad = loss_grad * x</code></td><td>가중치의 기울기. 입력이 클수록 그 가중치가 더 많이 움직여요</td></tr>
+  <tr><td><code>b_grad = loss_grad</code></td><td>편향의 기울기. 편향의 입력은 항상 1이라서 같은 값이에요</td></tr>
+  <tr><td><code>w -= learning_rate * w_grad</code></td><td>경사하강 업데이트 (4장). 기울기의 반대로 학습률만큼 이동해요</td></tr>
+</table>
+<p>같은 식이 아이리스 NumPy 코드(배치 전체)에서는 이렇게 나와요.</p>
+<div class="code">dZ = (P - Y_tr) / X_tr.shape[0]     # (예측 − 정답) / 샘플 수 N
+dW = X_tr.T @ dZ + l2 * W           # 가중치의 기울기 (+ L2 정규화 항)
+db = np.sum(dZ, axis=0, keepdims=True)</div>
+<p><code>dZ = (P - Y) / N</code>은 같은 "예측 − 정답"을 샘플 N개의 평균으로 쓴 거예요. 둘 다 <b>"예측 − 정답"이 출력층 기울기</b>라는 같은 줄이에요. Keras에서는 <code>model.compile(loss='categorical_crossentropy')</code>와 <code>fit</code>이 이 계산을 자동 미분으로 대신해 줘요.</p>
+<p>참고로 이 코드 한 스텝을 실제로 돌려 보면 <code>loss_grad</code>는 <code>[-0.1, 0.9, 0.9]</code>예요(sigmoid(2.2) ≈ 0.900에서 정답 [1, 0, 0]을 뺀 값). 강의자료 슬라이드에 적힌 업데이트 후 숫자는 코드 결과와 달라서, 숫자는 믿지 말고 "예측 − 정답" 구조만 보세요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"기울기 = 예측 − 정답 = 틀린 정도". 코드에서 이 식을 찾으라고 하면 <code>a - y_true</code> 또는 <code>(P - Y) / N</code>이 들어간 줄을 고르세요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax와 Cross-Entropy를 합쳐 미분하면 ∂L/∂z = ŷ − y(예측 − 정답)로 매우 간단해져서 출력층의 기울기 계산이 빠르고 안정적이다. 코드에서는 loss_grad = a - y_true 또는 dZ = (P - Y)/N 줄에 해당한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 예측 확률 [0.2, 0.7, 0.1], 정답이 2번 클래스(원-핫 [0, 1, 0])일 때 ŷ − y는?</summary>
+  <p>[0.2, −0.3, 0.1]이에요. 정답 칸만 음수라서 그 점수가 올라가는 방향으로 학습돼요.</p>
+</details>
+
+<div class="box tip"><span class="t">이 장 3줄 요약</span>
+  <ul>
+    <li>출력층은 문제 유형이 정해요. 이진은 1개·Sigmoid·Binary CE, 다중 클래스는 K개·Softmax·Categorical CE, 멀티라벨은 Sigmoid×K·Binary CE, 회귀는 Linear·MSE예요.</li>
+    <li>Softmax는 로짓을 합이 1인 확률로 바꾸고, 같은 상수를 더해도 불변이며, 로짓을 키우면 확신은 커지지만 순위는 유지돼요. 실무에서는 임계값·보류·Top-k로 쓰고 과신을 조심해요.</li>
+    <li>CE는 −log(정답 확률)이라 자신 있게 틀릴수록 벌점이 폭증하고, Softmax + CE의 출력층 기울기는 예측 − 정답이며 코드의 <code>loss_grad = a - y_true</code> 한 줄이에요.</li>
+  </ul>
+</div>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>model.summary()와 파라미터 수 세기 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k8"><a href="index.html#c8">← 보드</a><span>Keras로 MLP 만들기 · 5/7</span></div><h1>model.summary()와 파라미터 수 세기 ★★★</h1>
+<p><a class="w" href="words.html#w15" data-w="15">파라미터</a>는 학습으로 고쳐지는 숫자(<a class="w" href="words.html#w25" data-w="25">가중치</a> W와 <a class="w" href="words.html#w26" data-w="26">편향</a> b)의 총 개수예요. 정수 계산이라 시험에 반드시 나온다고 교수님이 말했어요(784×256 정도는 손으로 하면 되고 계산기는 못 써요).</p>
+<div class="box def"><span class="t">한 줄 정의</span>
+<p><b><a class="w" href="words.html#w43" data-w="43">Dense</a>(입력 → 출력)의 파라미터 = 입력 × 출력 + 출력</b>. 앞의 곱이 가중치, 뒤의 "+ 출력"이 편향(<a class="w" href="words.html#w23" data-w="23">뉴런</a>마다 하나)이에요. <a class="w" href="words.html#w45" data-w="45">Input</a> · <a class="w" href="words.html#w44" data-w="44">Flatten</a> · <a class="w" href="words.html#w104" data-w="104">Dropout</a>은 0개예요.</p>
+</div>
+<p><b>왜 "+ 출력"일까요?</b> 편향은 뉴런마다 하나씩 있어요. <a class="w" href="words.html#w36" data-w="36">은닉층</a> 뉴런이 256개면 편향도 256개예요. 이 편향을 빼먹는 것이 가장 흔한 실수예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:33%">층</th><th>계산</th><th style="width:20%">파라미터</th></tr>
+  <tr><td>Flatten</td><td>모양만 바꿈</td><td>0</td></tr>
+  <tr><td>Dense(256, '<a class="w" href="words.html#w88" data-w="88">relu</a>'), 입력 784</td><td>784 × 256 + 256 = 200,704 + 256</td><td><b>200,960</b></td></tr>
+  <tr><td>Dropout(0.2)</td><td>끄기만 함</td><td>0</td></tr>
+  <tr><td>Dense(10, '<a class="w" href="words.html#w48" data-w="48">softmax</a>'), 입력 256</td><td>256 × 10 + 10 = 2,560 + 10</td><td><b>2,570</b></td></tr>
+  <tr><td colspan="2"><b>합계 (<a class="w" href="words.html#w46" data-w="46">Total params</a>)</b></td><td><b>203,530</b></td></tr>
+</table></div>
+<p>784 × 256은 784 × 200 = 156,800과 784 × 56 = 43,904를 더해 200,704로 암산할 수 있어요. 첫 Dense가 전체의 약 98.7%(200,960 / 203,530)를 차지해서, <b><a class="w" href="words.html#w42" data-w="42">은닉 유닛</a> 수가 모델 크기를 정한다</b>는 것을 슬라이드가 짚어요.</p>
+<figure class="slide"><img src="slides/b_summary.jpg" alt="층별 모양과 파라미터 수 표와 model.summary 출력"><figcaption>교수님 슬라이드 — 층별 출력 모양과 파라미터 수, model.summary()의 Total params 203,530</figcaption></figure>
+<p><b>은닉 유닛 수를 바꿔 보는 문제</b>가 나와요. 입력 784, 출력 10은 그대로예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:20%">은닉 유닛</th><th>첫 Dense</th><th>출력 Dense</th><th style="width:20%">Total params</th></tr>
+  <tr><td>128</td><td>784×128 + 128 = 100,480</td><td>128×10 + 10 = 1,290</td><td><b>101,770</b></td></tr>
+  <tr><td>256</td><td>784×256 + 256 = 200,960</td><td>256×10 + 10 = 2,570</td><td><b>203,530</b></td></tr>
+  <tr><td>512</td><td>784×512 + 512 = 401,920</td><td>512×10 + 10 = 5,130</td><td><b>407,050</b></td></tr>
+</table></div>
+<p>유닛을 4배(128 → 512) 늘리면 파라미터도 약 4배(101,770 → 407,050)가 되는데, 슬라이드 실험에서 테스트 <a class="w" href="words.html#w79" data-w="79">정확도</a>는 0.9752에서 0.9794로 0.4%p밖에 안 올랐어요. 크게 키워도 이득이 점점 줄어드는 <b>수확 체감</b>이에요.</p>
+<p><b>층이 더 많은 경우</b>도 같은 규칙이에요. 입력 784 → 128 → 64 → 10이면 (784×128+128) + (128×64+64) + (64×10+10) = 100,480 + 8,256 + 650 = <b>109,386</b>이에요. 입력 20 → 8 → 3이면 (20×8+8) + (8×3+3) = 168 + 27 = <b>195</b>예요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>Dense 층의 파라미터 수는 (입력 뉴런 수 × 출력 뉴런 수) + 출력 뉴런 수(편향)이다. 784 → 256 → 10 구조는 (784×256+256) + (256×10+10) = 200,960 + 2,570 = 203,530개이며, Flatten과 Dropout은 학습할 파라미터가 없어 0개이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 입력 784, 은닉 Dense(100), 출력 Dense(10)일 때 Total params는?</summary>
+<p>(784×100+100) + (100×10+10) = 78,500 + 1,010 = 79,510개예요.</p></details>
+
+<div class="done"><a class="go" href="c8-06.html">다음 카드 → 코드 빈칸 연습 — 정답 철자를 손에 익혀요 ★★★</a><div class="pn"><a href="c8-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c8"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

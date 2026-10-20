@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NumPy에서 Keras로 — 부품 대응표 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k8"><a href="index.html#c8">← 보드</a><span>Keras로 MLP 만들기 · 1/7</span></div><h1>NumPy에서 Keras로 — 부품 대응표 ★</h1>
+<p>앞에서 <a class="w" href="words.html#w121" data-w="121">NumPy</a>로 손수 짠 <a class="w" href="words.html#w2" data-w="2">신경망</a>(<a class="w" href="words.html#w94" data-w="94">가중치 초기화</a>, <a class="w" href="words.html#w41" data-w="41">순전파</a>, <a class="w" href="words.html#w51" data-w="51">손실</a>, <a class="w" href="words.html#w95" data-w="95">역전파</a>, <a class="w" href="words.html#w63" data-w="63">경사하강</a>, 학습 루프)은 <a class="w" href="words.html#w110" data-w="110">Keras</a>에서 <b>객체와 인자 하나씩</b>으로 바뀌어요. 개념은 그대로이고 이름만 달라진 거예요. 슬라이드의 XOR 예제는 NumPy 60줄이 Keras 8줄이 돼요.</p>
+<div class="tw"><table>
+  <tr><th style="width:27%">하고 싶은 일</th><th style="width:27%">NumPy (손으로)</th><th style="width:27%">Keras (조립)</th><th>기억할 것</th></tr>
+  <tr><td><a class="w" href="words.html#w27" data-w="27">가중합</a> → <a class="w" href="words.html#w28" data-w="28">활성화</a> 한 층</td><td><code>z = X@W + b</code><br><code>a = sigmoid(z)</code></td><td><code>layers.Dense(units, activation=…)</code></td><td><a class="w" href="words.html#w43" data-w="43">Dense</a> 하나 = 한 층. <a class="w" href="words.html#w15" data-w="15">파라미터</a> = (입력+1)×<a class="w" href="words.html#w42" data-w="42">유닛</a></td></tr>
+  <tr><td>손실 계산 (+ 역전파)</td><td><code>cross_entropy</code><br><code>backward(...)</code> (<a class="w" href="words.html#w96" data-w="96">Chain Rule</a>)</td><td><code>compile(loss=…)</code> + <code>fit</code> 안의 자동 <a class="w" href="words.html#w21" data-w="21">미분</a></td><td>손실은 <b>이름</b>으로 고르고, 역전파는 <a class="w" href="words.html#w114" data-w="114">fit</a> 안에서 자동</td></tr>
+  <tr><td>경사하강 갱신</td><td><code>W -= lr * dW</code></td><td><code>compile(optimizer=…)</code></td><td><a class="w" href="words.html#w68" data-w="68">옵티마이저</a>가 갱신 방식을 정함</td></tr>
+  <tr><td>학습 루프</td><td><code>for ep in range(...)</code></td><td><code>fit(epochs=…, batch_size=…)</code></td><td>루프는 fit이 돌려 줌</td></tr>
+  <tr><td><a class="w" href="words.html#w79" data-w="79">정확도</a>, 평가, 예측</td><td><code>argmax</code>, <code>accuracy_score</code></td><td><code>metrics=['accuracy']</code>, <code>evaluate</code>, <code>predict</code></td><td><a class="w" href="words.html#w115" data-w="115">evaluate</a>는 (손실, 정확도), <a class="w" href="words.html#w116" data-w="116">predict</a>는 확률 <a class="w" href="words.html#w17" data-w="17">벡터</a></td></tr>
+</table></div>
+<figure class="slide"><img src="slides/b_np2keras.jpg" alt="NumPy와 Keras 대응표"><figcaption>교수님 슬라이드 — NumPy ↔ Keras 대응표, 2장 코드가 어디로 갔나</figcaption></figure>
+<div class="box eg"><span class="t">비유 — 직접 요리와 밀키트</span>
+<p>NumPy는 재료를 사서 직접 손질하고 불 조절까지 하는 요리예요. Keras는 손질된 재료 상자(Dense, <a class="w" href="words.html#w104" data-w="104">Dropout</a>)를 순서대로 조립하는 밀키트예요. 조립은 쉬워졌지만, 맛이 이상할 때 어느 상자를 의심할지 알려면 각 상자가 안에서 무슨 일을 하는지 알고 있어야 해요. 그래서 시험도 "이 줄이 NumPy의 어느 줄이냐"를 물어요.</p>
+</div>
+<p><b>Dense라는 이름</b>은 "촘촘하다", 즉 완전 연결(모든 입력이 모든 <a class="w" href="words.html#w23" data-w="23">뉴런</a>에 연결됨)이라는 뜻이에요. 교수님은 "<a class="w" href="words.html#w52" data-w="52">크로스 엔트로피</a>를 그렇게 복잡하게 배웠는데 코드로는 <code>loss=</code> 한 줄"이라고 했어요. 역전파의 미분 공식도 안 보이고 fit 안에 숨어 있어요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>Dense는 가중합 후 활성화를 수행하는 한 층이고, <a class="w" href="words.html#w113" data-w="113">compile</a>의 loss는 손실 함수, optimizer는 경사하강 갱신 방식을 지정하며, fit은 학습 루프와 자동 미분(역전파)을 수행한다. evaluate는 (손실, 정확도)를, predict는 클래스별 확률 벡터를 반환한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — NumPy의 <code>W -= lr * dW</code> 한 줄은 Keras의 어디에 해당하나요?</summary>
+<p><code>compile(optimizer=…)</code>예요. 갱신 방식(경사하강과 그 변형)은 옵티마이저가 맡고, 반복은 <code>fit</code>이 돌려요.</p></details>
+
+<div class="done"><a class="go" href="c8-02.html">다음 카드 → 층 부품 알아보기 — Sequential · Input · Flatten · Dense · Dropout ★★</a><div class="pn"><a href="index.html#c8"><b>← 이전</b>보드로</a><a class="next" href="quiz.html#c8"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

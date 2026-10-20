@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>문제 유형이 출력층 세트를 정해요 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k3"><a href="index.html#c3">← 보드</a><span>출력층 설계 · Softmax · Cross-Entropy · 1/7</span></div><h1>문제 유형이 출력층 세트를 정해요 ★★★</h1>
+<p><a class="w" href="words.html#w37" data-w="37">출력층</a>에서 정할 것은 세 가지예요. <b>출력 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 수</b>, <b>출력층 <a class="w" href="words.html#w28" data-w="28">활성화 함수</a></b>, <b><a class="w" href="words.html#w51" data-w="51">손실 함수</a></b>이고, 이 셋은 항상 세트로 움직여요. 교수님은 "무조건 이런 문제가 나오면 반드시 이게 나온다"는 식으로 외우라고 했어요.</p>
+<div class="tw"><table>
+  <tr><th style="width:21%">문제 유형</th><th style="width:13%">출력 뉴런 수</th><th style="width:20%">활성화</th><th style="width:21%">손실</th><th>예</th></tr>
+  <tr><td><b><a class="w" href="words.html#w53" data-w="53">이진 분류</a></b></td><td>1</td><td><a class="w" href="words.html#w86" data-w="86">Sigmoid</a> (확률 1개)</td><td>Binary <a class="w" href="words.html#w52" data-w="52">Cross-Entropy</a></td><td>이탈, 부도, 스팸 여부, 카드 승인</td></tr>
+  <tr><td><b><a class="w" href="words.html#w54" data-w="54">다중 클래스</a></b><br>(정답 하나만)</td><td>K (클래스 수)</td><td><a class="w" href="words.html#w48" data-w="48">Softmax</a> (합 = 1)</td><td>Categorical Cross-Entropy</td><td>붓꽃 3품종, 손글씨 10자</td></tr>
+  <tr><td><b><a class="w" href="words.html#w55" data-w="55">멀티라벨</a></b><br>(정답 여러 개)</td><td>K</td><td>Sigmoid × K (각각 독립)</td><td>Binary CE × K</td><td>영화 장르 태그, 사진 속 물체들</td></tr>
+  <tr><td><b><a class="w" href="words.html#w5" data-w="5">회귀</a></b></td><td>1 (또는 m)</td><td><a class="w" href="words.html#w29" data-w="29">Linear</a> (없음)</td><td><a class="w" href="words.html#w56" data-w="56">MSE</a> / MAE</td><td>집값, 수요량, 체류 시간</td></tr>
+</table></div>
+<figure class="slide"><img src="slides/a_c3_output_table.jpg" alt="문제 유형별 출력 뉴런 수 출력층 활성화 손실 함수 표"><figcaption>교수님 슬라이드 — 문제 유형이 출력층 세트를 결정해요</figcaption></figure>
+<p>왜 이렇게 짝지어질까요? 이유를 한 줄씩 알아 두면 외우기 쉬워요.</p>
+<ul>
+  <li><b>이진</b> — 확률 하나(p)만 있으면 나머지는 1 − p라서 뉴런 1개와 Sigmoid(0~1)면 충분해요.</li>
+  <li><b>다중 클래스</b> — 정답이 딱 하나라서 확률을 다 더하면 1이 되어야 해요. 그래서 합이 1이 되도록 만드는 Softmax를 써요.</li>
+  <li><b>멀티라벨</b> — 정답이 여러 개일 수 있어서 합이 1일 필요가 없어요. <a class="w" href="words.html#w7" data-w="7">라벨</a>마다 "이 라벨이 있나 없나"를 따로 묻는 이진 분류 K개로 생각해요.</li>
+  <li><b>회귀</b> — 집값처럼 어떤 크기의 숫자도 나올 수 있어야 해서 값을 누르는 활성화를 쓰지 않아요(Linear).</li>
+</ul>
+<div class="box eg"><span class="t">비유 — 답안지 양식</span>
+  <p>이진 분류는 "O/X" 한 칸, 다중 클래스는 "보기 중 하나만 고르는 객관식", 멀티라벨은 "해당하는 것을 모두 체크", 회귀는 "숫자를 직접 적는 주관식"이에요. 답안지 양식(출력층)이 문제 종류에 따라 달라지는 거예요.</p>
+</div>
+<p>교수님이 7주차에 한 말을 정리하면 "시그모이드는 모양부터 이진 분류처럼 생겼고(양 끝이 0 또는 1), 소프트맥스는 다중 분류에 써요. 다중 분류의 손실이 Categorical Cross-Entropy예요"예요. 시그모이드로 3개 이상을 하나만 고르는 것은 안 맞아요.</p>
+<p><a class="w" href="words.html#w110" data-w="110">Keras</a>에서는 이렇게 문자열로 써요. 손실 이름은 <b>정답 라벨의 모양</b>에 따라 골라요(강의 Chapter 3의 코드 빈칸에서 철자까지 맞게 써야 해요).</p>
+<div class="tw"><table>
+  <tr><th style="width:42%">상황</th><th>출력층 / 손실 문자열</th></tr>
+  <tr><td>이진 분류 (IMDB 리뷰 긍정/부정)</td><td><code>Dense(1, activation='sigmoid')</code> / <code>loss='binary_crossentropy'</code></td></tr>
+  <tr><td>다중 클래스, 라벨이 정수 (0~9)</td><td><code>Dense(10, activation='softmax')</code> / <code>loss='sparse_categorical_crossentropy'</code></td></tr>
+  <tr><td>다중 클래스, 라벨이 원-핫 [0,1,0]</td><td><code>Dense(K, activation='softmax')</code> / <code>loss='categorical_crossentropy'</code></td></tr>
+  <tr><td>멀티라벨</td><td><code>Dense(K, activation='sigmoid')</code> / <code>loss='binary_crossentropy'</code></td></tr>
+</table></div>
+<div class="box tip"><span class="t">외우기 팁 — 이렇게 고르세요</span>
+  <p>문제 문장에서 "정답이 몇 개인가"를 먼저 보세요. 2가지 중 하나면 Sigmoid + Binary, 여러 개 중 하나면 Softmax + Categorical, 여러 개가 동시에 정답이 될 수 있으면 Sigmoid × K, 숫자 자체를 맞히면 Linear + MSE예요. 라벨이 정수면 sparse가 붙어요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>스팸 여부를 판정하는 이진 분류는 출력 뉴런 1개에 Sigmoid, 손실은 Binary Cross-Entropy를 쓴다. 손글씨 숫자 10개 중 하나를 고르는 다중 클래스 <a class="w" href="words.html#w4" data-w="4">분류</a>는 출력 뉴런 10개에 Softmax, 손실은 Categorical Cross-Entropy(정수 라벨이면 <a class="w" href="words.html#w57" data-w="57">sparse_categorical_crossentropy</a>)를 쓴다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 영화 한 편에 "액션", "코미디", "로맨스" 태그가 동시에 붙을 수 있는 문제의 출력층은?</summary>
+  <p>멀티라벨이라서 뉴런 K개에 Sigmoid를 각각 쓰고 손실은 Binary CE예요. 태그가 여러 개 동시에 정답일 수 있어서 합이 1인 Softmax는 맞지 않아요.</p>
+</details>
+
+<div class="done"><a class="go" href="c3-02.html">다음 카드 → Softmax — 점수(로짓)를 확률로 바꿔요</a><div class="pn"><a href="index.html#c3"><b>← 이전</b>보드로</a><a class="next" href="quiz.html#c3"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 3·5) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

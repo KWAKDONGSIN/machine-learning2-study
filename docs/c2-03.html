@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>가중치 행렬의 크기 읽기 — W는 (이번 층 × 앞 층) · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k2"><a href="index.html#c2">← 보드</a><span>MLP 구조와 파라미터 수 · 3/7</span></div><h1>가중치 행렬의 크기 읽기 — W는 (이번 층 × 앞 층)</h1>
+<p>한 층의 계산은 <code>z = Wx + b</code>예요. 여기서 W의 크기가 시험에 나와요. 외울 문장은 이거 하나예요.</p>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>W⁽ˡ⁾의 크기 = (이번 층 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 수 nₗ) × (앞 층 뉴런 수 nₗ₋₁)</b>이고, <a class="w" href="words.html#w26" data-w="26">편향</a> b⁽ˡ⁾의 크기는 nₗ(이번 층 뉴런 수)예요.</p>
+</div>
+<p>이유는 이래요. 앞 층 뉴런 nₗ₋₁개가 이번 층 뉴런 nₗ개 <b>각각</b>에 모두 연결돼요.</p>
+<p> 이런 "모두 연결"을 <b>완전 연결(fully connected)</b> 또는 <b><a class="w" href="words.html#w43" data-w="43">Dense</a> 층</b>이라고 불러요. 이번 층 뉴런 하나가 앞 층 숫자 nₗ₋₁개를 곱하는 <a class="w" href="words.html#w25" data-w="25">가중치</a> 한 줄(행)을 가져서, 행이 nₗ개, 열이 nₗ₋₁개인 표가 돼요.</p>
+<div class="paper"><svg viewBox="0 0 400 170" width="100%" role="img" aria-label="입력 4개 은닉 5개 출력 3개 네트워크에서 층 사이마다 가중치 행렬 크기와 파라미터 수"><rect x="0" y="0" width="400" height="170" rx="8" fill="#f8faff"/><defs><marker id="n2a" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker></defs><rect x="10" y="38" width="100" height="56" rx="10" fill="#dbe6ff" stroke="#5d6b80"/><text x="60" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">입력층</text><text x="60" y="82" text-anchor="middle" font-size="13" fill="#1b2333">4개</text><rect x="150" y="38" width="100" height="56" rx="10" fill="#e3f6ec" stroke="#5d6b80"/><text x="200" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">은닉층</text><text x="200" y="82" text-anchor="middle" font-size="13" fill="#1b2333">5개</text><rect x="290" y="38" width="100" height="56" rx="10" fill="#fff1d6" stroke="#5d6b80"/><text x="340" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">출력층</text><text x="340" y="82" text-anchor="middle" font-size="13" fill="#1b2333">3개</text><line x1="112" y1="66" x2="148" y2="66" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#n2a)"/><line x1="252" y1="66" x2="288" y2="66" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#n2a)"/><text x="130" y="30" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="bold">W⁽¹⁾ 5×4</text><text x="130" y="112" text-anchor="middle" font-size="11" fill="#0f7a4f" font-weight="bold">b⁽¹⁾ 5개</text><text x="270" y="30" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="bold">W⁽²⁾ 3×5</text><text x="270" y="112" text-anchor="middle" font-size="11" fill="#0f7a4f" font-weight="bold">b⁽²⁾ 3개</text><text x="130" y="132" text-anchor="middle" font-size="12" fill="#1b2333" font-weight="bold">5×4 + 5 = 25</text><text x="270" y="132" text-anchor="middle" font-size="12" fill="#1b2333" font-weight="bold">3×5 + 3 = 18</text><text x="200" y="158" text-anchor="middle" font-size="13" fill="#d6264a" font-weight="bold">합계 25 + 18 = 43</text></svg></div>
+<figure class="slide"><img src="slides/a_c2_net_4_5_3.jpg" alt="입력 4개 은닉 5개 출력 3개 네트워크의 가중치 행렬 크기와 파라미터 43개"><figcaption>교수님 슬라이드 — 4 → 5 → 3 네트워크, 파라미터 = (5×4 + 5) + (3×5 + 3) = 43개</figcaption></figure>
+<div class="tw"><table>
+  <tr><th style="width:24%">층</th><th>W의 크기</th><th>b의 크기</th><th>파라미터</th></tr>
+  <tr><td>입력(4) → 은닉(5)</td><td>5 × 4</td><td>5</td><td>5×4 + 5 = 25</td></tr>
+  <tr><td>은닉(5) → 출력(3)</td><td>3 × 5</td><td>3</td><td>3×5 + 3 = 18</td></tr>
+  <tr><td colspan="3"><b>합계</b></td><td><b>43</b></td></tr>
+</table></div>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>크기를 헷갈리면 곱셈이 되는지 확인하세요. W(5×4)에 x(4개)를 곱하면 "안쪽 숫자 4와 4가 같아서" 곱셈이 되고, 결과는 "바깥 숫자 5"개가 나와요. 그래서 W는 (이번 층) × (앞 층)이에요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>l번째 층의 가중치 <a class="w" href="words.html#w18" data-w="18">행렬</a> W⁽ˡ⁾는 (nₗ × nₗ₋₁) 크기이다. 앞 층의 nₗ₋₁개 뉴런이 이번 층의 nₗ개 뉴런 각각에 연결되기 때문이며, 편향 <a class="w" href="words.html#w17" data-w="17">벡터</a> b⁽ˡ⁾는 뉴런마다 하나씩이라 크기가 nₗ이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 앞 층 784개, 이번 층 256개일 때 W의 크기는?</summary>
+  <p>(256, 784)예요. 이번 층 수가 앞(행)에, 앞 층 수가 뒤(열)에 와요.</p>
+</details>
+
+<div class="done"><a class="go" href="c2-04.html">다음 카드 → 파라미터 수 세기 ★★ — 공식과 예제</a><div class="pn"><a href="c2-02.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c2"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 2) · 머신러닝2_chapter3_redesign.pdf(p.11) · 머신02.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

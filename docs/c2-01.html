@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>입력층·은닉층·출력층 — 층마다 하는 일은 같아요 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k2"><a href="index.html#c2">← 보드</a><span>MLP 구조와 파라미터 수 · 1/7</span></div><h1>입력층·은닉층·출력층 — 층마다 하는 일은 같아요</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w38" data-w="38">MLP</a>(Multi-Layer Perceptron, 다층 퍼셉트론)</b>는 <a class="w" href="words.html#w35" data-w="35">입력층</a>과 <a class="w" href="words.html#w37" data-w="37">출력층</a> 사이에 <a class="w" href="words.html#w36" data-w="36">은닉층</a>이 1개 이상 있는 <a class="w" href="words.html#w2" data-w="2">신경망</a>이에요. 층마다 하는 일은 항상 "<a class="w" href="words.html#w27" data-w="27">가중합</a> → <a class="w" href="words.html#w28" data-w="28">활성화</a>"예요.</p>
+</div>
+<ul>
+  <li><b>입력층(input layer)</b> — 데이터를 받는 곳이에요. 계산은 하지 않고 숫자를 넘겨줘요. <a class="w" href="words.html#w15" data-w="15">파라미터</a>도 없어요.</li>
+  <li><b>은닉층(hidden layer)</b> — 중간에서 가중합과 활성화를 하는 층이에요. 우리는 입력과 출력만 보고 중간 계산은 안 보여서 "은닉(hidden)"이라고 불러요.</li>
+  <li><b>출력층(output layer)</b> — 마지막에 답을 내는 층이에요. 문제 유형에 맞춰 활성화 함수를 골라요(3장).</li>
+</ul>
+<div class="box eg"><span class="t">비유 — 식품 공장</span>
+  <p>원료를 넣는 입구(입력층), 눈에 안 보이는 가공 공정 여러 단계(은닉층), 완제품이 나오는 출구(출력층)라고 생각하세요. 각 공정은 앞 공정에서 받은 것을 섞고 가공해서 다음 공정에 넘겨요. 공정이 하는 일의 모양(가중합 → 활성화)은 매번 같아요.</p>
+</div>
+<figure class="slide"><img src="slides/a_c2_mlp_layers.jpg" alt="입력층 은닉층 2개 출력층으로 이루어진 신경망 그림과 단층 MLP DNN 비교표"><figcaption>교수님 슬라이드 — 입력층 → 은닉층 → 은닉층 → 출력층 (은닉층 2개 = DNN)</figcaption></figure>
+<p><b><a class="w" href="words.html#w41" data-w="41">순전파</a>(forward propagation)</b>는 입력을 층마다 통과시켜 출력을 계산하는 과정이에요. 층 하나는 이렇게 써요.</p>
+<div class="code">z⁽¹⁾ = W⁽¹⁾x + b⁽¹⁾,      a⁽¹⁾ = f(z⁽¹⁾)       ← 첫 번째 은닉층
+z⁽²⁾ = W⁽²⁾a⁽¹⁾ + b⁽²⁾,   a⁽²⁾ = f(z⁽²⁾)       ← 두 번째 은닉층
+z⁽ᴸ⁾ = W⁽ᴸ⁾a⁽ᴸ⁻¹⁾ + b⁽ᴸ⁾,  ŷ = g(z⁽ᴸ⁾)         ← 출력층</div>
+<p>위 첨자 (1), (2)는 "몇 번째 층"이라는 표시일 뿐이에요. 앞 층의 출력 a가 다음 층의 입력이 돼요.</p>
+<p> 교수님은 "연산의 단위는 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 하나가 아니라 <b>층</b>"이라는 점을 짚었어요. 은닉층의 활성화는 f(<a class="w" href="words.html#w88" data-w="88">ReLU</a> 등), 출력층의 활성화는 g(<a class="w" href="words.html#w48" data-w="48">softmax</a> 등)로 따로 써요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>MLP는 입력층, 하나 이상의 은닉층, 출력층으로 구성되며, 각 층에서 가중합과 활성화를 반복하여 입력을 출력으로 변환한다. 이 과정을 순전파라고 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 은닉층이라고 부르는 이유는?</summary>
+  <p>입력과 출력은 눈에 보이지만 중간 층의 계산은 밖에서 보이지 않기 때문이에요.</p>
+</details>
+
+<div class="done"><a class="go" href="c2-02.html">다음 카드 → 단층 퍼셉트론 / MLP / DNN 구분</a><div class="pn"><a href="index.html#c2"><b>← 이전</b>보드로</a><a class="next" href="quiz.html#c2"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 2) · 머신러닝2_chapter3_redesign.pdf(p.11) · 머신02.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

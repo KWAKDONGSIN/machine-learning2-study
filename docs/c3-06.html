@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Softmax + CE의 기울기는 &quot;예측 − 정답&quot; ★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k3"><a href="index.html#c3">← 보드</a><span>출력층 설계 · Softmax · Cross-Entropy · 6/7</span></div><h1>Softmax + CE의 기울기는 &quot;예측 − 정답&quot; ★★</h1>
+<p>왜 <a class="w" href="words.html#w48" data-w="48">Softmax</a>와 <a class="w" href="words.html#w52" data-w="52">CE</a>는 짝꿍처럼 붙어 다닐까요? 교수님과 강의자료가 든 이유는 세 가지예요.</p>
+<ul>
+  <li><b>확률적 해석</b> — Softmax가 출력을 확률처럼 읽게 만들어요.</li>
+  <li><b>학습 효율</b> — CE는 정답 클래스의 확률을 높일수록 <a class="w" href="words.html#w51" data-w="51">손실</a>이 줄게 설계돼서, 정답 확률을 최대화하는 쪽으로 학습이 유도돼요.</li>
+  <li><b>수학적 간결성</b> — 둘을 합쳐서 한 번에 <a class="w" href="words.html#w21" data-w="21">미분</a>하면 아주 간단한 식이 나와요.</li>
+</ul>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p>손실을 <a class="w" href="words.html#w47" data-w="47">로짓</a>으로 미분한 <a class="w" href="words.html#w22" data-w="22">기울기</a>는 <code>∂L/∂zᵢ = ŷᵢ − yᵢ</code> (예측 − 정답)이에요.</p>
+</div>
+<p>식이 간단하면 컴퓨터가 덜 계산해도 돼요. 교수님은 "덧셈·뺄셈 한 번이 나눗셈·곱셈 여러 번보다 CPU 자원과 전력을 덜 먹는다"고 했어요.</p>
+<p> <a class="w" href="words.html#w36" data-w="36">은닉층</a>이 50개 있어도 <a class="w" href="words.html#w37" data-w="37">출력층</a>의 기울기는 이 한 줄이에요. 증명은 체인 룰로 하는데 시험 범위가 아니니 결과만 알면 돼요.</p>
+<p>이 기울기가 무슨 뜻인지 숫자로 봐요. 예측 <code>ŷ = [0.66, 0.24, 0.10]</code>, 정답이 2번 클래스라 <code>y = [0, 1, 0]</code>이에요.</p>
+<div class="code">ŷ − y = [0.66 − 0, 0.24 − 1, 0.10 − 0] = [0.66, −0.76, 0.10]</div>
+<ul>
+  <li>정답 칸(2번)은 <b>−0.76 (음수)</b>예요. <a class="w" href="words.html#w63" data-w="63">경사하강</a>은 기울기를 빼므로 이 클래스의 점수가 <b>올라가요</b>.</li>
+  <li>오답 칸(1번 0.66, 3번 0.10)은 <b>양수</b>예요. 점수가 <b>내려가요</b>. 많이 틀린 1번이 더 크게 내려가요.</li>
+  <li>예측이 정답에 가까울수록 기울기가 작아져요. 정답 확률이 0.9면 −0.1이고, 0.1이면 −0.9예요.</li>
+</ul>
+<p>즉 "틀린 만큼 고친다"는 아주 직관적인 식이에요. 이 식이 코드의 <b>한 줄</b>로 나와요. 강의자료의 경사하강 한 <a class="w" href="words.html#w125" data-w="125">스텝</a> 코드예요.</p>
+<div class="code">def update_weights(x, y_true, w, b, learning_rate=0.1):
+    a, z = simple_nn_forward(x, w, b)   # 순전파
+    loss_grad = a - y_true              # 예측값과 실제값의 차이
+    w_grad = loss_grad * x
+    b_grad = loss_grad
+    w -= learning_rate * w_grad
+    b -= learning_rate * b_grad
+    return w, b, loss_grad</div>
+<div class="tw"><table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>a, z = simple_nn_forward(x, w, b)</code></td><td>입력을 넣어 <a class="w" href="words.html#w27" data-w="27">가중합</a> z와 출력 a를 구해요 (<a class="w" href="words.html#w41" data-w="41">순전파</a>)</td></tr>
+  <tr><td><code>loss_grad = a - y_true</code></td><td>★ <b>예측 − 정답</b>. Softmax(또는 <a class="w" href="words.html#w86" data-w="86">Sigmoid</a>) + CE의 기울기 ∂L/∂z 그대로예요</td></tr>
+  <tr><td><code>w_grad = loss_grad * x</code></td><td><a class="w" href="words.html#w25" data-w="25">가중치</a>의 기울기. 입력이 클수록 그 가중치가 더 많이 움직여요</td></tr>
+  <tr><td><code>b_grad = loss_grad</code></td><td><a class="w" href="words.html#w26" data-w="26">편향</a>의 기울기. 편향의 입력은 항상 1이라서 같은 값이에요</td></tr>
+  <tr><td><code>w -= learning_rate * w_grad</code></td><td>경사하강 업데이트 (4장). 기울기의 반대로 <a class="w" href="words.html#w64" data-w="64">학습률</a>만큼 이동해요</td></tr>
+</table></div>
+<p>같은 식이 아이리스 <a class="w" href="words.html#w121" data-w="121">NumPy</a> 코드(<a class="w" href="words.html#w123" data-w="123">배치</a> 전체)에서는 이렇게 나와요.</p>
+<div class="code">dZ = (P - Y_tr) / X_tr.shape[0]     # (예측 − 정답) / 샘플 수 N
+dW = X_tr.T @ dZ + l2 * W           # 가중치의 기울기 (+ L2 정규화 항)
+db = np.sum(dZ, axis=0, keepdims=True)</div>
+<p><code>dZ = (P - Y) / N</code>은 같은 "예측 − 정답"을 샘플 N개의 평균으로 쓴 거예요. 둘 다 <b>"예측 − 정답"이 출력층 기울기</b>라는 같은 줄이에요. <a class="w" href="words.html#w110" data-w="110">Keras</a>에서는 <code>model.compile(loss='categorical_crossentropy')</code>와 <code>fit</code>이 이 계산을 자동 미분으로 대신해 줘요.</p>
+<p>참고로 이 코드 한 스텝을 실제로 돌려 보면 <code>loss_grad</code>는 <code>[-0.1, 0.9, 0.9]</code>예요(sigmoid(2.2) ≈ 0.900에서 정답 [1, 0, 0]을 뺀 값). 강의자료 슬라이드에 적힌 업데이트 후 숫자는 코드 결과와 달라서, 숫자는 믿지 말고 "예측 − 정답" 구조만 보세요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"기울기 = 예측 − 정답 = 틀린 정도". 코드에서 이 식을 찾으라고 하면 <code>a - y_true</code> 또는 <code>(P - Y) / N</code>이 들어간 줄을 고르세요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax와 Cross-Entropy를 합쳐 미분하면 ∂L/∂z = ŷ − y(예측 − 정답)로 매우 간단해져서 출력층의 기울기 계산이 빠르고 안정적이다. 코드에서는 loss_grad = a - y_true 또는 dZ = (P - Y)/N 줄에 해당한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 예측 확률 [0.2, 0.7, 0.1], 정답이 2번 클래스(원-핫 [0, 1, 0])일 때 ŷ − y는?</summary>
+  <p>[0.2, −0.3, 0.1]이에요. 정답 칸만 음수라서 그 점수가 올라가는 방향으로 학습돼요.</p>
+</details>
+
+<div class="done"><a class="go" href="c3-07.html">다음 카드 → 이 장 3줄 요약</a><div class="pn"><a href="c3-05.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c3"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 3·5) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

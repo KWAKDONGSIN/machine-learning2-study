@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>과적합이란 — 외우기만 하고 새 문제를 못 푸는 상태 ★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k7"><a href="index.html#c7">← 보드</a><span>역전파(개념) · 과적합 · 정규화 · 2/8</span></div><h1>과적합이란 — 외우기만 하고 새 문제를 못 푸는 상태 ★★</h1>
+<p>학습이 잘 되기 시작하면 다음 문제는 "너무 잘 되는 것"이에요. <b><a class="w" href="words.html#w97" data-w="97">과적합</a>(overfitting)</b>은 <a class="w" href="words.html#w8" data-w="8">훈련 데이터</a>에는 지나치게 잘 맞지만 새로운 데이터에서는 성능이 떨어지는 현상이에요.</p>
+<div class="box eg"><span class="t">비유 — 족보만 외운 학생</span>
+<p>기출 문제와 답을 통째로 외운 학생은 기출 시험에서는 100점이지만, 숫자만 바뀌어도 풀지 못해요. 이해한 것이 아니라 외운 것이기 때문이에요. 모델의 "기출"이 훈련 데이터이고 "새 시험"이 검증·<a class="w" href="words.html#w10" data-w="10">테스트 데이터</a>예요.</p>
+</div>
+<p>교수님이 "반드시 시험에 나온다"고 한 <b>과적합의 원인 3가지</b>가 있어요.</p>
+<ul>
+  <li>① <b><a class="w" href="words.html#w15" data-w="15">파라미터</a>가 데이터에 비해 너무 많다</b> (모델이 너무 크다)</li>
+  <li>② 그래서 상대적으로 <b>데이터가 부족하다</b></li>
+  <li>③ 일반적인 규칙이 아니라 <b>노이즈(우연한 잡음, 이상치)까지 학습했다</b></li>
+</ul>
+<p>증상은 <b>학습 <a class="w" href="words.html#w79" data-w="79">정확도</a>(또는 <a class="w" href="words.html#w51" data-w="51">손실</a>)는 계속 좋아지는데, 검증·테스트 성능은 나빠지는 것</b>이에요. 곡선으로 그리면 두 선이 점점 벌어져요.</p>
+<p>점들을 곡선으로 맞추는 그림으로 보면 쉬워요. 올라갔다 내려가는 점들을 1차(직선)로 맞추면 점을 못 따라가는 <b><a class="w" href="words.html#w98" data-w="98">과소적합</a></b>, 3차 곡선이면 <b>적절</b>해요. 15차 곡선으로 모든 점을 지나가게 하면 훈련 점은 완벽하지만 점 사이에서 마구 출렁여서 <b>과적합</b>이에요.</p>
+<figure class="slide"><img src="slides/b_overfit_curve.jpg" alt="1차 3차 15차 다항식과 검증 손실 곡선"><figcaption>교수님 슬라이드 — A 1차(과소적합), B 3차(적절), C 15차(과적합), D 학습 손실은 내려가는데 검증 손실은 epoch 1832 최소 이후 다시 오름</figcaption></figure>
+<p>슬라이드 D의 실험(은닉 64개, 데이터 60개)에서는 학습 손실이 0.075까지 계속 내려가는데 <a class="w" href="words.html#w133" data-w="133">검증 손실</a>은 <a class="w" href="words.html#w122" data-w="122">epoch</a> 1832에서 최소(0.304)가 되고 이후 0.707까지 올라갔어요. <b>검증 손실이 바닥을 찍은 그 지점이 멈춰야 할 곳</b>이에요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>실무 규칙 두 개예요. ① <a class="w" href="words.html#w67" data-w="67">학습 곡선</a>은 <b>항상 학습과 검증 두 줄</b>로 그려요. 학습 한 줄만 보면 과적합은 절대 안 보여요. ② 검증 손실이 최소인 지점에서 멈추는 것이 <a class="w" href="words.html#w107" data-w="107">조기 종료</a>예요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>과적합은 훈련 데이터에는 지나치게 잘 맞지만 새로운 데이터에서는 성능이 떨어지는 현상이다. 원인은 데이터에 비해 파라미터가 너무 많은 것, 데이터 부족, 노이즈까지 학습한 것이며, 학습 손실은 계속 감소하는데 검증 손실이 증가하여 두 곡선의 간격이 벌어지는 것으로 확인한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습 곡선 한 줄만 그려서는 왜 과적합을 알 수 없나요?</summary>
+<p>과적합은 "학습 성능과 검증 성능의 차이"로 나타나기 때문이에요. 검증 곡선이 없으면 비교할 대상이 없어요.</p></details>
+
+<div class="done"><a class="go" href="c7-03.html">다음 카드 → 학습·검증 곡선 네 패턴 — 진단과 처방 ★★★</a><div class="pn"><a href="c7-01.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c7"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 3~4주차 · 머신러닝2_chapter2_student_ver.pdf(PART 6 p.35–36, PART 7 p.55–57) · 머신러닝03.txt, 머신러닝04.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

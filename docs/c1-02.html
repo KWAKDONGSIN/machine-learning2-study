@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>활성화 함수 σ — 신호가 선을 넘어야 전달돼요 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k1"><a href="index.html#c1">← 보드</a><span>뉴런 하나와 편향 · 2/6</span></div><h1>활성화 함수 σ — 신호가 선을 넘어야 전달돼요</h1>
+<p><a class="w" href="words.html#w27" data-w="27">가중합</a> 뒤에 <b><a class="w" href="words.html#w28" data-w="28">활성화 함수</a>(activation function) σ</b>를 붙이면 <a class="w" href="words.html#w2" data-w="2">신경망</a>의 <a class="w" href="words.html#w23" data-w="23">뉴런</a>이 돼요. 식으로는 <code>a = σ(z)</code>예요. z를 σ에 넣어서 나온 a가 이 뉴런의 출력이에요.</p>
+<div class="box eg"><span class="t">비유 — 교수님이 든 생물학적 뉴런</span>
+  <p>우리 몸의 뉴런은 신호가 쌓여서 일정한 선(임계점)을 넘어야 다음 뉴런으로 신호를 보내요. 활성화 함수가 바로 이 "선을 넘었나"를 판단하는 역할이에요.</p>
+</div>
+<p>대표적인 활성화 함수인 <b><a class="w" href="words.html#w86" data-w="86">시그모이드</a>(sigmoid)</b>는 <code>σ(z) = 1 / (1 + e⁻ᶻ)</code>예요. 어떤 실수를 넣어도 0과 1 사이로 눌러 줘서 "활성화 정도" 또는 "확률"로 읽을 수 있어요. 그래프는 S자 모양이고, 양쪽 끝이 평평해져요.</p>
+<p>z가 0이면 a는 정확히 0.5이고, z가 커지면 1에, 작아지면 0에 가까워져요. 양쪽 끝이 평평(<a class="w" href="words.html#w91" data-w="91">포화</a>)하면 <a class="w" href="words.html#w22" data-w="22">기울기</a>가 거의 0이라 학습이 느려져요. 이 문제는 활성화 함수 장에서 다시 나와요.</p>
+<p>가장 오래된 <b><a class="w" href="words.html#w24" data-w="24">퍼셉트론</a>(Perceptron = perception + neuron)</b>은 가중합 → 활성화 → 출력의 구조예요. 1958년 원조는 계단함수로 −1 또는 1을 냈어요.</p>
+<p> 요즘은 <a class="w" href="words.html#w21" data-w="21">미분</a>이 가능한 시그모이드와 <a class="w" href="words.html#w88" data-w="88">ReLU</a>를 써요. 미분이 되어야 <a class="w" href="words.html#w63" data-w="63">경사하강</a>으로 학습할 수 있기 때문이에요.</p>
+<p>강의자료의 예로 따라가 볼게요. <code>x = [2, 3]</code>, <code>w = [0.5, −0.2]</code>, <code>b = 1</code>이에요.</p>
+<div class="code">z = (0.5 × 2) + (−0.2 × 3) + 1 = 1.0 − 0.6 + 1 = 1.4
+a = σ(1.4) = 1 / (1 + e⁻¹·⁴) ≈ 1 / (1 + 0.2466) ≈ 0.802</div>
+<p>가중합이 1.4이고, 시그모이드를 통과하면 약 0.80이에요. 1에 가까우니 "활성화됐다"고 읽어요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>활성화 함수 σ는 가중합 z를 <a class="w" href="words.html#w30" data-w="30">비선형</a>으로 변환하는 함수이며, 시그모이드는 모든 실수를 (0, 1) 구간으로 눌러 활성화 정도나 확률로 해석하게 한다. 퍼셉트론은 가중합 → 활성화 → 출력으로 이루어진 <a class="w" href="words.html#w53" data-w="53">이진 분류</a>용 <a class="w" href="words.html#w3" data-w="3">지도학습</a> 알고리즘이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 퍼셉트론의 세 단계를 순서대로 말해 보세요</summary>
+  <p>가중합 → 활성화 → 출력이에요. 곱해서 더하고, 임계점을 넘었는지 보고, 값을 내요.</p>
+</details>
+
+<div class="done"><a class="go" href="c1-03.html">다음 카드 → 선형회귀·로지스틱 회귀와 무엇이 같고 무엇이 다른가 ★</a><div class="pn"><a href="c1-01.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c1"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 1) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

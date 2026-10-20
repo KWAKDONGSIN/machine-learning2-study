@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>실무에서는 optimizer 한 줄 — 그리고 step과 epoch · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k4"><a href="index.html#c4">← 보드</a><span>경사하강과 학습률 · 5/6</span></div><h1>실무에서는 optimizer 한 줄 — 그리고 step과 epoch</h1>
+<p>실무에서는 위 루프를 직접 쓰지 않고 <code>model.compile(optimizer='adam')</code> 한 줄로 대신해요. 그래도 알아야 하는 이유는 "<a class="w" href="words.html#w51" data-w="51">손실</a>이 안 줄 때 <a class="w" href="words.html#w22" data-w="22">기울기</a>가 0인지 폭주하는지", "<a class="w" href="words.html#w64" data-w="64">학습률</a>을 어디서부터 바꿀지, 왜 <a class="w" href="words.html#w66" data-w="66">NaN</a>이 뜨는지"를 디버깅하기 위해서예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:20%">옵티마이저</th><th>핵심 아이디어</th></tr>
+  <tr><td><b><a class="w" href="words.html#w69" data-w="69">SGD</a></b></td><td><a class="w" href="words.html#w73" data-w="73">미니배치</a>의 기울기 방향으로 한 걸음 (w ← w − lr·g). 단순하지만 학습률에 민감하고 골짜기에서 진동해요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w70" data-w="70">Momentum</a></b></td><td>이전 이동 방향을 관성으로 누적해요. 진동이 줄고 빨라져요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w71" data-w="71">RMSProp</a></b></td><td>최근 기울기 크기를 보고 <a class="w" href="words.html#w15" data-w="15">파라미터</a>마다 학습률을 자동 조절해요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w72" data-w="72">Adam</a></b></td><td>Momentum + RMSProp + <a class="w" href="words.html#w26" data-w="26">편향</a> 보정이에요. 대부분의 문제에서 기본값이고 기본 lr은 1e-3이에요</td></tr>
+</table></div>
+<p>어떤 <a class="w" href="words.html#w68" data-w="68">옵티마이저</a>를 써도 <b>학습률이 가장 중요한 <a class="w" href="words.html#w14" data-w="14">하이퍼파라미터</a></b>예요. 너무 크면 loss가 튀거나 NaN이고, 너무 작으면 <a class="w" href="words.html#w122" data-w="122">epoch</a>을 많이 써도 제자리예요. 학습이 한 지점에서 멈추면 <code>ReduceLROnPlateau</code> <a class="w" href="words.html#w118" data-w="118">콜백</a>으로 학습률을 절반씩 줄이기도 해요.</p>
+<p>용어도 짚어 둘게요. <b><a class="w" href="words.html#w125" data-w="125">step</a></b>은 한 묶음(<a class="w" href="words.html#w123" data-w="123">batch</a>)으로 기울기를 계산해 한 번 갱신하는 것이고, <b>epoch</b>는 <a class="w" href="words.html#w8" data-w="8">학습 데이터</a> 전체가 한 번 쓰인 것이에요.</p>
+<p> 입력을 넣어 손실까지 갔다가 다시 돌아와 갱신하는 한 번이 step이에요. 교수님은 이 둘을 헷갈려 하는 학생이 많다고 했어요.</p>
+<div class="code">step 수 / epoch = ⌈ 학습 샘플 수 ÷ batch_size ⌉
+예) 55,000장, batch_size 128  →  55,000 ÷ 128 = 429.7  →  올림해서 430 step
+    (로그의 430/430이 이 숫자예요)</div>
+<p>배치가 커지면 갱신 횟수가 줄어요. 그래서 batch 크기와 학습률, epoch은 함께 조정해요. batch 32는 1,719 step, 128은 430 step, 512는 108 step이에요(모두 55,000장 기준).</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>step/epoch = ⌈학습 샘플 수 / <a class="w" href="words.html#w124" data-w="124">batch_size</a>⌉이므로 학습 샘플이 55,000개이고 batch_size가 128이면 1 epoch은 430 step이다. Adam은 Momentum과 RMSProp에 편향 보정을 결합한 옵티마이저이고 기본 학습률은 1e-3이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습 샘플 1,000개, batch_size 100이면 1 epoch의 step 수는?</summary>
+  <p>1,000 ÷ 100 = 10 step이에요. 나누어떨어지지 않으면 올림해요.</p>
+</details>
+
+<div class="done"><a class="go" href="c4-06.html">다음 카드 → 이 장 3줄 요약</a><div class="pn"><a href="c4-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c4"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·4주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 5) · 머신러닝2_chapter3_redesign.pdf(p.21·27) · 머신02.txt · 머신러닝04.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

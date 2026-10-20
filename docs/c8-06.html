@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>코드 빈칸 연습 — 정답 철자를 손에 익혀요 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k8"><a href="index.html#c8">← 보드</a><span>Keras로 MLP 만들기 · 6/7</span></div><h1>코드 빈칸 연습 — 정답 철자를 손에 익혀요 ★★★</h1>
+<p>단답형은 이런 식으로 나와요. <b>정답은 대소문자, 따옴표, 언더바까지 똑같아야</b> 해요. 먼저 철자 주의표를 눈에 익히고, 가린 답을 보지 않고 직접 써 봐요.</p>
+<div class="tw"><table>
+  <tr><th style="width:44%">자주 틀리는 철자</th><th>주의점</th></tr>
+  <tr><td><code>Sequential</code> · <code>Flatten</code> · <code>Dense</code> · <code>Dropout</code> · <code>Input</code></td><td>층과 모델 이름은 <b>첫 글자 대문자</b></td></tr>
+  <tr><td><code>EarlyStopping</code> · <code>Adam</code></td><td>대문자 E, S와 A (<code>Earlystopping</code> 아님)</td></tr>
+  <tr><td><code>'relu'</code> · <code>'softmax'</code> · <code>'sigmoid'</code></td><td><a class="w" href="words.html#w28" data-w="28">활성화</a> 문자열은 <b>전부 소문자</b>이고 따옴표 안에 써요</td></tr>
+  <tr><td><code>'sparse_categorical_crossentropy'</code></td><td>소문자, 단어 사이 언더바. <code>entropy</code> 앞이 <code>cross</code> 한 단어(<code>crossentropy</code>)</td></tr>
+  <tr><td><code>restore_best_weights</code> · <code>validation_data</code> · <code>batch_size</code></td><td>언더바가 들어간 소문자. <code>weights</code>의 s, <code>validation</code>의 철자 주의</td></tr>
+  <tr><td><code>'val_accuracy'</code> · <code>'val_loss'</code> · <code>'accuracy'</code></td><td><code>acc</code>가 아니라 <code>accuracy</code> 전체</td></tr>
+</table></div>
+<p><b>빈칸 1 — 모델 틀</b></p>
+<div class="code">model = models.__________([
+    layers.Input(shape=(28,28)),
+    layers.__________(),
+    layers.Dense(256, activation='__________'),
+    layers.__________(0.2),
+    layers.Dense(10, activation='__________')
+])</div>
+<details class="check"><summary>정답 보기</summary>
+<p>순서대로 <code>Sequential</code>, <code>Flatten</code>, <code>relu</code>, <code>Dropout</code>, <code>softmax</code>예요.</p></details>
+<p><b>빈칸 2 — <a class="w" href="words.html#w113" data-w="113">compile</a></b></p>
+<div class="code">model.__________(
+    optimizer=tf.keras.optimizers.__________(learning_rate=1e-3),
+    loss='__________',
+    metrics=['__________']
+)</div>
+<details class="check"><summary>정답 보기</summary>
+<p>순서대로 <code>compile</code>, <code>Adam</code>, <code>sparse_categorical_crossentropy</code>(<a class="w" href="words.html#w7" data-w="7">라벨</a>이 정수일 때), <code>accuracy</code>예요.</p></details>
+<p><b>빈칸 3 — <a class="w" href="words.html#w118" data-w="118">콜백</a>과 <a class="w" href="words.html#w114" data-w="114">fit</a> 연결</b></p>
+<div class="code">early_stop = tf.keras.callbacks.__________(
+    monitor='val_accuracy',
+    __________=3,
+    __________=True
+)
+history = model.__________(
+    x_trn, y_trn,
+    __________=(x_val, y_val),
+    epochs=20,
+    __________=128,
+    __________=[early_stop]
+)</div>
+<details class="check"><summary>정답 보기</summary>
+<p>순서대로 <code>EarlyStopping</code>, <code>patience</code>, <code>restore_best_weights</code>, <code>fit</code>, <code>validation_data</code>, <code>batch_size</code>, <code>callbacks</code>예요. 마지막 인자는 리스트 <code>[early_stop]</code>로 묶어요.</p></details>
+<p><b>빈칸 4 — 평가와 예측</b></p>
+<div class="code">test_loss, test_acc = model.__________(x_test, y_test, verbose=0)
+y_pred_prob = model.__________(x_test, verbose=0)
+y_pred = np.__________(y_pred_prob, axis=1)</div>
+<details class="check"><summary>정답 보기</summary>
+<p>순서대로 <code>evaluate</code>, <code>predict</code>, <code>argmax</code>예요. <a class="w" href="words.html#w115" data-w="115">evaluate</a>는 (<a class="w" href="words.html#w51" data-w="51">손실</a>, <a class="w" href="words.html#w79" data-w="79">정확도</a>), <a class="w" href="words.html#w116" data-w="116">predict</a>는 확률 <a class="w" href="words.html#w17" data-w="17">벡터</a>, <a class="w" href="words.html#w117" data-w="117">argmax</a>는 확률이 가장 큰 칸의 번호예요.</p></details>
+<p><b>빈칸 5 — 라벨 형식에 맞는 손실 문자열</b></p>
+<div class="code"># (가) y_train이 정수 0~9, 모양 (55000,)
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+              loss='__________', metrics=['accuracy'])
+
+# (나) y_train이 원-핫, 모양 (55000, 10)
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+              loss='__________', metrics=['accuracy'])
+
+# (다) 스팸(1) / 정상(0) 이진 분류, 출력층이 Dense(1, activation='__________')
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+              loss='__________', metrics=['accuracy'])</div>
+<details class="check"><summary>정답 보기</summary>
+<p>(가) <code>sparse_categorical_crossentropy</code>, (나) <code>categorical_crossentropy</code>, (다) <a class="w" href="words.html#w37" data-w="37">출력층</a>은 <code>sigmoid</code>, 손실은 <code>binary_crossentropy</code>예요.</p></details>
+<p><b>빈칸 6 — <a class="w" href="words.html#w121" data-w="121">NumPy</a>와 <a class="w" href="words.html#w110" data-w="110">Keras</a> 짝짓기</b></p>
+<div class="code">경사하강 W -= lr * dW             ↔  compile의 __________ 인자
+손실 계산 cross_entropy(Y, yhat)   ↔  compile의 __________ 인자
+학습 루프 for ep in range(...)     ↔  model.__________ 의 epochs 인자
+정확도 계산 (argmax == y).mean()   ↔  compile의 __________ 인자</div>
+<details class="check"><summary>정답 보기</summary>
+<p>순서대로 <code>optimizer</code>, <code>loss</code>, <code>fit</code>, <code>metrics</code>예요.</p></details>
+<p><b>빈칸 7 — <a class="w" href="words.html#w67" data-w="67">학습 곡선</a> 그리기</b></p>
+<div class="code">plt.plot(history.__________['accuracy'])
+plt.plot(history.history['__________'])
+plt.plot(history.history['__________'])
+plt.plot(history.history['__________'])</div>
+<p>(아래 세 줄은 순서대로 <a class="w" href="words.html#w134" data-w="134">검증 정확도</a>, 학습 손실, <a class="w" href="words.html#w133" data-w="133">검증 손실</a>이에요.)</p>
+<details class="check"><summary>정답 보기</summary>
+<p>첫 줄은 <code>history.history['accuracy']</code>의 <code>history</code>이고, 이어서 <code>val_accuracy</code>, <code>loss</code>, <code>val_loss</code>예요. <code>history.history</code>에는 <a class="w" href="words.html#w122" data-w="122">epoch</a>별 값이 리스트로 네 개(<code>accuracy</code>, <code>val_accuracy</code>, <code>loss</code>, <code>val_loss</code>) 쌓여 있어요.</p></details>
+<p><b>빈칸 8 — 결과 분석 도구</b></p>
+<div class="code">from sklearn.metrics import __________, __________
+cm = confusion_matrix(y_test, y_pred)
+print(__________(y_test, y_pred, digits=4))</div>
+<details class="check"><summary>정답 보기</summary>
+<p><code>confusion_matrix</code>, <code>classification_report</code>, 그리고 마지막 줄도 <code>classification_report</code>예요. <a class="w" href="words.html#w74" data-w="74">혼동행렬</a>(5장)과 클래스별 <a class="w" href="words.html#w80" data-w="80">정밀도</a>·<a class="w" href="words.html#w81" data-w="81">재현율</a>·<a class="w" href="words.html#w82" data-w="82">F1</a>·support 표를 만들어 줘요.</p></details>
+<p><b>빈칸 9 — <a class="w" href="words.html#w53" data-w="53">이진 분류</a>로 출력만 바꾸기</b></p>
+<div class="code">model = models.Sequential([
+    layers.Input(shape=(20000,)),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(__, activation='__________')
+])
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+    loss='__________',
+    metrics=['accuracy']
+)</div>
+<details class="check"><summary>정답 보기</summary>
+<p>출력 <a class="w" href="words.html#w23" data-w="23">뉴런</a>은 <code>1</code>개, 활성화는 <code>sigmoid</code>, 손실은 <code>binary_crossentropy</code>예요. 은닉 부분은 그대로이고 출력층과 손실만 문제 유형에 맞게 바뀌어요.</p></details>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>코드를 통째로 외우기 어렵다면 <b>"무엇이 바뀌는 자리인가"</b>만 외워요. 바뀌는 자리는 ① <a class="w" href="words.html#w42" data-w="42">은닉 유닛</a> 수와 <a class="w" href="words.html#w104" data-w="104">Dropout</a> 비율 ② 출력층 <code>Dense(클래스 수, 활성화)</code> ③ <code>loss=</code> 문자열 ④ 콜백 인자 세 개예요. 교수님은 "A 이상을 받고 싶으면 이 코드를 싹 다 외우고, B 정도면 외우지 않아도 된다, 배점이 크지 않다"고 했어요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>(빈칸 답안 쓰는 요령) 층은 <code>Dense</code>·<code>Flatten</code>·<code>Dropout</code>처럼 첫 글자 대문자, 활성화와 손실은 따옴표 안에 소문자와 언더바로 <code>'relu'</code>, <code>'softmax'</code>, <code>'sparse_categorical_crossentropy'</code>, 콜백 인자는 <code>monitor</code>, <code>patience</code>, <code>restore_best_weights</code>를 쓴다.</p>
+</div>
+
+<div class="done"><a class="go" href="c8-07.html">다음 카드 → 이 장 3줄 요약</a><div class="pn"><a href="c8-05.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c8"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

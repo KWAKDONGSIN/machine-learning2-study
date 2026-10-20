@@ -1,0 +1,185 @@
+<!-- 2장: MLP 구조와 파라미터 수. 입력·은닉·출력층, 단층/MLP/DNN 구분, 가중치 행렬 크기, 파라미터 수=(앞 층×이번 층)+이번 층을 여러 예제로 익혀요 -->
+<h2>MLP 구조와 파라미터 수 — 층을 쌓고 숫자를 세요</h2>
+<p class="lead">뉴런을 나란히 놓으면 층이 되고, 층을 이어 붙이면 MLP(다층 퍼셉트론)가 돼요. 시험에서 정수 계산으로 가장 확실하게 나오는 것이 "층 구성이 주어지면 편향을 포함한 전체 파라미터 수를 센다"예요. 이 장의 공식 하나를 확실히 잡으면 점수가 보장돼요.</p>
+
+<h3>2-1. 입력층·은닉층·출력층 — 층마다 하는 일은 같아요</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>MLP(Multi-Layer Perceptron, 다층 퍼셉트론)</b>는 입력층과 출력층 사이에 은닉층이 1개 이상 있는 신경망이에요. 층마다 하는 일은 항상 "가중합 → 활성화"예요.</p>
+</div>
+<ul>
+  <li><b>입력층(input layer)</b> — 데이터를 받는 곳이에요. 계산은 하지 않고 숫자를 넘겨줘요. 파라미터도 없어요.</li>
+  <li><b>은닉층(hidden layer)</b> — 중간에서 가중합과 활성화를 하는 층이에요. 우리는 입력과 출력만 보고 중간 계산은 안 보여서 "은닉(hidden)"이라고 불러요.</li>
+  <li><b>출력층(output layer)</b> — 마지막에 답을 내는 층이에요. 문제 유형에 맞춰 활성화 함수를 골라요(3장).</li>
+</ul>
+<div class="box eg"><span class="t">비유 — 식품 공장</span>
+  <p>원료를 넣는 입구(입력층), 눈에 안 보이는 가공 공정 여러 단계(은닉층), 완제품이 나오는 출구(출력층)라고 생각하세요. 각 공정은 앞 공정에서 받은 것을 섞고 가공해서 다음 공정에 넘겨요. 공정이 하는 일의 모양(가중합 → 활성화)은 매번 같아요.</p>
+</div>
+<figure class="slide"><img src="slides/a_c2_mlp_layers.jpg" alt="입력층 은닉층 2개 출력층으로 이루어진 신경망 그림과 단층 MLP DNN 비교표"><figcaption>교수님 슬라이드 — 입력층 → 은닉층 → 은닉층 → 출력층 (은닉층 2개 = DNN)</figcaption></figure>
+<p><b>순전파(forward propagation)</b>는 입력을 층마다 통과시켜 출력을 계산하는 과정이에요. 층 하나는 이렇게 써요.</p>
+<div class="code">z⁽¹⁾ = W⁽¹⁾x + b⁽¹⁾,      a⁽¹⁾ = f(z⁽¹⁾)       ← 첫 번째 은닉층
+z⁽²⁾ = W⁽²⁾a⁽¹⁾ + b⁽²⁾,   a⁽²⁾ = f(z⁽²⁾)       ← 두 번째 은닉층
+z⁽ᴸ⁾ = W⁽ᴸ⁾a⁽ᴸ⁻¹⁾ + b⁽ᴸ⁾,  ŷ = g(z⁽ᴸ⁾)         ← 출력층</div>
+<p>위 첨자 (1), (2)는 "몇 번째 층"이라는 표시일 뿐이에요. 앞 층의 출력 a가 다음 층의 입력이 돼요.</p>
+<p> 교수님은 "연산의 단위는 뉴런 하나가 아니라 <b>층</b>"이라는 점을 짚었어요. 은닉층의 활성화는 f(ReLU 등), 출력층의 활성화는 g(softmax 등)로 따로 써요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>MLP는 입력층, 하나 이상의 은닉층, 출력층으로 구성되며, 각 층에서 가중합과 활성화를 반복하여 입력을 출력으로 변환한다. 이 과정을 순전파라고 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 은닉층이라고 부르는 이유는?</summary>
+  <p>입력과 출력은 눈에 보이지만 중간 층의 계산은 밖에서 보이지 않기 때문이에요.</p>
+</details>
+
+<h3>2-2. 단층 퍼셉트론 / MLP / DNN 구분</h3>
+<p>구분의 기준은 딱 하나, <b>은닉층이 몇 개인가</b>예요.</p>
+<table>
+  <tr><th style="width:26%">이름</th><th style="width:18%">은닉층</th><th>풀 수 있는 문제</th></tr>
+  <tr><td><b>단층 퍼셉트론</b></td><td>0개</td><td>선형으로 나눌 수 있는 문제만 (XOR은 못 풀어요)</td></tr>
+  <tr><td><b>MLP</b></td><td>1개 이상</td><td>비선형 결정경계도 가능 (XOR 가능)</td></tr>
+  <tr><td><b>DNN(심층 신경망)</b></td><td>2개 이상</td><td>계층적 특징 학습 — 이미지·언어</td></tr>
+</table>
+<p>"딥(deep)"의 뜻은 단순히 <b>은닉층이 여러 개</b>라는 거예요. 층이 깊어질수록 표현력은 커지지만, 학습은 어려워져요. 이유는 기울기 소실이라는 문제 때문이고, 교수님은 "문제가 있다는 정도만 알아 두라"고 했어요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>그림을 보면 "입력과 출력 사이에 낀 층이 몇 개인가"를 세요. 0개면 단층, 1개 이상이면 MLP, 2개 이상이면 DNN이에요. 은닉층 1개는 MLP이면서 DNN은 아니에요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>입력층과 출력층 사이의 은닉층이 없으면 단층 퍼셉트론, 1개 이상이면 MLP, 2개 이상이면 DNN이라고 한다. 단층 퍼셉트론은 선형 분리가 가능한 문제만 풀 수 있고, 은닉층이 있는 MLP는 비선형 결정경계도 표현할 수 있다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 입력 → 은닉(256) → 출력(10)인 네트워크는 MLP일까요, DNN일까요?</summary>
+  <p>MLP예요. 은닉층이 1개뿐이라서 DNN(은닉층 2개 이상)은 아니에요.</p>
+</details>
+
+<h3>2-3. 가중치 행렬의 크기 읽기 — W는 (이번 층 × 앞 층)</h3>
+<p>한 층의 계산은 <code>z = Wx + b</code>예요. 여기서 W의 크기가 시험에 나와요. 외울 문장은 이거 하나예요.</p>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>W⁽ˡ⁾의 크기 = (이번 층 뉴런 수 nₗ) × (앞 층 뉴런 수 nₗ₋₁)</b>이고, 편향 b⁽ˡ⁾의 크기는 nₗ(이번 층 뉴런 수)예요.</p>
+</div>
+<p>이유는 이래요. 앞 층 뉴런 nₗ₋₁개가 이번 층 뉴런 nₗ개 <b>각각</b>에 모두 연결돼요.</p>
+<p> 이런 "모두 연결"을 <b>완전 연결(fully connected)</b> 또는 <b>Dense 층</b>이라고 불러요. 이번 층 뉴런 하나가 앞 층 숫자 nₗ₋₁개를 곱하는 가중치 한 줄(행)을 가져서, 행이 nₗ개, 열이 nₗ₋₁개인 표가 돼요.</p>
+<svg viewBox="0 0 400 170" width="100%" role="img" aria-label="입력 4개 은닉 5개 출력 3개 네트워크에서 층 사이마다 가중치 행렬 크기와 파라미터 수"><rect x="0" y="0" width="400" height="170" rx="8" fill="#f8faff"/><defs><marker id="n2a" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker></defs><rect x="10" y="38" width="100" height="56" rx="10" fill="#dbe6ff" stroke="#5d6b80"/><text x="60" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">입력층</text><text x="60" y="82" text-anchor="middle" font-size="13" fill="#1b2333">4개</text><rect x="150" y="38" width="100" height="56" rx="10" fill="#e3f6ec" stroke="#5d6b80"/><text x="200" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">은닉층</text><text x="200" y="82" text-anchor="middle" font-size="13" fill="#1b2333">5개</text><rect x="290" y="38" width="100" height="56" rx="10" fill="#fff1d6" stroke="#5d6b80"/><text x="340" y="63" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">출력층</text><text x="340" y="82" text-anchor="middle" font-size="13" fill="#1b2333">3개</text><line x1="112" y1="66" x2="148" y2="66" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#n2a)"/><line x1="252" y1="66" x2="288" y2="66" stroke="#1d4ed8" stroke-width="2.5" marker-end="url(#n2a)"/><text x="130" y="30" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="bold">W⁽¹⁾ 5×4</text><text x="130" y="112" text-anchor="middle" font-size="11" fill="#0f7a4f" font-weight="bold">b⁽¹⁾ 5개</text><text x="270" y="30" text-anchor="middle" font-size="11" fill="#1d4ed8" font-weight="bold">W⁽²⁾ 3×5</text><text x="270" y="112" text-anchor="middle" font-size="11" fill="#0f7a4f" font-weight="bold">b⁽²⁾ 3개</text><text x="130" y="132" text-anchor="middle" font-size="12" fill="#1b2333" font-weight="bold">5×4 + 5 = 25</text><text x="270" y="132" text-anchor="middle" font-size="12" fill="#1b2333" font-weight="bold">3×5 + 3 = 18</text><text x="200" y="158" text-anchor="middle" font-size="13" fill="#d6264a" font-weight="bold">합계 25 + 18 = 43</text></svg>
+<figure class="slide"><img src="slides/a_c2_net_4_5_3.jpg" alt="입력 4개 은닉 5개 출력 3개 네트워크의 가중치 행렬 크기와 파라미터 43개"><figcaption>교수님 슬라이드 — 4 → 5 → 3 네트워크, 파라미터 = (5×4 + 5) + (3×5 + 3) = 43개</figcaption></figure>
+<table>
+  <tr><th style="width:24%">층</th><th>W의 크기</th><th>b의 크기</th><th>파라미터</th></tr>
+  <tr><td>입력(4) → 은닉(5)</td><td>5 × 4</td><td>5</td><td>5×4 + 5 = 25</td></tr>
+  <tr><td>은닉(5) → 출력(3)</td><td>3 × 5</td><td>3</td><td>3×5 + 3 = 18</td></tr>
+  <tr><td colspan="3"><b>합계</b></td><td><b>43</b></td></tr>
+</table>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>크기를 헷갈리면 곱셈이 되는지 확인하세요. W(5×4)에 x(4개)를 곱하면 "안쪽 숫자 4와 4가 같아서" 곱셈이 되고, 결과는 "바깥 숫자 5"개가 나와요. 그래서 W는 (이번 층) × (앞 층)이에요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>l번째 층의 가중치 행렬 W⁽ˡ⁾는 (nₗ × nₗ₋₁) 크기이다. 앞 층의 nₗ₋₁개 뉴런이 이번 층의 nₗ개 뉴런 각각에 연결되기 때문이며, 편향 벡터 b⁽ˡ⁾는 뉴런마다 하나씩이라 크기가 nₗ이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 앞 층 784개, 이번 층 256개일 때 W의 크기는?</summary>
+  <p>(256, 784)예요. 이번 층 수가 앞(행)에, 앞 층 수가 뒤(열)에 와요.</p>
+</details>
+
+<h3>2-4. 파라미터 수 세기 ★★ — 공식과 예제</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>한 층의 파라미터 수 = (앞 층 뉴런 수 × 이번 층 뉴런 수) + 이번 층 뉴런 수</b>. 앞의 곱은 가중치 W의 개수이고, 뒤의 덧셈은 편향 b의 개수예요. 전체 파라미터 수는 층마다 구해서 <b>모두 더해요</b>.</p>
+</div>
+<p>교수님은 "각각의 전체 파라미터 수를 세는 것이 중요하다"고 7주차 복습 시간에 강조했어요. 시험에 확실히 나오는 정수 계산이에요. 파라미터는 학습으로 고쳐지는 숫자(w와 b)를 말해요.</p>
+<div class="box eg"><span class="t">비유 — 조절 손잡이 세기</span>
+  <p>각 뉴런에는 입력마다 하나씩 돌릴 수 있는 손잡이(가중치)와, 전체를 올리고 내리는 손잡이(편향) 하나가 달려 있어요. 파라미터 수는 이 신경망에 달린 손잡이를 전부 센 개수예요.</p>
+</div>
+<p><b>예제 1.</b> 입력 4 → 은닉 5 → 출력 3</p>
+<div class="code">1층  4×5 + 5 = 25
+2층  5×3 + 3 = 18
+합계 25 + 18 = 43</div>
+<p><b>예제 2.</b> 입력 784 → 은닉 256 → 출력 10 (MNIST)</p>
+<div class="code">1층  784×256 + 256 = 200,704 + 256 = 200,960
+2층  256×10 + 10  = 2,560 + 10    = 2,570
+합계 200,960 + 2,570 = 203,530</div>
+<p><b>예제 3.</b> 입력 d → 은닉 h → 출력 K의 일반식은 <code>(d·h + h) + (h·K + K)</code>예요. 아이리스처럼 d = 4, h = 8, K = 3이면 다음과 같아요.</p>
+<div class="code">1층  4×8 + 8 = 32 + 8 = 40
+2층  8×3 + 3 = 24 + 3 = 27
+합계 40 + 27 = 67</div>
+<p><b>예제 4.</b> 은닉층이 2개인 784 → 128 → 64 → 10</p>
+<div class="code">1층  784×128 + 128 = 100,352 + 128 = 100,480
+2층  128×64  + 64  = 8,192 + 64    = 8,256
+3층  64×10   + 10  = 640 + 10      = 650
+합계 100,480 + 8,256 + 650 = 109,386</div>
+<p>시험에서 자주 틀리는 실수는 이 세 가지예요.</p>
+<ul>
+  <li><b>편향을 빼먹는 것</b> — 곱셈 결과만 더하면 틀려요. 층마다 "+ 이번 층 뉴런 수"를 꼭 붙여요.</li>
+  <li><b>입력층을 한 층으로 세는 것</b> — 입력층은 파라미터가 없어요. 층 "사이"마다 계산해요. 층이 3개면 계산은 2번, 4개면 3번이에요.</li>
+  <li><b>활성화·Flatten·Dropout에 파라미터를 세는 것</b> — 이들은 모두 0이에요.</li>
+</ul>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>곱셈이 큰 수일 때는 쪼개서 계산하세요. 784×256은 784×250 = 196,000에 784×6 = 4,704를 더해 200,704예요. 계산기는 필요 없고 시험지 여백에 쓰면 돼요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>입력 784, 은닉 256, 출력 10인 MLP의 파라미터 수는 (784×256 + 256) + (256×10 + 10) = 200,960 + 2,570 = 203,530개이다. 층마다 가중치 수(앞 층×이번 층)와 편향 수(이번 층)를 더하고 전체 층을 합산한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 입력 3 → 은닉 4 → 출력 2의 파라미터 수는?</summary>
+  <p>(3×4 + 4) + (4×2 + 2) = 16 + 10 = 26개예요.</p>
+</details>
+
+<h3>2-5. Keras 코드와 model.summary()에서 파라미터 읽기</h3>
+<p>강의 Chapter 3의 MNIST 실습 모델이 바로 784 → 256 → 10이에요. 코드를 한 줄씩 읽어 볼게요.</p>
+<div class="code">model = models.Sequential([
+    layers.Input(shape=(28,28)),
+    layers.Flatten(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.2),
+    layers.Dense(10, activation='softmax')
+])
+model.summary()</div>
+<table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th><th style="width:18%">파라미터</th></tr>
+  <tr><td><code>Input(shape=(28,28))</code></td><td>입력은 28×28 이미지라고 선언해요</td><td>0</td></tr>
+  <tr><td><code>Flatten()</code></td><td>2차원 이미지를 784개짜리 한 줄로 펴요</td><td>0</td></tr>
+  <tr><td><code>Dense(256, activation='relu')</code></td><td>256개 뉴런의 완전 연결층. 가중합 → ReLU</td><td>784×256 + 256 = 200,960</td></tr>
+  <tr><td><code>Dropout(0.2)</code></td><td>학습할 때 뉴런 20%를 무작위로 꺼요</td><td>0</td></tr>
+  <tr><td><code>Dense(10, activation='softmax')</code></td><td>10개 클래스의 확률을 내는 출력층</td><td>256×10 + 10 = 2,570</td></tr>
+</table>
+<p><code>model.summary()</code>를 실행하면 층마다 출력 모양과 파라미터 수가 표로 나와요. 결과는 다음과 같아요.</p>
+<div class="code">flatten  (Flatten)   (None, 784)    0
+dense    (Dense)     (None, 256)    200,960
+dropout  (Dropout)   (None, 256)    0
+dense_1  (Dense)     (None, 10)     2,570
+Total params: 203,530</div>
+<figure class="slide"><img src="slides/a_c2_mnist_params.jpg" alt="Keras model summary와 층별 모양 및 파라미터 수 표"><figcaption>교수님 슬라이드 — 784 → 256 → 10 모델, 총 파라미터 203,530</figcaption></figure>
+<p>알아 둘 점이 세 가지 있어요.</p>
+<ul>
+  <li><code>(None, 784)</code>의 <code>None</code>은 "한 번에 몇 장을 넣는지(batch)는 아직 안 정해졌다"는 뜻이에요. 파라미터와는 관계없어요.</li>
+  <li><b>Dropout은 파라미터를 버리는 게 아니에요.</b> 학습할 때만 뉴런을 확률적으로 껐다 켜는 장치라서 파라미터는 0개예요.</li>
+  <li>첫 Dense 층이 전체의 약 98.7%(200,960 ÷ 203,530)예요. 그래서 <b>은닉 뉴런 수가 모델의 크기를 거의 정해요</b>.</li>
+</ul>
+<p>은닉 뉴런 수를 바꾸면 합계가 이렇게 달라져요. 강의자료 실험 결과와 같은 숫자예요.</p>
+<table>
+  <tr><th>은닉 뉴런 수</th><th>1층 (784→h)</th><th>2층 (h→10)</th><th>합계</th></tr>
+  <tr><td>128</td><td>100,480</td><td>1,290</td><td><b>101,770</b></td></tr>
+  <tr><td>256</td><td>200,960</td><td>2,570</td><td><b>203,530</b></td></tr>
+  <tr><td>512</td><td>401,920</td><td>5,130</td><td><b>407,050</b></td></tr>
+</table>
+<p>은닉 수를 4배(128 → 512)로 늘리면 파라미터도 약 4배인데, 정확도는 0.4%p밖에 안 올랐어요. 크게 키워도 효과가 점점 줄어든다는(수확체감) 뜻이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Dense(in → out)의 파라미터 수는 in × out + out이고 Flatten과 Dropout은 0개이다. 784 → 256 → 10 모델의 Total params는 203,530이며, 은닉 유닛을 512로 바꾸면 (784×512 + 512) + (512×10 + 10) = 407,050이 된다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — Dense(256)을 Dense(512)로 바꾸면 첫 Dense 층의 파라미터는? (입력 784)</summary>
+  <p>784×512 + 512 = 401,408 + 512 = 401,920개예요. 강의자료 셀프체크 Q1이에요.</p>
+</details>
+
+<h3>2-6. 연습 문제 — 직접 세어 보세요</h3>
+<p>종이에 식을 쓰고 풀어 본 뒤 답을 열어 보세요. 수십 번 보는 것보다 한 번 써 보는 것이 훨씬 오래가요.</p>
+<details class="check"><summary>연습 1 — 입력 10 → 은닉 20 → 출력 5</summary>
+  <p>(10×20 + 20) + (20×5 + 5) = 220 + 105 = 325개예요.</p></details>
+<details class="check"><summary>연습 2 — 아이리스 분류기(특성 4개, 품종 3개)가 은닉층 없이 입력에서 바로 출력(softmax)으로 가면?</summary>
+  <p>4×3 + 3 = 15개예요. 강의자료의 Softmax 회귀 모델이고, W는 4×3, b는 3개예요.</p></details>
+<details class="check"><summary>연습 3 — 784 → 256 → 128 → 10</summary>
+  <p>(784×256 + 256) + (256×128 + 128) + (128×10 + 10) = 200,960 + 32,896 + 1,290 = 235,146개예요.</p></details>
+<details class="check"><summary>연습 4 — 784 → 64 → 10에서 W⁽¹⁾의 크기와 전체 파라미터 수는?</summary>
+  <p>W⁽¹⁾는 (64, 784)이고, 전체는 (784×64 + 64) + (64×10 + 10) = 50,240 + 650 = 50,890개예요.</p></details>
+<details class="check"><summary>연습 5 — 파라미터가 많을수록 항상 좋은가요?</summary>
+  <p>아니에요. 파라미터가 데이터에 비해 너무 많으면 과적합이 생기기 쉽고, 계산량도 늘어요. 효과가 점점 줄어드는 수확체감도 있어요.</p></details>
+
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>층 구성이 주어지면 층 사이마다 (앞 층 뉴런 수 × 이번 층 뉴런 수) + 이번 층 뉴런 수를 계산해 모두 더한다. 예를 들어 입력 3, 은닉 4, 출력 2이면 (3×4 + 4) + (4×2 + 2) = 26개이다.</p>
+</div>
+
+<div class="box tip"><span class="t">이 장 3줄 요약</span>
+  <ul>
+    <li>MLP는 입력층 + 은닉층(1개 이상) + 출력층이고 층마다 "가중합 → 활성화"를 반복해요. 은닉층 0개는 단층, 1개 이상은 MLP, 2개 이상은 DNN이에요.</li>
+    <li>W⁽ˡ⁾의 크기는 (이번 층 × 앞 층), b⁽ˡ⁾의 크기는 이번 층 뉴런 수이고, 편향은 뉴런마다 하나씩이에요.</li>
+    <li>파라미터 수 = (앞 층 수 × 이번 층 수) + 이번 층 수를 층마다 구해 더해요. 784→256→10은 203,530이고 Flatten·Dropout은 0이에요.</li>
+  </ul>
+</div>

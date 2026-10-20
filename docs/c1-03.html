@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>선형회귀·로지스틱 회귀와 무엇이 같고 무엇이 다른가 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k1"><a href="index.html#c1">← 보드</a><span>뉴런 하나와 편향 · 3/6</span></div><h1>선형회귀·로지스틱 회귀와 무엇이 같고 무엇이 다른가 ★</h1>
+<p>키워드 표에 "<a class="w" href="words.html#w31" data-w="31">선형회귀</a>와 <a class="w" href="words.html#w2" data-w="2">신경망</a> <a class="w" href="words.html#w23" data-w="23">뉴런</a>의 계산에서 무엇이 같고 무엇이 다른지 말한다"가 있어요. 교수님은 "너무 많이 말하면 답을 다 말하는 거라 이만큼만 한다"며 아껴 둔 문제예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:22%"></th><th>선형회귀 (1학기)</th><th>뉴런 (이 장)</th></tr>
+  <tr><td><b><a class="w" href="words.html#w27" data-w="27">가중합</a></b></td><td><code>y = wᵀx + b</code></td><td><code>z = wᵀx + b</code> (똑같아요)</td></tr>
+  <tr><td><b><a class="w" href="words.html#w28" data-w="28">활성화 함수</a></b></td><td>없어요</td><td><code>a = σ(z)</code>를 붙여요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w30" data-w="30">비선형</a>성</b></td><td>없어요 (직선)</td><td>활성화 함수 덕분에 생겨요</td></tr>
+  <tr><td><b>개수</b></td><td>모델 1개</td><td>층마다 뉴런 여러 개, 층을 여러 개 쌓아요</td></tr>
+  <tr><td><b>w, b를 정하는 법</b></td><td>데이터로 학습 (<a class="w" href="words.html#w63" data-w="63">경사하강</a>)</td><td>똑같이 데이터로 학습 (경사하강)</td></tr>
+</table></div>
+<p>정리하면 <b>같은 점</b>은 "가중합 wᵀx + b를 계산하고, w와 b를 데이터로 학습한다"예요. <b>다른 점</b>은 딱 두 가지로, "가중합 뒤에 활성화 함수 σ를 붙인다"와 "이런 뉴런을 여러 개, 여러 층으로 쌓는다"예요.</p>
+<p><a class="w" href="words.html#w32" data-w="32">로지스틱 회귀</a>와의 관계도 알아 두세요. 로지스틱 회귀는 "가중합 + <a class="w" href="words.html#w86" data-w="86">시그모이드</a>"인데, 이것이 곧 <b>뉴런 하나(시그모이드)</b>예요.</p>
+<p> 그래서 실무에서 "뉴런 하나 = 로지스틱 회귀"라고 말해요. 반대로 활성화 함수를 쓰지 않으면(항등) 선형회귀와 같아요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"뉴런 = 선형회귀 + 활성화 함수(+ 여러 개 쌓기)". 차이를 물으면 활성화 함수와 쌓기, 두 가지만 답하세요.</p>
+</div>
+<p>실무에서는 출력 a를 확률로 읽고 <a class="w" href="words.html#w34" data-w="34">임계값</a>으로 자르면 바로 의사결정이 돼요. 임계값 0.5는 기본값일 뿐이고, 틀렸을 때의 비용에 따라 달라져요.</p>
+<div class="tw"><table>
+  <tr><th style="width:20%">문제</th><th>입력 → 출력 → 결정</th></tr>
+  <tr><td>신용카드 승인</td><td>소득·연체 횟수·이용액 → 연체 확률 a → a &gt; 0.3이면 거절. 놓친 연체가 더 비싸서 0.5보다 낮게 잡아요</td></tr>
+  <tr><td>스팸 필터</td><td>단어 빈도 → 스팸 확률 → 0.9 이상만 차단. 정상 메일을 막는 비용이 커서 높게 잡아요</td></tr>
+  <tr><td>고객 이탈</td><td>접속 일수·문의 횟수·요금 → 이탈 확률 → 상위 10%에게만 쿠폰</td></tr>
+  <tr><td>공정 이상 감지</td><td>센서 12개 → 이상 확률 → 0.5 초과 시 알람과 사람 확인</td></tr>
+</table></div>
+<p>입력의 단위가 다르면(예 소득은 원, 횟수는 번) <a class="w" href="words.html#w25" data-w="25">가중치</a>를 비교할 수 없어요. 그래서 <a class="w" href="words.html#w13" data-w="13">표준화</a>를 먼저 해요. 가중치의 부호와 크기를 보면 "어떤 입력이 결과를 올리고 내리는지"를 말할 수 있어서, 뉴런 하나는 해석하기 쉬운 모델이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>선형회귀와 신경망 뉴런은 가중합 wᵀx + b를 계산하고 w, b를 데이터로 학습한다는 점이 같다. 차이는 뉴런이 가중합 뒤에 활성화 함수 σ를 적용해 비선형성을 더하고, 이런 뉴런을 여러 개 여러 층으로 쌓는다는 것이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 뉴런 하나에 시그모이드를 쓰면 1학기의 어떤 모델과 같은 계산인가요?</summary>
+  <p>로지스틱 회귀예요. 가중합에 시그모이드를 씌워 확률을 내는 구조가 같아요.</p>
+</details>
+
+<div class="done"><a class="go" href="c1-04.html">다음 카드 → 편향(bias) — 결정경계를 평행 이동시켜요 ★</a><div class="pn"><a href="c1-02.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c1"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 1) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

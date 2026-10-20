@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>손실 문자열 고르기 — 라벨 형식이 정해요 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k8"><a href="index.html#c8">← 보드</a><span>Keras로 MLP 만들기 · 4/7</span></div><h1>손실 문자열 고르기 — 라벨 형식이 정해요 ★★★</h1>
+<p><a class="w" href="words.html#w37" data-w="37">출력층</a> <a class="w" href="words.html#w28" data-w="28">활성화</a>, <a class="w" href="words.html#w51" data-w="51">손실 함수</a>, <a class="w" href="words.html#w7" data-w="7">라벨</a>(정답) 형식은 <b>한 세트</b>예요. 셋 중 하나가 어긋나면 오류가 나거나 학습이 이상해져요. 교수님이 "시험에 낸다"고 한 표예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:25%">정답(라벨) 모양</th><th style="width:22%">문제 유형</th><th style="width:22%">출력층</th><th>손실 문자열</th></tr>
+  <tr><td><b>정수 하나</b><br>예 숫자 7 → <code>7</code></td><td><a class="w" href="words.html#w54" data-w="54">다중 클래스</a></td><td><code>Dense(K, activation='softmax')</code></td><td><code>'sparse_categorical_crossentropy'</code></td></tr>
+  <tr><td><b>원-핫 <a class="w" href="words.html#w17" data-w="17">벡터</a></b><br>예 7 → <code>[0,0,0,0,0,0,0,1,0,0]</code></td><td>다중 클래스</td><td><code>Dense(K, activation='softmax')</code></td><td><code>'categorical_crossentropy'</code></td></tr>
+  <tr><td><b>0 또는 1</b><br>(스팸/정상)</td><td><a class="w" href="words.html#w53" data-w="53">이진 분류</a></td><td><code>Dense(1, activation='sigmoid')</code></td><td><code>'binary_crossentropy'</code></td></tr>
+  <tr><td><b>0/1이 여러 칸</b><br>(태그 여러 개)</td><td><a class="w" href="words.html#w55" data-w="55">멀티라벨</a></td><td><code>Dense(K, activation='sigmoid')</code></td><td><code>'binary_crossentropy'</code></td></tr>
+  <tr><td>숫자 값</td><td><a class="w" href="words.html#w5" data-w="5">회귀</a> (참고)</td><td><code>Dense(1)</code> (<a class="w" href="words.html#w29" data-w="29">Linear</a>)</td><td><code>'mse'</code> (<a class="w" href="words.html#w56" data-w="56">MSE</a>)</td></tr>
+</table></div>
+<div class="box def"><span class="t">한 줄 정의</span>
+<p><b>정수 라벨 → <code>sparse_categorical_crossentropy</code> / 원-핫 라벨 → <code>categorical_crossentropy</code> / 이진·멀티라벨 → <code>binary_crossentropy</code></b>. 세 문자열을 철자 그대로 써요.</p>
+</div>
+<p><b>원-핫과 정수의 차이를 분명히 해요.</b> "정답이 3번"이라는 같은 정보를 <b>정수 하나</b>(<code>3</code>)로 적으면 sparse, <b>칸이 K개인 벡터에서 정답 칸만 1</b>(<code>[0,0,0,1,0,…]</code>)로 적으면 원-핫이에요. sparse는 "드문드문, 한 개만 적어 둔"이라는 뜻이에요. 같은 내용을 다른 모양으로 적은 것이라 정답 확률 p의 −<a class="w" href="words.html#w20" data-w="20">log</a> p를 계산하는 결과는 똑같고, 라벨 모양만 달라서 손실 이름이 달라져요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>교수님이 특히 헷갈리지 말라고 한 것이에요. <b>원-핫 라벨은 이진 분류가 아니에요.</b> 숫자가 0과 1뿐이라서 이진이라고 착각하기 쉽지만, 이진 분류는 "정답이 두 가지뿐인 문제"이고 원-핫은 "여러 칸 중 정답 칸만 1"로 적은 <b>다중 클래스</b>의 라벨 표기예요. 그래서 원-핫은 <code>categorical_crossentropy</code>이고, 정수 라벨은 앞에 <code>sparse_</code>를 붙여요.</p>
+</div>
+<p><b>자주 만나는 오류.</b> <code>Shapes (None, 1) and (None, 10) are incompatible</code>는 거의 항상 이 세트가 어긋났다는 뜻이에요. 라벨이 정수(한 칸)인데 원-핫용 <code>categorical_crossentropy</code>를 쓰면 이 오류가 나요. 처방은 <code>sparse_categorical_crossentropy</code>로 바꾸는 거예요. 반대로 원-핫 라벨(K칸)에 sparse를 쓰면 라벨 모양이 맞지 않아요. (정수 라벨을 원-핫으로 바꾸고 싶으면 <code>tf.keras.utils.to_categorical(y, 10)</code>을 쓰는데, 참고로만 알아 두세요.)</p>
+<p><b>학습이 시작될 때의 손실 값</b>도 기억해 둬요. 클래스가 10개이고 아무것도 모르는 상태라면 정답 확률이 약 0.1이라 손실이 −log(0.1) ≈ <b>2.30</b>이에요. 학습 초기에 손실이 2.30 근처이면 정상이고, 2.30 근처에서 계속 머물면 학습이 안 되고 있다는 신호예요(수치 손계산이 나오지는 않아요).</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>라벨이 0~9의 정수이고 출력층이 <a class="w" href="words.html#w48" data-w="48">Softmax</a>이면 loss='<a class="w" href="words.html#w57" data-w="57">sparse_categorical_crossentropy</a>', 라벨이 원-핫 벡터이면 loss='<a class="w" href="words.html#w58" data-w="58">categorical_crossentropy</a>', 이진 분류나 멀티라벨이면 출력층 <a class="w" href="words.html#w86" data-w="86">Sigmoid</a>와 loss='<a class="w" href="words.html#w59" data-w="59">binary_crossentropy</a>'를 쓴다. 출력층 활성화, 손실, 라벨 형식은 하나의 세트이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 정수 라벨(0~9)로 학습하면서 loss='categorical_crossentropy'를 쓰면 어떻게 되나요?</summary>
+<p>라벨 모양이 맞지 않아 <code>Shapes (None, 1) and (None, 10) are incompatible</code> 같은 shape 오류가 나요. <code>'sparse_categorical_crossentropy'</code>로 바꾸면 해결돼요.</p></details>
+
+<div class="done"><a class="go" href="c8-05.html">다음 카드 → model.summary()와 파라미터 수 세기 ★★★</a><div class="pn"><a href="c8-03.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c8"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

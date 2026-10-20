@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>로그와 지수 — &quot;작을수록 크게 벌주는 함수&quot; · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c0">← 보드</a><span>왕초보 수학·머신러닝 기초 · 6/8</span></div><h1>로그와 지수 — &quot;작을수록 크게 벌주는 함수&quot;</h1>
+<p>3장의 <a class="w" href="words.html#w52" data-w="52">Cross-Entropy</a>(<a class="w" href="words.html#w51" data-w="51">손실</a>) 식에 <code>−log</code>가 나와요. <a class="w" href="words.html#w20" data-w="20">로그</a>의 계산법은 몰라도 돼요. 시험은 로그 수치를 손으로 계산시키지 않고, <b>그래프 모양</b>만 읽게 해요.</p>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>−log p</b>는 "p가 1이면 벌점 0, p가 0에 가까워질수록 벌점이 급격히 커지는" 함수예요. 여기서 p는 정답에 준 확률이에요.</p>
+</div>
+<div class="paper"><svg viewBox="0 0 380 205" width="100%" role="img" aria-label="정답 확률 p가 작을수록 벌점 마이너스 로그 p가 급격히 커지는 곡선"><rect x="0" y="0" width="380" height="205" rx="8" fill="#f8faff"/><line x1="44" y1="170" x2="350" y2="170" stroke="#5d6b80" stroke-width="1.5"/><line x1="44" y1="20" x2="44" y2="170" stroke="#5d6b80" stroke-width="1.5"/><path d="M53.2,23.9 L56.2,35.9 L59.3,45.2 L62.4,52.8 L65.4,59.2 L68.5,64.8 L71.5,69.7 L74.6,74.1 L77.7,78.0 L80.7,81.7 L83.8,85.0 L86.8,88.1 L89.9,91.0 L93.0,93.6 L96.0,96.2 L99.1,98.6 L102.1,100.8 L105.2,102.9 L108.3,105.0 L111.3,106.9 L114.4,108.8 L117.4,110.5 L120.5,112.2 L123.6,113.9 L126.6,115.4 L129.7,117.0 L132.7,118.4 L135.8,119.8 L138.9,121.2 L141.9,122.5 L145.0,123.8 L148.0,125.0 L151.1,126.3 L154.2,127.4 L157.2,128.6 L160.3,129.7 L163.3,130.8 L166.4,131.8 L169.5,132.9 L172.5,133.9 L175.6,134.8 L178.6,135.8 L181.7,136.7 L184.8,137.6 L187.8,138.5 L190.9,139.4 L193.9,140.3 L197.0,141.1 L200.1,141.9 L203.1,142.8 L206.2,143.5 L209.2,144.3 L212.3,145.1 L215.4,145.8 L218.4,146.6 L221.5,147.3 L224.5,148.0 L227.6,148.7 L230.7,149.4 L233.7,150.1 L236.8,150.7 L239.8,151.4 L242.9,152.1 L246.0,152.7 L249.0,153.3 L252.1,153.9 L255.1,154.5 L258.2,155.1 L261.3,155.7 L264.3,156.3 L267.4,156.9 L270.4,157.5 L273.5,158.0 L276.6,158.6 L279.6,159.1 L282.7,159.6 L285.7,160.2 L288.8,160.7 L291.9,161.2 L294.9,161.7 L298.0,162.2 L301.0,162.7 L304.1,163.2 L307.2,163.7 L310.2,164.2 L313.3,164.7 L316.3,165.1 L319.4,165.6 L322.5,166.1 L325.5,166.5 L328.6,167.0 L331.6,167.4 L334.7,167.9 L337.8,168.3 L340.8,168.7 L343.9,169.2 L346.9,169.6 L350.0,170.0" fill="none" stroke="#1d4ed8" stroke-width="3"/><circle cx="74.6" cy="74.1" r="5" fill="#d6264a"/><text x="84.6" y="72.1" text-anchor="start" font-size="11" fill="#d6264a" font-weight="bold">p=0.1 → 벌점 2.30</text><circle cx="197.0" cy="141.1" r="5" fill="#b45309"/><text x="207.0" y="133.1" text-anchor="start" font-size="11" fill="#b45309" font-weight="bold">p=0.5 → 벌점 0.69</text><circle cx="319.4" cy="165.6" r="5" fill="#0f7a4f"/><text x="319.4" y="155.6" text-anchor="middle" font-size="11" fill="#0f7a4f" font-weight="bold">p=0.9 → 벌점 0.105</text><text x="197" y="192" text-anchor="middle" font-size="11" fill="#5d6b80">정답에 준 확률 p (0 ~ 1)</text><text x="12" y="95" font-size="11" fill="#5d6b80" text-anchor="middle" transform="rotate(-90 12 95)">벌점 (−log p)</text><text x="350" y="184" text-anchor="middle" font-size="10" fill="#5d6b80">1</text><text x="44" y="184" text-anchor="middle" font-size="10" fill="#5d6b80">0</text></svg></div>
+<div class="tw"><table>
+  <tr><th>정답에 준 확률 p</th><th>1.0</th><th>0.9</th><th>0.5</th><th>0.1</th><th>0.01</th><th>0에 가까움</th></tr>
+  <tr><td>벌점 −log p</td><td>0</td><td>0.105</td><td>0.693</td><td>2.303</td><td>4.605</td><td>끝없이 커짐</td></tr>
+</table></div>
+<div class="box eg"><span class="t">비유 — 자신 있게 틀린 학생</span>
+  <p>"잘 모르겠다"며 찍어서 틀린 학생보다 "100% 확실하다"며 틀린 학생이 더 크게 혼나요. −log p는 자신 있게 틀릴수록 벌점이 폭증하는 이 규칙을 그대로 식으로 쓴 거예요.</p>
+</div>
+<p>같이 나오는 <b>지수(e의 거듭제곱, eᶻ)</b>도 알아 두세요. e는 약 2.718인 특별한 수예요.</p>
+<p> eᶻ는 z가 0이면 1이고, z가 커질수록 훨씬 빠르게 커지며, z가 음수여도 <b>항상 0보다 커요</b>. <a class="w" href="words.html#w48" data-w="48">Softmax</a>가 이 성질을 이용해요.</p>
+<div class="tw"><table>
+  <tr><th>z</th><th>−1</th><th>0</th><th>1</th><th>2</th></tr>
+  <tr><td>eᶻ</td><td>0.37</td><td>1</td><td>2.72</td><td>7.39</td></tr>
+</table></div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>−log p는 정답 확률 p가 작아질수록 값이 급격히 커지는 곡선이라서, 정답에 낮은 확률을 준 예측일수록 큰 손실을 준다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 정답 확률이 0.9일 때와 0.1일 때 중 벌점이 더 큰 쪽은?</summary>
+  <p>0.1일 때예요. 0.105와 2.303으로 약 22배 차이가 나요.</p>
+</details>
+
+<div class="done"><a class="go" href="c0-07.html">다음 카드 → 시험에서 계산은 어디까지? 기호 읽는 법</a><div class="pn"><a href="c0-05.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c0"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·7주차 · 머신러닝2_chapter1_student_ver.pdf(p.3–10 배경) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

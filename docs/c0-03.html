@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>표 — 행렬 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c0">← 보드</a><span>왕초보 수학·머신러닝 기초 · 3/8</span></div><h1>표 — 행렬</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w18" data-w="18">행렬</a>(matrix)</b>은 숫자를 가로세로 표 모양으로 늘어놓은 것이에요. 가로줄은 <b>행</b>, 세로줄은 <b>열</b>이라고 불러요.</p>
+</div>
+<p>크기는 "행 수 × 열 수"로 말해요. 아래 표는 2행 3열이라서 "2×3 행렬"이에요.</p>
+<div class="tw"><table>
+  <tr><th style="width:18%"></th><th>1열</th><th>2열</th><th>3열</th></tr>
+  <tr><td><b>1행</b></td><td>1</td><td>0</td><td>2</td></tr>
+  <tr><td><b>2행</b></td><td>0</td><td>1</td><td>−1</td></tr>
+</table></div>
+<p><a class="w" href="words.html#w2" data-w="2">신경망</a>에서 <a class="w" href="words.html#w25" data-w="25">가중치</a> 행렬 W의 <b>한 행이 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 하나</b>예요. 뉴런이 5개면 행이 5개이고, 입력이 4개면 열이 4개라서 5×4 표가 돼요. 이 크기 읽는 법이 2장의 "<a class="w" href="words.html#w15" data-w="15">파라미터</a> 수 세기"로 곧바로 이어져요.</p>
+<div class="box eg"><span class="t">비유 — 성적표</span>
+  <p>학생 5명이 과목 4개를 본 성적표는 5행 4열이에요. 신경망의 W는 "뉴런 5개가 입력 4개를 각각 얼마나 중요하게 보는가"를 적은 성적표 같은 거예요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>가중치 행렬 W의 크기는 (이번 층 뉴런 수) × (앞 층 뉴런 수)이며, 행 하나가 뉴런 하나의 가중치 <a class="w" href="words.html#w17" data-w="17">벡터</a>에 해당한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 3행 4열 표는 "몇 × 몇" 행렬인가요?</summary>
+  <p>3×4 행렬이에요. 행 수를 먼저, 열 수를 나중에 읽어요.</p>
+</details>
+
+<div class="done"><a class="go" href="c0-04.html">다음 카드 → 곱하고 더하기 — 가중합</a><div class="pn"><a href="c0-02.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c0"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·7주차 · 머신러닝2_chapter1_student_ver.pdf(p.3–10 배경) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

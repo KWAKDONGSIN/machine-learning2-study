@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>출력층 활성화는 손실과 세트 ★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k6"><a href="index.html#c6">← 보드</a><span>활성화 함수 · 5/7</span></div><h1>출력층 활성화는 손실과 세트 ★★</h1>
+<p><a class="w" href="words.html#w36" data-w="36">은닉층</a> <a class="w" href="words.html#w28" data-w="28">활성화</a>(<a class="w" href="words.html#w88" data-w="88">ReLU</a> 등)와 <a class="w" href="words.html#w37" data-w="37">출력층</a> 활성화는 <b>역할이 달라요</b>. 은닉층은 모양을 구부려 표현력을 만드는 일을 하고, 출력층은 "무엇을 예측하는가"에 맞는 모양의 값을 내보내요. 교수님은 이 표가 "중간·기말에도 계속 따라다닌다"고 했어요.</p>
+<div class="tw"><table>
+  <tr><th style="width:22%">문제 유형</th><th style="width:16%">출력 뉴런 수</th><th style="width:18%">출력층 활성화</th><th>손실 함수</th></tr>
+  <tr><td><b><a class="w" href="words.html#w53" data-w="53">이진 분류</a></b> (예/아니오)</td><td>1개</td><td><a class="w" href="words.html#w86" data-w="86">Sigmoid</a></td><td>Binary <a class="w" href="words.html#w52" data-w="52">Cross-Entropy</a></td></tr>
+  <tr><td><b><a class="w" href="words.html#w54" data-w="54">다중 클래스</a></b> (정답이 하나)</td><td>클래스 수 K개</td><td><a class="w" href="words.html#w48" data-w="48">Softmax</a></td><td>Categorical Cross-Entropy</td></tr>
+  <tr><td><b><a class="w" href="words.html#w55" data-w="55">멀티라벨</a></b> (정답이 여러 개 가능)</td><td><a class="w" href="words.html#w7" data-w="7">라벨</a> 수 K개</td><td>Sigmoid</td><td>Binary Cross-Entropy</td></tr>
+  <tr><td><b><a class="w" href="words.html#w5" data-w="5">회귀</a></b> (숫자 예측)</td><td>예측할 숫자 개수</td><td><a class="w" href="words.html#w29" data-w="29">Linear</a></td><td><a class="w" href="words.html#w56" data-w="56">MSE</a> (평균제곱오차)</td></tr>
+</table></div>
+<p><b>왜 Softmax와 Sigmoid를 나눌까요?</b> Softmax는 모든 출력의 합이 1이 되게 만들어요. "여러 후보 중 하나"를 고르는 문제에 맞아요. Sigmoid는 출력마다 따로 0~1을 내서 "각각 켜졌나 꺼졌나"를 독립적으로 말해요. 한 사진에 고양이도 있고 강아지도 있는 멀티라벨이 그 예예요.</p>
+<ul>
+  <li>"이 사진은 숫자 0~9 중 무엇인가" → 정답 하나, 합 1 → <b>Softmax</b></li>
+  <li>"이 영화 리뷰는 긍정인가" → 예/아니오 → <b>Sigmoid</b> (<a class="w" href="words.html#w23" data-w="23">뉴런</a> 1개)</li>
+  <li>"이 사진에 있는 태그를 모두 고르시오" → 각각 독립 → <b>Sigmoid</b> (뉴런 여러 개)</li>
+  <li>"내일 기온은 몇 도인가" → 숫자 → <b>Linear</b></li>
+</ul>
+<p>Linear는 입력을 그대로 내보내는 함수예요. 이것도 활성화 함수의 하나예요. "은닉층에 선형을 쓰면 안 된다"는 말과 헷갈릴 수 있는데, 금지된 것은 <b>은닉층의 선형</b>이고 출력층의 회귀용 Linear는 별개예요(6-1). 값의 범위가 정해진 회귀(예 −1~1)는 <a class="w" href="words.html#w87" data-w="87">Tanh</a> 또는 Sigmoid에 크기를 맞춰 쓰기도 해요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>"<b>하나 고르기 = Softmax, 각각 켜기 = Sigmoid, 숫자 맞히기 = Linear</b>"예요. <a class="w" href="words.html#w51" data-w="51">손실</a>은 짝꿍이라 활성화를 알면 따라 나와요. Softmax는 categorical, Sigmoid는 binary, Linear는 MSE예요. 정수 라벨일 때 sparse_가 붙는 것은 8장에서 다뤄요.</p>
+</div>
+<p>교수님이 예고한 출제 방식은 두 가지예요. 하나는 데이터 설명을 주고 "보기가 tanh, ReLU, Swish, Sigmoid일 때 이진 분류의 출력층은?"처럼 활성화를 고르게 하는 것이에요. 다른 하나는 "Softmax를 넣었다면 데이터는 어떤 형식일까요?"처럼 거꾸로 묻는 것이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>출력층 활성화는 손실 함수와 세트로 문제 유형이 정한다. 이진 분류와 멀티라벨은 Sigmoid + Binary Cross-Entropy, 다중 클래스(정답 하나)는 Softmax + Categorical Cross-Entropy, 회귀는 Linear + MSE이다. Softmax는 출력의 합이 1이 되어 하나의 클래스를 고르는 문제에 맞고, Sigmoid는 클래스마다 독립 확률을 낸다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 한 사진에 "사람, 자동차, 신호등"이 동시에 있는지를 각각 맞히는 모델의 출력층은?</summary>
+<p>멀티라벨 문제라서 Sigmoid(라벨 수만큼 뉴런) + Binary Cross-Entropy예요. Softmax는 합이 1이라 하나만 고르게 만들어서 맞지 않아요.</p></details>
+
+<div class="done"><a class="go" href="c6-06.html">다음 카드 → 연습 문제 — 그래프와 개념으로 풀어 봐요</a><div class="pn"><a href="c6-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c6"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 3주차 · 머신러닝2_chapter2_student_ver.pdf(PART 5, p.29–33, p.48) · 머신러닝03.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

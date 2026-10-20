@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>L1 대 L2 — 손실에 벌점을 붙여요 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k7"><a href="index.html#c7">← 보드</a><span>역전파(개념) · 과적합 · 정규화 · 5/8</span></div><h1>L1 대 L2 — 손실에 벌점을 붙여요 ★</h1>
+<p><a class="w" href="words.html#w0" data-w="0">머신러닝</a>1에서 배운 <a class="w" href="words.html#w100" data-w="100">정규화</a>예요. <a class="w" href="words.html#w51" data-w="51">손실</a>에 <b><a class="w" href="words.html#w25" data-w="25">가중치</a>의 크기에 대한 벌점</b>을 더해서 모델이 지나치게 구부러지지 못하게 해요. 새 손실 = 원래 손실 + λ·(벌점)이고, λ(람다)는 벌점을 얼마나 세게 줄지 정하는 숫자예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:16%">기법</th><th style="width:22%">손실에 더하는 항</th><th>효과</th><th style="width:25%">한 줄 요약</th></tr>
+  <tr><td><b><a class="w" href="words.html#w101" data-w="101">L1</a></b> (Lasso)</td><td>λ · Σ|wᵢ|<br>(절댓값의 합)</td><td>일부 가중치를 <b>정확히 0</b>으로 만들어요 → 희소(sparse), 안 쓰는 변수를 지워서 <b>변수 선택</b></td><td>필요 없는 건 아예 버려요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w102" data-w="102">L2</a></b> (Ridge)</td><td>λ · Σwᵢ²<br>(제곱의 합)</td><td>가중치가 <b>너무 커지지 않게</b> 제한해요 → 안정적이고 부드러운 해. 0으로 만들지는 않아요</td><td>크기를 작게 눌러요</td></tr>
+  <tr><td><b>Elastic Net</b></td><td>L1 + L2 혼합</td><td>희소성과 안정성을 둘 다</td><td>둘을 섞어요</td></tr>
+</table></div>
+<div class="box eg"><span class="t">비유 — 배낭에 붙는 세금</span>
+<p>배낭에 짐을 넣을 때 세금을 내야 한다고 해 봐요. <b>L1</b>은 "짐 무게를 그대로 세금으로" 내는 방식이라 안 쓰는 짐은 아예 빼 버리는 쪽이 이득이에요(가중치가 0이 돼요). <b>L2</b>는 "무게의 제곱"을 세금으로 내서 무거운 짐 하나는 세금이 어마어마해요. 그래서 짐을 잘게 나눠 모두 가볍게 들게 돼요(가중치가 작아지지만 0은 아니에요).</p>
+</div>
+<p><b>왜 <a class="w" href="words.html#w97" data-w="97">과적합</a>이 줄까요?</b> 과적합한 모델은 가중치가 매우 큰 경우가 많아요. 15차 곡선이 점 사이에서 마구 출렁이는 것도 큰 계수 때문이에요. 큰 가중치에 벌점을 주면 곡선이 덜 구부러져서 노이즈를 따라가지 못해요.</p>
+<ul>
+  <li><b>L2는 <a class="w" href="words.html#w103" data-w="103">Weight Decay</a>(가중치 감쇠)</b>와 사실상 같은 일이에요. 매 갱신마다 가중치를 조금씩 줄여요. <a class="w" href="words.html#w1" data-w="1">딥러닝</a>에서는 <a class="w" href="words.html#w68" data-w="68">옵티마이저</a> 옵션(예 AdamW의 weight_decay)으로 써요.</li>
+  <li>2장 붓꽃 코드의 <code>loss = ... + 0.5 * l2 * np.sum(W*W)</code>(손실 항)와 <code>dW = ... + l2 * W</code>(<a class="w" href="words.html#w22" data-w="22">기울기</a> 항)가 바로 L2예요.</li>
+  <li><a class="w" href="words.html#w110" data-w="110">Keras</a>에서는 <code>kernel_regularizer=l2(1e-4)</code> 같은 식으로 층에 붙여요(참고).</li>
+  <li>λ는 <a class="w" href="words.html#w133" data-w="133">검증 손실</a>이 최소가 되는 값으로 골라요. 보통 10배씩 바꿔 가며(1e-5 ~ 1e-2) 찾아요. 너무 크면 가중치가 눌려서 오히려 <a class="w" href="words.html#w98" data-w="98">과소적합</a>이 돼요.</li>
+</ul>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p><b>L1 → 0이 된다 → 변수 선택</b>, <b>L2 → 작아진다 → 가중치 크기 제한(Weight Decay)</b>이에요. 식에서 L1은 절댓값(|w|), L2는 제곱(w²)이라는 것도 같이 외워요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>L1 정규화는 손실에 가중치 절댓값의 합을 더해 일부 가중치를 0으로 만들어 희소한 해와 변수 선택 효과를 주고, L2 정규화는 가중치 제곱의 합을 더해 가중치가 커지는 것을 제한하여(Weight Decay) 모델이 과도하게 복잡해지는 것을 막는다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 변수 중 중요하지 않은 것을 자동으로 0으로 만들어 지우고 싶다면 L1과 L2 중 무엇인가요?</summary>
+<p>L1이에요. 절댓값 벌점은 가중치를 정확히 0으로 밀어 넣을 수 있어요. L2는 작게만 만들고 0으로 만들지는 못해요.</p></details>
+
+<div class="done"><a class="go" href="c7-06.html">다음 카드 → 딥러닝의 정규화 기법 — 무엇을 바꾸는가 ★★</a><div class="pn"><a href="c7-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c7"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 3~4주차 · 머신러닝2_chapter2_student_ver.pdf(PART 6 p.35–36, PART 7 p.55–57) · 머신러닝03.txt, 머신러닝04.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

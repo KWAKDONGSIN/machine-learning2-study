@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>확률을 실무에서 쓰는 법 — 임계값·보류·Top-k·과신 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k3"><a href="index.html#c3">← 보드</a><span>출력층 설계 · Softmax · Cross-Entropy · 4/7</span></div><h1>확률을 실무에서 쓰는 법 — 임계값·보류·Top-k·과신</h1>
+<p><a class="w" href="words.html#w48" data-w="48">Softmax</a>의 확률은 "가장 큰 값이 답"으로 끝나지 않아요. 확신의 크기를 활용해요. 결정 자체는 <a class="w" href="words.html#w117" data-w="117">argmax</a> 한 줄이지만, 1등과 2등이 얼마나 차이 나는지가 실무 가치예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:24%">용도</th><th>어떻게 쓰나</th></tr>
+  <tr><td><b><a class="w" href="words.html#w34" data-w="34">임계값</a> + <a class="w" href="words.html#w62" data-w="62">보류</a></b></td><td>최대 확률이 임계값(예 0.8)보다 낮으면 자동 판정을 하지 않고 <b>"보류"</b>로 사람에게 넘겨요. 의료 영상 판독, 서류 <a class="w" href="words.html#w4" data-w="4">분류</a>가 이 방식이에요. 틀린 자동 결정보다 보류가 더 싸기 때문이에요.</td></tr>
+  <tr><td><b><a class="w" href="words.html#w61" data-w="61">Top-k</a></b></td><td>확률 순으로 상위 k개(예 5개)를 보여 줘요. 추천·검색은 1등만 필요한 게 아니에요.</td></tr>
+  <tr><td><b><a class="w" href="words.html#w85" data-w="85">클래스 불균형</a></b></td><td>희귀 클래스(불량 1%)는 확률이 작게 나오기 쉬워요. 그래서 임계값을 클래스마다 다르게 하거나, <a class="w" href="words.html#w51" data-w="51">손실</a>에 <a class="w" href="words.html#w25" data-w="25">가중치</a>를 줘요.</td></tr>
+  <tr><td><b><a class="w" href="words.html#w60" data-w="60">과신</a> 주의</b></td><td>Softmax 출력은 "확률처럼 생긴 점수"예요. 0.9라고 해서 실제로 90% 맞는다는 보장은 없어요(과신 경향). 필요하면 보정(캘리브레이션)을 해요.</td></tr>
+</table></div>
+<div class="box eg"><span class="t">비유 — 자동 판정과 사람 검토</span>
+  <p>CT 영상을 기계가 먼저 보고, 확신이 높은 것은 자동으로 통과시키고 애매한 것은 영상의학과 전문의가 다시 봐요. "확률이 0.5와 0.51"처럼 아슬아슬한 건 기계에게 맡기지 않는 거예요.</p>
+</div>
+<p>주관식에서는 "문제 상황 → <a class="w" href="words.html#w37" data-w="37">출력층</a>·지표·임계값·전처리 결정"을 근거와 함께 쓰라고 해요. 이 소단원의 문장이 그 근거로 쓰여요. 예를 들어 "오판의 비용이 큰 의료·서류 분류에서는 최대 확률이 임계값 미만이면 보류하고 사람이 검토한다"고 쓰면 돼요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Softmax 확률은 최대 확률이 임계값보다 낮으면 자동 판정 대신 사람 검토로 보류하는 데 쓰이고, Top-k 추천이나 클래스별 임계값 조정에도 쓰인다. 다만 출력 확률이 실제 정답률과 일치한다는 보장은 없어서(과신 경향) 필요하면 보정해야 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 최대 확률이 0.55인 샘플을 자동으로 판정해도 될까요? (임계값 0.8 기준)</summary>
+  <p>안 돼요. 0.8보다 낮아서 "보류"로 사람이 확인해요. 틀린 자동 판정보다 사람이 보는 비용이 더 싸다고 보는 경우예요.</p>
+</details>
+
+<div class="done"><a class="go" href="c3-05.html">다음 카드 → Cross-Entropy — 정답 확률을 채점해요 ★★★</a><div class="pn"><a href="c3-03.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c3"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 3·5) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>학습률 η — 너무 작으면 느리고, 너무 크면 발산해요 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k4"><a href="index.html#c4">← 보드</a><span>경사하강과 학습률 · 2/6</span></div><h1>학습률 η — 너무 작으면 느리고, 너무 크면 발산해요 ★★★</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w64" data-w="64">학습률</a>(learning rate, η)</b>은 한 번 갱신할 때 얼마나 움직일지를 정하는 값이에요. w와 b는 모델이 학습하는 <b><a class="w" href="words.html#w15" data-w="15">파라미터</a></b>이고, 학습률은 사람이 정하는 <b><a class="w" href="words.html#w14" data-w="14">하이퍼파라미터</a></b>예요.</p>
+</div>
+<p>같은 곡면에서 학습률만 바꿔 세 번 갱신해 볼게요. 시작은 모두 w = −1(<a class="w" href="words.html#w51" data-w="51">손실</a> 9.5)이에요. (직접 계산한 값이에요.)</p>
+<div class="tw"><table>
+  <tr><th style="width:24%">갱신 횟수</th><th>η = 0.1 (작음)</th><th>η = 0.5 (알맞음)</th><th>η = 1.05 (큼)</th></tr>
+  <tr><td>시작</td><td>손실 9.50</td><td>손실 9.50</td><td>손실 9.50</td></tr>
+  <tr><td>1회 후</td><td>6.26 (w = −0.4)</td><td>0.50 (w = 2, 바닥)</td><td><b>11.39</b> (w = 5.3)</td></tr>
+  <tr><td>2회 후</td><td>4.19</td><td>0.50 (그대로)</td><td><b>13.68</b> (w = −1.63)</td></tr>
+  <tr><td>3회 후</td><td>2.86</td><td>0.50 (그대로)</td><td><b>16.44</b></td></tr>
+</table></div>
+<ul>
+  <li><b>η가 작아요 (A)</b> — 안정적이지만 한 걸음이 짧아서 아주 느려요. 수백 <a class="w" href="words.html#w122" data-w="122">epoch</a>에도 안 줄면 너무 작은 거예요.</li>
+  <li><b>η가 알맞아요 (B)</b> — 빠르게 바닥에 도착해요.</li>
+  <li><b>η가 너무 커요 (C)</b> — 한 걸음이 너무 커서 골짜기를 건너뛰어요. 건너편이 더 높은 곳이라 손실이 오히려 커지고, 갈수록 점점 더 높이 튀어 올라요. 이것이 <b><a class="w" href="words.html#w65" data-w="65">발산</a>(divergence)</b>이고, 숫자가 너무 커져 계산이 깨진 값이 <b><a class="w" href="words.html#w66" data-w="66">NaN</a>(Not a Number)</b>이에요.</li>
+</ul>
+<figure class="slide"><img src="slides/a_c4_lr_curves.jpg" alt="같은 손실 곡면에서 학습률 0.1, 0.5, 1.05일 때 8스텝 이동 경로"><figcaption>교수님 슬라이드 — A 학습률 0.1 (느리지만 안정) · B 0.5 (적절) · C 1.05 (발산)</figcaption></figure>
+<div class="box eg"><span class="t">비유 — 걸음 크기</span>
+  <p>골짜기로 내려가는데 아기 걸음으로 가면 너무 오래 걸리고, 거인 걸음으로 가면 골짜기를 한 번에 건너뛰어 맞은편 높은 곳에 떨어져요. 건너뛴 곳이 점점 더 높아지니 영영 못 내려가요.</p>
+</div>
+<p>실무에서는 학습률이 <b>가장 먼저 만지는 하이퍼파라미터</b>예요. <a class="w" href="words.html#w110" data-w="110">Keras</a>의 기본값 <b><a class="w" href="words.html#w72" data-w="72">Adam</a>의 0.001(= 1e-3)</b>에서 시작해 10배씩 바꿔 보는 것이 관례예요. 손실이 NaN이거나 폭증하면 너무 큰 거예요.</p>
+<p>강의자료 아이리스 실습(<a class="w" href="words.html#w121" data-w="121">NumPy</a>, 에폭 200)에서 실제로 비교한 결과예요. 테스트 샘플이 38개라서 <a class="w" href="words.html#w79" data-w="79">정확도</a>가 31/38 = 0.816처럼 띄엄띄엄 나와요.</p>
+<div class="tw"><table>
+  <tr><th style="width:36%">설정 (표준화 후)</th><th>lr</th><th>epoch</th><th>정확도</th></tr>
+  <tr><td>슬라이드 코드 그대로</td><td>0.1</td><td>200</td><td>0.816</td></tr>
+  <tr><td>더 오래</td><td>0.1</td><td>1000</td><td>0.947</td></tr>
+  <tr><td>더 크게</td><td>1.0</td><td>200</td><td>0.947</td></tr>
+  <tr><td>더 작게</td><td>0.01</td><td>200</td><td>0.816</td></tr>
+</table></div>
+<p><a class="w" href="words.html#w67" data-w="67">손실 곡선</a>이 아직 내려가는 중이면 "모델이 나쁜 것"이 아니라 <b>"덜 학습된 것"</b>이에요. 그럴 때는 학습률을 올리거나 epoch을 늘려요. 반대로 손실이 튀거나 NaN이면 학습률을 내려요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"느리면 올리고, 튀면 내린다." 손실이 <b>NaN이거나 폭증</b>하면 너무 큰 것, <b>수백 epoch에도 안 줄면</b> 너무 작은 것이에요. 올릴지 내릴지가 헷갈리면 이 두 줄만 떠올리세요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>학습률이 너무 작으면 손실이 천천히 줄어 학습이 느리고, 너무 크면 최저점을 건너뛰어 손실이 커지거나 진동하며 발산해 NaN이 될 수 있다. 학습률은 사람이 정하는 하이퍼파라미터이며 가장 중요한 값 중 하나이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습률을 10배 올렸더니 손실이 NaN이 되었어요. 무슨 일일까요?</summary>
+  <p>한 걸음이 너무 커서 골짜기를 건너뛰다가 발산한 거예요. 학습률을 낮추거나(예 1/10) 입력이 <a class="w" href="words.html#w13" data-w="13">표준화</a>됐는지 확인해요.</p>
+</details>
+
+<div class="done"><a class="go" href="c4-03.html">다음 카드 → 손실 곡선 그림으로 진단하고 처방하기 ★★★</a><div class="pn"><a href="c4-01.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c4"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·4주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 5) · 머신러닝2_chapter3_redesign.pdf(p.21·27) · 머신02.txt · 머신러닝04.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

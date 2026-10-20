@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>이 장 3줄 요약 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k8"><a href="index.html#c8">← 보드</a><span>Keras로 MLP 만들기 · 7/7</span></div><h1>이 장 3줄 요약</h1><div class="box tip"><span class="t">이 장 3줄 요약</span>
+<ul>
+  <li><a class="w" href="words.html#w43" data-w="43">Dense</a> = <a class="w" href="words.html#w27" data-w="27">가중합</a> + <a class="w" href="words.html#w28" data-w="28">활성화</a> 한 층, <a class="w" href="words.html#w113" data-w="113">compile</a>(<a class="w" href="words.html#w68" data-w="68">optimizer</a> · <a class="w" href="words.html#w51" data-w="51">loss</a> · metrics)이 갱신 방식·손실·지표, <a class="w" href="words.html#w114" data-w="114">fit</a>이 학습 루프와 자동 <a class="w" href="words.html#w95" data-w="95">역전파</a>, <a class="w" href="words.html#w115" data-w="115">evaluate</a>는 (loss, acc), <a class="w" href="words.html#w116" data-w="116">predict</a>는 확률 <a class="w" href="words.html#w17" data-w="17">벡터</a>예요.</li>
+  <li><a class="w" href="words.html#w120" data-w="120">MNIST</a> <a class="w" href="words.html#w38" data-w="38">MLP</a>는 <code>Sequential([Input, Flatten, Dense(…,'relu'), Dropout, Dense(10,'softmax')])</code>이고, 손실은 정수 <a class="w" href="words.html#w7" data-w="7">라벨</a> <code>'sparse_categorical_crossentropy'</code>, 원-핫 <code>'categorical_crossentropy'</code>, 이진·<a class="w" href="words.html#w55" data-w="55">멀티라벨</a> <code>'binary_crossentropy'</code>예요.</li>
+  <li><a class="w" href="words.html#w15" data-w="15">파라미터</a> = Dense마다 입력 × 출력 + 출력(<a class="w" href="words.html#w44" data-w="44">Flatten</a>·<a class="w" href="words.html#w104" data-w="104">Dropout</a>은 0)이라 784→256→10은 203,530개이고, 512로 바꾸면 407,050개예요.</li>
+</ul>
+</div>
+<div class="done"><a class="go" href="c9-01.html">다음 카드 → batch · epoch · step과 EarlyStopping 시작</a><div class="pn"><a href="c8-06.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c8"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

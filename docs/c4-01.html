@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>경사하강 — 기울기의 반대로 한 걸음 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k4"><a href="index.html#c4">← 보드</a><span>경사하강과 학습률 · 1/6</span></div><h1>경사하강 — 기울기의 반대로 한 걸음</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w63" data-w="63">경사하강</a>(gradient descent)</b>은 <a class="w" href="words.html#w51" data-w="51">손실</a>의 <a class="w" href="words.html#w22" data-w="22">기울기</a>를 구해서 그 <b>반대 방향</b>으로 <a class="w" href="words.html#w25" data-w="25">가중치</a>를 조금 옮기는 방법이에요. 식은 <code>w ← w − η · ∂L/∂w</code>예요.</p>
+</div>
+<p>식의 세 부분을 말로 풀면 이래요. <b>w</b>는 지금 서 있는 자리(가중치)이고, <b>∂L/∂w</b>는 "이 자리에서 어느 쪽이 오르막이고 얼마나 가파른가"를 알려 주는 기울기예요. <b>η(에타)</b>는 한 걸음의 크기인 <a class="w" href="words.html#w64" data-w="64">학습률</a>이에요.</p>
+<p>기울기는 "어느 쪽이 오르막인가"만 알려 줘요. 그래서 한 번에 멀리 못 가고, 조금씩 반복해서 내려가요. 화살표 <code>←</code>는 "새 값으로 덮어쓴다"는 뜻이에요.</p>
+<div class="box eg"><span class="t">비유 — 안개 낀 산에서 내려오기</span>
+  <p>안개 때문에 산 전체는 안 보이고 발밑 경사만 느껴져요. 경사를 느끼고, 내리막 쪽으로 한 걸음 내딛고, 다시 경사를 느끼는 일을 반복하면 골짜기(손실이 최소인 곳)에 도착해요. 한 걸음의 크기가 학습률이에요.</p>
+</div>
+<p>가파를수록 기울기가 커서 걸음이 커지고, 바닥에 가까워 완만해지면 걸음이 저절로 작아져요. 그래서 "기울기 × 학습률"만큼 움직이는 방식이 편리해요.</p>
+<p>이제 숫자로 따라가 볼게요. 강의자료의 손실 곡면 <code>L(w) = (w − 2)² + 0.5</code>를 쓸게요.</p>
+<p> 가장 낮은 곳은 <code>w = 2</code>이고 그때 손실은 0.5예요. 기울기는 <code>2(w − 2)</code>예요. 시작은 <code>w = −1</code>(손실 9.5)이에요.</p>
+<div class="code">기울기 = 2 × (−1 − 2) = −6        (음수 → 오른쪽이 내리막)
+η = 0.1 이면  w ← −1 − 0.1 × (−6) = −0.4
+                손실 = (−0.4 − 2)² + 0.5 = 6.26   (9.5 에서 내려갔어요)</div>
+<p>기울기가 음수라서 "빼기 × 음수"가 더하기가 되고, w가 오른쪽(골짜기 쪽)으로 이동했어요. 이것이 경사하강의 한 <a class="w" href="words.html#w125" data-w="125">스텝</a>이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>경사하강법은 w ← w − η·∂L/∂w로, 손실의 기울기 반대 방향으로 학습률 η만큼 가중치를 갱신해 손실을 줄여 나가는 방법이다. 기울기는 현재 위치에서 손실이 증가하는 방향을 알려 주므로 그 반대로 이동한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 기울기가 음수(−6)이면 w는 커지나요, 작아지나요?</summary>
+  <p>커져요. w ← w − η×(−6) = w + 6η라서 w가 오른쪽으로 이동해요.</p>
+</details>
+
+<div class="done"><a class="go" href="c4-02.html">다음 카드 → 학습률 η — 너무 작으면 느리고, 너무 크면 발산해요 ★★★</a><div class="pn"><a href="index.html#c4"><b>← 이전</b>보드로</a><a class="next" href="quiz.html#c4"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·4주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 5) · 머신러닝2_chapter3_redesign.pdf(p.21·27) · 머신02.txt · 머신러닝04.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

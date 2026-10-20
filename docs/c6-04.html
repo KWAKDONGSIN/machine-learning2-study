@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ReLU와 죽은 뉴런 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k6"><a href="index.html#c6">← 보드</a><span>활성화 함수 · 4/7</span></div><h1>ReLU와 죽은 뉴런 ★</h1>
+<p><b><a class="w" href="words.html#w88" data-w="88">ReLU</a></b>는 max(0, x)예요. 입력이 음수이면 0, 양수이면 그대로 내보내요. 식의 <b>뒤쪽 0</b>이 중요해요. "음수는 0으로 막는다"는 뜻이에요.</p>
+<ul>
+  <li><b>양수 구간 <a class="w" href="words.html#w22" data-w="22">기울기</a> = 1</b>, <b>음수 구간 기울기 = 0</b> (교수님이 "외우라"고 한 부분이에요)</li>
+  <li>계산이 아주 간단해서 빨라요(0과 비교 한 번).</li>
+  <li><a class="w" href="words.html#w91" data-w="91">포화</a>가 없어서 <a class="w" href="words.html#w90" data-w="90">기울기 소실</a>이 적어요.</li>
+</ul>
+<p>그런데 음수 구간 기울기가 0이라는 것이 약점이에요. 어떤 <a class="w" href="words.html#w23" data-w="23">뉴런</a>의 <a class="w" href="words.html#w27" data-w="27">가중합</a>이 항상 음수가 되도록 <a class="w" href="words.html#w25" data-w="25">가중치</a>가 한 번 크게 밀리면, 출력은 항상 0이고 기울기도 0이라 가중치가 다시는 고쳐지지 않아요. 이렇게 영원히 신호가 안 나오는 뉴런을 <b>죽은 뉴런(<a class="w" href="words.html#w92" data-w="92">dead ReLU</a>)</b>이라고 해요.</p>
+<div class="box eg"><span class="t">비유 — 잠긴 문</span>
+<p>ReLU는 음수 쪽 문이 잠겨 있는 방이에요. 방 안 사람(뉴런)이 한 번 잠긴 쪽으로 밀려 들어가면, 문을 두드려 줄 신호(기울기)도 0이라서 영원히 갇혀요. <a class="w" href="words.html#w64" data-w="64">학습률</a>을 너무 크게 하거나 초기값이 나쁘면 이런 일이 잘 생겨요.</p>
+</div>
+<p><b>처방</b>은 이렇게 해요.</p>
+<ul>
+  <li><b><a class="w" href="words.html#w89" data-w="89">Leaky ReLU</a></b> — 음수 구간에서 기울기를 완전히 0으로 두지 않고 아주 작게(예 0.01x) 남겨요. leak은 "물이 샌다"는 뜻이에요. 비용은 ReLU와 거의 같아요.</li>
+  <li><b>ELU, PReLU</b> 같은 변형도 있어요. PReLU는 음수 쪽 기울기를 학습으로 정해요.</li>
+  <li><b><a class="w" href="words.html#w93" data-w="93">He 초기화</a></b> — ReLU 계열은 He(Kaiming) 초기화와 함께 써요. 초기값이 너무 크면 출력과 기울기가 폭주하고, 너무 작으면 0에 가까워져요.</li>
+</ul>
+<p>그 밖에 최신 모델에서는 Swish(SiLU, x·σ(x))와 GELU를 써요. Transformer 계열은 GELU가 표준이에요. 이 둘은 이름과 "ReLU보다 매끄럽고 성능이 종종 좋다" 정도만 알면 돼요.</p>
+<figure class="slide"><img src="slides/b_act_relu.jpg" alt="ReLU 계열 함수 표"><figcaption>교수님 슬라이드 — ReLU 계열(ReLU, Leaky ReLU, PReLU, ELU/SELU, Softplus)의 식과 장단점</figcaption></figure>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p><a class="w" href="words.html#w36" data-w="36">은닉층</a> 기본 순서는 "<b>ReLU + He 초기화</b>로 시작 → 죽은 뉴런이 많으면 <b>Leaky ReLU/ELU</b> → 더 높은 성능이 필요하면 Swish/GELU"예요. 문제가 생길 때만 바꿔요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>ReLU는 max(0, x)로 양수 구간 기울기 1, 음수 구간 기울기 0이다. 음수 구간에서 기울기가 0이므로 가중치가 갱신되지 않는 죽은 뉴런(dead ReLU)이 생길 수 있고, 이를 Leaky ReLU 등으로 완화한다. <a class="w" href="words.html#w38" data-w="38">MLP</a> 은닉층에는 ReLU를 기본값으로 쓴다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — "죽은 뉴런"은 왜 계속 죽어 있나요?</summary>
+<p>출력이 항상 0이고 음수 구간의 기울기도 0이어서 가중치를 고칠 신호가 전혀 오지 않기 때문이에요.</p></details>
+
+<div class="done"><a class="go" href="c6-05.html">다음 카드 → 출력층 활성화는 손실과 세트 ★★</a><div class="pn"><a href="c6-03.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c6"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 3주차 · 머신러닝2_chapter2_student_ver.pdf(PART 5, p.29–33, p.48) · 머신러닝03.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

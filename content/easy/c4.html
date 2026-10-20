@@ -1,0 +1,169 @@
+<!-- 4장: 경사하강과 학습률. w←w−η·기울기, 학습률이 작을 때와 클 때(발산·NaN), 학습률만 다른 손실 곡선을 보고 진단하고 처방(η를 올릴지 내릴지)하는 법을 설명해요 -->
+<h2>경사하강과 학습률 — 한 걸음의 크기가 학습을 좌우해요</h2>
+<p class="lead">신경망은 "틀린 만큼 가중치를 조금 고치기"를 수없이 반복해서 배워요. 그 한 걸음을 어떻게 내딛는지가 경사하강이고, 한 걸음의 크기가 학습률이에요. 시험에는 손실 곡선 그림 여러 개를 보여 주고 "각각 무슨 상태이고 학습률을 올릴지 내릴지"를 묻는 문제가 나와요.</p>
+
+<h3>4-1. 경사하강 — 기울기의 반대로 한 걸음</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>경사하강(gradient descent)</b>은 손실의 기울기를 구해서 그 <b>반대 방향</b>으로 가중치를 조금 옮기는 방법이에요. 식은 <code>w ← w − η · ∂L/∂w</code>예요.</p>
+</div>
+<p>식의 세 부분을 말로 풀면 이래요. <b>w</b>는 지금 서 있는 자리(가중치)이고, <b>∂L/∂w</b>는 "이 자리에서 어느 쪽이 오르막이고 얼마나 가파른가"를 알려 주는 기울기예요. <b>η(에타)</b>는 한 걸음의 크기인 학습률이에요.</p>
+<p>기울기는 "어느 쪽이 오르막인가"만 알려 줘요. 그래서 한 번에 멀리 못 가고, 조금씩 반복해서 내려가요. 화살표 <code>←</code>는 "새 값으로 덮어쓴다"는 뜻이에요.</p>
+<div class="box eg"><span class="t">비유 — 안개 낀 산에서 내려오기</span>
+  <p>안개 때문에 산 전체는 안 보이고 발밑 경사만 느껴져요. 경사를 느끼고, 내리막 쪽으로 한 걸음 내딛고, 다시 경사를 느끼는 일을 반복하면 골짜기(손실이 최소인 곳)에 도착해요. 한 걸음의 크기가 학습률이에요.</p>
+</div>
+<p>가파를수록 기울기가 커서 걸음이 커지고, 바닥에 가까워 완만해지면 걸음이 저절로 작아져요. 그래서 "기울기 × 학습률"만큼 움직이는 방식이 편리해요.</p>
+<p>이제 숫자로 따라가 볼게요. 강의자료의 손실 곡면 <code>L(w) = (w − 2)² + 0.5</code>를 쓸게요.</p>
+<p> 가장 낮은 곳은 <code>w = 2</code>이고 그때 손실은 0.5예요. 기울기는 <code>2(w − 2)</code>예요. 시작은 <code>w = −1</code>(손실 9.5)이에요.</p>
+<div class="code">기울기 = 2 × (−1 − 2) = −6        (음수 → 오른쪽이 내리막)
+η = 0.1 이면  w ← −1 − 0.1 × (−6) = −0.4
+                손실 = (−0.4 − 2)² + 0.5 = 6.26   (9.5 에서 내려갔어요)</div>
+<p>기울기가 음수라서 "빼기 × 음수"가 더하기가 되고, w가 오른쪽(골짜기 쪽)으로 이동했어요. 이것이 경사하강의 한 스텝이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>경사하강법은 w ← w − η·∂L/∂w로, 손실의 기울기 반대 방향으로 학습률 η만큼 가중치를 갱신해 손실을 줄여 나가는 방법이다. 기울기는 현재 위치에서 손실이 증가하는 방향을 알려 주므로 그 반대로 이동한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 기울기가 음수(−6)이면 w는 커지나요, 작아지나요?</summary>
+  <p>커져요. w ← w − η×(−6) = w + 6η라서 w가 오른쪽으로 이동해요.</p>
+</details>
+
+<h3>4-2. 학습률 η — 너무 작으면 느리고, 너무 크면 발산해요 ★★★</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>학습률(learning rate, η)</b>은 한 번 갱신할 때 얼마나 움직일지를 정하는 값이에요. w와 b는 모델이 학습하는 <b>파라미터</b>이고, 학습률은 사람이 정하는 <b>하이퍼파라미터</b>예요.</p>
+</div>
+<p>같은 곡면에서 학습률만 바꿔 세 번 갱신해 볼게요. 시작은 모두 w = −1(손실 9.5)이에요. (직접 계산한 값이에요.)</p>
+<table>
+  <tr><th style="width:24%">갱신 횟수</th><th>η = 0.1 (작음)</th><th>η = 0.5 (알맞음)</th><th>η = 1.05 (큼)</th></tr>
+  <tr><td>시작</td><td>손실 9.50</td><td>손실 9.50</td><td>손실 9.50</td></tr>
+  <tr><td>1회 후</td><td>6.26 (w = −0.4)</td><td>0.50 (w = 2, 바닥)</td><td><b>11.39</b> (w = 5.3)</td></tr>
+  <tr><td>2회 후</td><td>4.19</td><td>0.50 (그대로)</td><td><b>13.68</b> (w = −1.63)</td></tr>
+  <tr><td>3회 후</td><td>2.86</td><td>0.50 (그대로)</td><td><b>16.44</b></td></tr>
+</table>
+<ul>
+  <li><b>η가 작아요 (A)</b> — 안정적이지만 한 걸음이 짧아서 아주 느려요. 수백 epoch에도 안 줄면 너무 작은 거예요.</li>
+  <li><b>η가 알맞아요 (B)</b> — 빠르게 바닥에 도착해요.</li>
+  <li><b>η가 너무 커요 (C)</b> — 한 걸음이 너무 커서 골짜기를 건너뛰어요. 건너편이 더 높은 곳이라 손실이 오히려 커지고, 갈수록 점점 더 높이 튀어 올라요. 이것이 <b>발산(divergence)</b>이고, 숫자가 너무 커져 계산이 깨진 값이 <b>NaN(Not a Number)</b>이에요.</li>
+</ul>
+<figure class="slide"><img src="slides/a_c4_lr_curves.jpg" alt="같은 손실 곡면에서 학습률 0.1, 0.5, 1.05일 때 8스텝 이동 경로"><figcaption>교수님 슬라이드 — A 학습률 0.1 (느리지만 안정) · B 0.5 (적절) · C 1.05 (발산)</figcaption></figure>
+<div class="box eg"><span class="t">비유 — 걸음 크기</span>
+  <p>골짜기로 내려가는데 아기 걸음으로 가면 너무 오래 걸리고, 거인 걸음으로 가면 골짜기를 한 번에 건너뛰어 맞은편 높은 곳에 떨어져요. 건너뛴 곳이 점점 더 높아지니 영영 못 내려가요.</p>
+</div>
+<p>실무에서는 학습률이 <b>가장 먼저 만지는 하이퍼파라미터</b>예요. Keras의 기본값 <b>Adam의 0.001(= 1e-3)</b>에서 시작해 10배씩 바꿔 보는 것이 관례예요. 손실이 NaN이거나 폭증하면 너무 큰 거예요.</p>
+<p>강의자료 아이리스 실습(NumPy, 에폭 200)에서 실제로 비교한 결과예요. 테스트 샘플이 38개라서 정확도가 31/38 = 0.816처럼 띄엄띄엄 나와요.</p>
+<table>
+  <tr><th style="width:36%">설정 (표준화 후)</th><th>lr</th><th>epoch</th><th>정확도</th></tr>
+  <tr><td>슬라이드 코드 그대로</td><td>0.1</td><td>200</td><td>0.816</td></tr>
+  <tr><td>더 오래</td><td>0.1</td><td>1000</td><td>0.947</td></tr>
+  <tr><td>더 크게</td><td>1.0</td><td>200</td><td>0.947</td></tr>
+  <tr><td>더 작게</td><td>0.01</td><td>200</td><td>0.816</td></tr>
+</table>
+<p>손실 곡선이 아직 내려가는 중이면 "모델이 나쁜 것"이 아니라 <b>"덜 학습된 것"</b>이에요. 그럴 때는 학습률을 올리거나 epoch을 늘려요. 반대로 손실이 튀거나 NaN이면 학습률을 내려요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"느리면 올리고, 튀면 내린다." 손실이 <b>NaN이거나 폭증</b>하면 너무 큰 것, <b>수백 epoch에도 안 줄면</b> 너무 작은 것이에요. 올릴지 내릴지가 헷갈리면 이 두 줄만 떠올리세요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>학습률이 너무 작으면 손실이 천천히 줄어 학습이 느리고, 너무 크면 최저점을 건너뛰어 손실이 커지거나 진동하며 발산해 NaN이 될 수 있다. 학습률은 사람이 정하는 하이퍼파라미터이며 가장 중요한 값 중 하나이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습률을 10배 올렸더니 손실이 NaN이 되었어요. 무슨 일일까요?</summary>
+  <p>한 걸음이 너무 커서 골짜기를 건너뛰다가 발산한 거예요. 학습률을 낮추거나(예 1/10) 입력이 표준화됐는지 확인해요.</p>
+</details>
+
+<h3>4-3. 손실 곡선 그림으로 진단하고 처방하기 ★★★</h3>
+<p>"학습률만 다른 손실 곡선 여러 개를 보고 각각을 진단하고 처방(η를 올릴지 내릴지)한다"가 키워드 표의 문장이에요. 교수님도 "슬라이드의 그림이 왜 이런 모양인지 설명할 수 있어야 한다"고 했어요. 가로축은 반복(epoch이나 step), 세로축은 손실이에요.</p>
+<svg viewBox="0 0 400 330" width="100%" role="img" aria-label="학습률 크기에 따른 손실 곡선 네 가지"><rect x="0" y="0" width="400" height="330" rx="8" fill="#f8faff"/><text x="112" y="26" text-anchor="middle" font-size="12" fill="#0f7a4f" font-weight="bold">A 학습률 너무 작음</text><line x1="36" y1="116" x2="190" y2="116" stroke="#5d6b80"/><line x1="36" y1="46" x2="36" y2="116" stroke="#5d6b80"/><path d="M36.0,49.5 L55.2,72.2 L74.5,86.7 L93.8,96.0 L113.0,101.9 L132.2,105.7 L151.5,108.2 L170.8,109.7 L190.0,110.7" fill="none" stroke="#0f7a4f" stroke-width="2.6"/><circle cx="36.0" cy="49.5" r="2.6" fill="#0f7a4f"/><circle cx="55.2" cy="72.2" r="2.6" fill="#0f7a4f"/><circle cx="74.5" cy="86.7" r="2.6" fill="#0f7a4f"/><circle cx="93.8" cy="96.0" r="2.6" fill="#0f7a4f"/><circle cx="113.0" cy="101.9" r="2.6" fill="#0f7a4f"/><circle cx="132.2" cy="105.7" r="2.6" fill="#0f7a4f"/><circle cx="151.5" cy="108.2" r="2.6" fill="#0f7a4f"/><circle cx="170.8" cy="109.7" r="2.6" fill="#0f7a4f"/><circle cx="190.0" cy="110.7" r="2.6" fill="#0f7a4f"/><text x="112" y="136" text-anchor="middle" font-size="10" fill="#5d6b80">반복 횟수 →</text><text x="112" y="152" text-anchor="middle" font-size="10.5" fill="#1b2333">느리게 내려가요 (아직 한참 위)</text><text x="22" y="81" font-size="10" fill="#5d6b80" text-anchor="middle" transform="rotate(-90 22 81)">손실</text><text x="308" y="26" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">B 학습률 알맞음</text><line x1="232" y1="116" x2="386" y2="116" stroke="#5d6b80"/><line x1="232" y1="46" x2="232" y2="116" stroke="#5d6b80"/><path d="M232.0,49.5 L251.2,94.3 L270.5,106.9 L289.8,110.8 L309.0,111.9 L328.2,112.3 L347.5,112.4 L366.8,112.5 L386.0,112.5" fill="none" stroke="#1d4ed8" stroke-width="2.6"/><circle cx="232.0" cy="49.5" r="2.6" fill="#1d4ed8"/><circle cx="251.2" cy="94.3" r="2.6" fill="#1d4ed8"/><circle cx="270.5" cy="106.9" r="2.6" fill="#1d4ed8"/><circle cx="289.8" cy="110.8" r="2.6" fill="#1d4ed8"/><circle cx="309.0" cy="111.9" r="2.6" fill="#1d4ed8"/><circle cx="328.2" cy="112.3" r="2.6" fill="#1d4ed8"/><circle cx="347.5" cy="112.4" r="2.6" fill="#1d4ed8"/><circle cx="366.8" cy="112.5" r="2.6" fill="#1d4ed8"/><circle cx="386.0" cy="112.5" r="2.6" fill="#1d4ed8"/><text x="308" y="136" text-anchor="middle" font-size="10" fill="#5d6b80">반복 횟수 →</text><text x="308" y="152" text-anchor="middle" font-size="10.5" fill="#1b2333">빠르게 내려가 바닥에서 멈춰요</text><text x="218" y="81" font-size="10" fill="#5d6b80" text-anchor="middle" transform="rotate(-90 218 81)">손실</text><text x="112" y="184" text-anchor="middle" font-size="12" fill="#d6264a" font-weight="bold">C 학습률 너무 큼 (발산)</text><line x1="36" y1="274" x2="190" y2="274" stroke="#5d6b80"/><line x1="36" y1="204" x2="36" y2="274" stroke="#5d6b80"/><path d="M36.0,258.1 L55.2,255.0 L74.5,251.1 L93.8,246.5 L113.0,240.9 L132.2,234.1 L151.5,225.9 L170.8,216.0 L190.0,204.0" fill="none" stroke="#d6264a" stroke-width="2.6"/><circle cx="36.0" cy="258.1" r="2.6" fill="#d6264a"/><circle cx="55.2" cy="255.0" r="2.6" fill="#d6264a"/><circle cx="74.5" cy="251.1" r="2.6" fill="#d6264a"/><circle cx="93.8" cy="246.5" r="2.6" fill="#d6264a"/><circle cx="113.0" cy="240.9" r="2.6" fill="#d6264a"/><circle cx="132.2" cy="234.1" r="2.6" fill="#d6264a"/><circle cx="151.5" cy="225.9" r="2.6" fill="#d6264a"/><circle cx="170.8" cy="216.0" r="2.6" fill="#d6264a"/><circle cx="190.0" cy="204.0" r="2.6" fill="#d6264a"/><text x="112" y="294" text-anchor="middle" font-size="10" fill="#5d6b80">반복 횟수 →</text><text x="112" y="310" text-anchor="middle" font-size="10.5" fill="#1b2333">손실이 오히려 커져요 → NaN</text><text x="22" y="239" font-size="10" fill="#5d6b80" text-anchor="middle" transform="rotate(-90 22 239)">손실</text><text x="308" y="184" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">D 학습률 큼 (요동)</text><line x1="232" y1="274" x2="386" y2="274" stroke="#5d6b80"/><line x1="232" y1="204" x2="232" y2="274" stroke="#5d6b80"/><path d="M232.0,207.5 L251.2,260.0 L270.5,218.0 L289.8,261.4 L309.0,221.5 L328.2,257.9 L347.5,225.0 L366.8,258.6 L386.0,226.4" fill="none" stroke="#b45309" stroke-width="2.6"/><circle cx="232.0" cy="207.5" r="2.6" fill="#b45309"/><circle cx="251.2" cy="260.0" r="2.6" fill="#b45309"/><circle cx="270.5" cy="218.0" r="2.6" fill="#b45309"/><circle cx="289.8" cy="261.4" r="2.6" fill="#b45309"/><circle cx="309.0" cy="221.5" r="2.6" fill="#b45309"/><circle cx="328.2" cy="257.9" r="2.6" fill="#b45309"/><circle cx="347.5" cy="225.0" r="2.6" fill="#b45309"/><circle cx="366.8" cy="258.6" r="2.6" fill="#b45309"/><circle cx="386.0" cy="226.4" r="2.6" fill="#b45309"/><text x="308" y="294" text-anchor="middle" font-size="10" fill="#5d6b80">반복 횟수 →</text><text x="308" y="310" text-anchor="middle" font-size="10.5" fill="#1b2333">위아래로 튀며 안 가라앉아요</text><text x="218" y="239" font-size="10" fill="#5d6b80" text-anchor="middle" transform="rotate(-90 218 239)">손실</text></svg>
+<table>
+  <tr><th style="width:27%">곡선 모양</th><th style="width:24%">진단</th><th>왜 이런 모양인가 → 처방</th></tr>
+  <tr><td><b>A.</b> 아주 천천히 내려가요</td><td><b>학습률이 너무 작음</b> (덜 학습됨)</td><td>한 걸음이 짧아서 바닥에 못 갔어요 → <b>η를 올려요</b> (10배 정도), epoch을 늘려요</td></tr>
+  <tr><td><b>B.</b> 빠르게 내려가다 완만해져요</td><td><b>적절</b></td><td>바닥에 가까울수록 기울기가 작아져 걸음이 저절로 줄어요 → 그대로 두고 저장해요</td></tr>
+  <tr><td><b>C.</b> 손실이 점점 커져요 (NaN)</td><td><b>학습률이 너무 큼 (발산)</b></td><td>골짜기를 건너뛰어 더 높은 곳으로 가요 → <b>η를 크게 내려요</b> (1/10), clipnorm, 입력 표준화 확인</td></tr>
+  <tr><td><b>D.</b> 위아래로 튀어요</td><td><b>학습률이 큼 (요동)</b></td><td>골짜기 양쪽 벽을 번갈아 치고 있어요 → <b>η를 내려요</b> (10배↓)</td></tr>
+</table>
+<p>곡선 모양을 한 문장으로 설명할 수 있어야 해요. 예를 들어 B 곡선이 처음에 빠르다가 완만해지는 이유는 "기울기가 클수록 걸음이 커서 처음엔 크게 내려가고, 바닥에 가까워지면 기울기가 작아져 걸음이 줄기 때문"이에요.</p>
+<figure class="slide"><img src="slides/a_c4_curve_patterns.jpg" alt="학습 곡선 네 가지 패턴 과소적합 적절 과적합 학습률 과대"><figcaption>교수님 슬라이드 — 학습·검증 곡선 네 모양 (이 장에서는 D 학습률 과대가 핵심, 과적합 처방은 따로 배워요)</figcaption></figure>
+<p>이 슬라이드의 <b>D 학습률 과대</b>가 위 표의 C·D에 해당해요. 처방은 "lr을 10배 낮추고, clipnorm(기울기 크기 제한)을 쓴다"예요. 슬라이드에는 A 과소적합(유닛·층·lr↑·epoch↑), B 적절, C 과적합(Dropout·조기 종료·L2)도 있는데, 곡선을 구분하는 포인트는 아래와 같아요.</p>
+<ul>
+  <li><b>학습 손실 자체가 안 내려가거나 튀면</b> 학습률(최적화) 문제예요. 처방은 η 조절이에요.</li>
+  <li><b>학습 손실은 잘 내려가는데 검증 손실만 다시 오르면</b> 과적합이에요. η가 아니라 Dropout·조기 종료·L2 같은 처방이 필요해요.</li>
+  <li><b>두 곡선이 모두 높고 평평하게 내려가기만 하면</b> 과소적합이에요. 유닛·층·학습률·epoch을 늘려요.</li>
+</ul>
+<p>자주 만나는 증상도 한 가지 더 있어요. 손실이 <b>2.30 근처에서 안 내려가요</b>. 10개 클래스를 그냥 찍는 수준에서 못 벗어난 상태라서, 입력 정규화 누락·학습률 과대·활성화 누락을 의심해요(이때 학습률을 3e-4 정도로 낮춰 봐요).</p>
+<p>주관식에서는 "현상 이름 → 그래프의 근거 → 처방" 순서로 쓰라고 했어요. 틀을 하나 외워 두세요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>이 손실 곡선은 위아래로 크게 진동하며 줄지 않으므로 학습률이 너무 큰 상태(학습률 과대)이다. 한 번의 갱신이 너무 커서 최저점을 건너뛰기 때문이며, 학습률을 약 10배 낮추거나 clipnorm으로 기울기 크기를 제한하여 해결한다. 반대로 손실이 매우 천천히 줄어드는 곡선은 학습률이 너무 작은 것이므로 학습률을 올리거나 epoch을 늘린다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 손실이 100 epoch 동안 3.1에서 3.0까지만 줄었어요. 학습률을 올릴까요, 내릴까요?</summary>
+  <p>올려요. 거의 안 줄어드는 것은 한 걸음이 너무 짧다는 신호예요. (입력 정규화가 안 되어 있지 않은지도 같이 확인해요.)</p>
+</details>
+
+<h3>4-4. 코드로 읽기 — 한 스텝과 200번 반복</h3>
+<p>경사하강의 한 스텝을 코드로 보면 이래요. 3장에서 본 <code>update_weights</code>의 마지막 두 줄이 학습률이 쓰이는 곳이에요.</p>
+<div class="code">w_grad = loss_grad * x
+b_grad = loss_grad
+w -= learning_rate * w_grad      # w ← w − η·기울기
+b -= learning_rate * b_grad      # b ← b − η·기울기</div>
+<table>
+  <tr><th style="width:42%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>w_grad = loss_grad * x</code></td><td>가중치의 기울기. 입력 x가 클수록 그 가중치가 더 많이 움직여요</td></tr>
+  <tr><td><code>b_grad = loss_grad</code></td><td>편향의 기울기</td></tr>
+  <tr><td><code>w -= learning_rate * w_grad</code></td><td>기울기에 학습률을 곱해서 빼요. w ← w − η·∂L/∂w 그대로예요</td></tr>
+</table>
+<p>x = [2, 3, 1], 정답 [1, 0, 0], w = [0.5, −0.2, 0.8], b = 1, learning_rate = 0.1로 한 번 갱신하고 직접 실행한 결과예요.</p>
+<div class="code">업데이트된 가중치: [ 0.5199501  -0.47007485  0.70997505]
+업데이트된 편향:   [1.00997505 0.90997505 0.90997505]
+손실 기울기:       [-0.09975049  0.90024951  0.90024951]</div>
+<p>손으로 따라가면 <code>a = sigmoid(2.2) ≈ 0.900</code>이라서 <code>loss_grad = a − y ≈ [−0.10, 0.90, 0.90]</code>이고, <code>w_grad = loss_grad × x = [−0.2, 2.7, 0.9]</code>예요. 여기에 0.1을 곱해 빼면 w의 첫 칸은 0.5 − 0.1×(−0.2) = 0.52가 돼요. 강의자료 슬라이드에 적힌 결과 숫자는 이 코드의 실제 실행 결과와 달라 보여요(자료에도 "다르면 직접 실행해 확인"이라는 주석이 있어요). 이 코드는 뉴런 하나에 3-클래스 정답을 넣은 교육용 단순화라서, 숫자보다 "예측 − 정답 → 학습률 곱하기 → 빼기" 순서만 기억하세요.</p>
+<p>한 스텝만으로는 변화가 작아요. 이것을 수백 번 반복하는 것이 학습이에요. 아이리스 분류기는 200번 반복해요.</p>
+<div class="code">lr = 0.1
+epochs = 200
+for ep in range(epochs):
+    Z = X_tr @ W + b                # 순전파: 가중합
+    P = softmax(Z)                  # 확률
+    loss = cross_entropy(Y_tr, P)   # 손실
+    dZ = (P - Y_tr) / X_tr.shape[0] # 기울기 (예측 − 정답)
+    dW = X_tr.T @ dZ
+    db = np.sum(dZ, axis=0, keepdims=True)
+    W -= lr * dW                    # 경사하강 업데이트
+    b -= lr * db</div>
+<p>이 루프에서 학습률은 <code>W -= lr * dW</code> 줄에서 쓰여요. 같은 모델을 Keras로 쓰면 아래처럼 대응돼요. 강의 Chapter 3의 "NumPy 줄과 Keras 객체 짝짓기" 문제와 연결돼요.</p>
+<table>
+  <tr><th style="width:44%">NumPy (이 장)</th><th>Keras</th></tr>
+  <tr><td><code>cross_entropy(Y, P)</code></td><td><code>loss='categorical_crossentropy'</code> (compile)</td></tr>
+  <tr><td><code>W -= lr * dW</code> (경사하강 업데이트)</td><td><code>optimizer=SGD(learning_rate=0.1)</code> (compile)</td></tr>
+  <tr><td><code>dZ, dW, db</code> (기울기 계산)</td><td>자동 미분 (<code>fit</code> 안에서 자동으로 해 줘요)</td></tr>
+  <tr><td><code>for ep in range(200)</code></td><td><code>fit(epochs=200)</code></td></tr>
+</table>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>경사하강 코드에서 W -= lr * dW 줄이 w ← w − η·∂L/∂w에 해당한다. Keras에서는 compile의 optimizer가 이 갱신을 맡고, fit이 자동 미분과 반복(epochs)을 수행한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 코드에서 학습률은 어느 줄에 곱해지나요?</summary>
+  <p><code>W -= lr * dW</code> 줄이에요. 기울기 dW에 학습률 lr을 곱한 만큼 W에서 빼요.</p>
+</details>
+
+<h3>4-5. 실무에서는 optimizer 한 줄 — 그리고 step과 epoch</h3>
+<p>실무에서는 위 루프를 직접 쓰지 않고 <code>model.compile(optimizer='adam')</code> 한 줄로 대신해요. 그래도 알아야 하는 이유는 "손실이 안 줄 때 기울기가 0인지 폭주하는지", "학습률을 어디서부터 바꿀지, 왜 NaN이 뜨는지"를 디버깅하기 위해서예요.</p>
+<table>
+  <tr><th style="width:20%">옵티마이저</th><th>핵심 아이디어</th></tr>
+  <tr><td><b>SGD</b></td><td>미니배치의 기울기 방향으로 한 걸음 (w ← w − lr·g). 단순하지만 학습률에 민감하고 골짜기에서 진동해요</td></tr>
+  <tr><td><b>Momentum</b></td><td>이전 이동 방향을 관성으로 누적해요. 진동이 줄고 빨라져요</td></tr>
+  <tr><td><b>RMSProp</b></td><td>최근 기울기 크기를 보고 파라미터마다 학습률을 자동 조절해요</td></tr>
+  <tr><td><b>Adam</b></td><td>Momentum + RMSProp + 편향 보정이에요. 대부분의 문제에서 기본값이고 기본 lr은 1e-3이에요</td></tr>
+</table>
+<p>어떤 옵티마이저를 써도 <b>학습률이 가장 중요한 하이퍼파라미터</b>예요. 너무 크면 loss가 튀거나 NaN이고, 너무 작으면 epoch을 많이 써도 제자리예요. 학습이 한 지점에서 멈추면 <code>ReduceLROnPlateau</code> 콜백으로 학습률을 절반씩 줄이기도 해요.</p>
+<p>용어도 짚어 둘게요. <b>step</b>은 한 묶음(batch)으로 기울기를 계산해 한 번 갱신하는 것이고, <b>epoch</b>는 학습 데이터 전체가 한 번 쓰인 것이에요.</p>
+<p> 입력을 넣어 손실까지 갔다가 다시 돌아와 갱신하는 한 번이 step이에요. 교수님은 이 둘을 헷갈려 하는 학생이 많다고 했어요.</p>
+<div class="code">step 수 / epoch = ⌈ 학습 샘플 수 ÷ batch_size ⌉
+예) 55,000장, batch_size 128  →  55,000 ÷ 128 = 429.7  →  올림해서 430 step
+    (로그의 430/430이 이 숫자예요)</div>
+<p>배치가 커지면 갱신 횟수가 줄어요. 그래서 batch 크기와 학습률, epoch은 함께 조정해요. batch 32는 1,719 step, 128은 430 step, 512는 108 step이에요(모두 55,000장 기준).</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>step/epoch = ⌈학습 샘플 수 / batch_size⌉이므로 학습 샘플이 55,000개이고 batch_size가 128이면 1 epoch은 430 step이다. Adam은 Momentum과 RMSProp에 편향 보정을 결합한 옵티마이저이고 기본 학습률은 1e-3이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습 샘플 1,000개, batch_size 100이면 1 epoch의 step 수는?</summary>
+  <p>1,000 ÷ 100 = 10 step이에요. 나누어떨어지지 않으면 올림해요.</p>
+</details>
+
+<div class="box tip"><span class="t">이 장 3줄 요약</span>
+  <ul>
+    <li>경사하강은 w ← w − η·∂L/∂w로, 기울기(오르막 방향)의 반대로 학습률만큼 조금씩 옮기는 일을 반복해요.</li>
+    <li>학습률이 너무 작으면 느리고(수백 epoch에도 안 줄면 올려요), 너무 크면 골짜기를 건너뛰어 요동·발산해 손실이 커지거나 NaN이 돼요(내려요). 기본 출발점은 Adam의 1e-3이에요.</li>
+    <li>손실 곡선은 "느리면 올리고 튀면 내린다"로 진단하고, 학습 손실은 잘 줄어드는데 검증 손실만 오르면 학습률이 아니라 과적합 처방을 써요.</li>
+  </ul>
+</div>

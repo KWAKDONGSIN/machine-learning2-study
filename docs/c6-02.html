@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세 함수를 그래프로 구분하기 ★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k6"><a href="index.html#c6">← 보드</a><span>활성화 함수 · 2/7</span></div><h1>세 함수를 그래프로 구분하기 ★★</h1>
+<p>시험에는 이름 없는 그래프를 보여 주고 "이것은 무슨 함수인가", "범위는 얼마인가"를 묻는 문제가 나와요. 세 함수의 모양을 눈에 익혀요.</p>
+<div class="paper"><svg viewBox="0 0 540 215" width="130mm" role="img" aria-label="Sigmoid, Tanh, ReLU 그래프 비교">
+  <rect x="36" y="28" width="135" height="105" fill="#fbfcfe" stroke="#d6dde8"/>
+  <line x1="36" y1="124.2" x2="171" y2="124.2" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="103.5" y1="28" x2="103.5" y2="133" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="36" y1="124.2" x2="171" y2="124.2" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="31" y="128.2" text-anchor="end" font-size="12" fill="#5d6b80">0</text>
+  <line x1="36" y1="80.5" x2="171" y2="80.5" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="31" y="84.5" text-anchor="end" font-size="12" fill="#5d6b80">0.5</text>
+  <line x1="36" y1="36.8" x2="171" y2="36.8" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="31" y="40.8" text-anchor="end" font-size="12" fill="#5d6b80">1</text>
+  <text x="36.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">-5</text>
+  <text x="103.5" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">0</text>
+  <text x="171.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">5</text>
+  <polyline points="36.0,123.7 37.1,123.6 38.3,123.6 39.4,123.5 40.5,123.4 41.6,123.4 42.8,123.3 43.9,123.2 45.0,123.1 46.1,123.0 47.2,122.9 48.4,122.8 49.5,122.7 50.6,122.5 51.8,122.4 52.9,122.2 54.0,122.1 55.1,121.9 56.2,121.7 57.4,121.5 58.5,121.2 59.6,121.0 60.7,120.7 61.9,120.4 63.0,120.1 64.1,119.8 65.2,119.4 66.4,119.0 67.5,118.6 68.6,118.1 69.8,117.6 70.9,117.1 72.0,116.5 73.1,115.9 74.2,115.3 75.4,114.6 76.5,113.8 77.6,113.0 78.8,112.2 79.9,111.3 81.0,110.3 82.1,109.3 83.2,108.3 84.4,107.2 85.5,106.0 86.6,104.8 87.8,103.5 88.9,102.1 90.0,100.7 91.1,99.3 92.2,97.7 93.4,96.2 94.5,94.6 95.6,92.9 96.8,91.2 97.9,89.5 99.0,87.7 100.1,85.9 101.2,84.1 102.4,82.3 103.5,80.5 104.6,78.7 105.8,76.9 106.9,75.1 108.0,73.3 109.1,71.5 110.2,69.8 111.4,68.1 112.5,66.4 113.6,64.8 114.7,63.3 115.9,61.7 117.0,60.3 118.1,58.9 119.2,57.5 120.4,56.2 121.5,55.0 122.6,53.8 123.8,52.7 124.9,51.7 126.0,50.7 127.1,49.7 128.2,48.8 129.4,48.0 130.5,47.2 131.6,46.4 132.8,45.7 133.9,45.1 135.0,44.5 136.1,43.9 137.2,43.4 138.4,42.9 139.5,42.4 140.6,42.0 141.8,41.6 142.9,41.2 144.0,40.9 145.1,40.6 146.2,40.3 147.4,40.0 148.5,39.8 149.6,39.5 150.8,39.3 151.9,39.1 153.0,38.9 154.1,38.8 155.2,38.6 156.4,38.5 157.5,38.3 158.6,38.2 159.8,38.1 160.9,38.0 162.0,37.9 163.1,37.8 164.2,37.7 165.4,37.6 166.5,37.6 167.6,37.5 168.8,37.4 169.9,37.4 171.0,37.3" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <text x="103.5" y="19" text-anchor="middle" font-size="16" font-weight="bold" fill="#1b2333">Sigmoid</text>
+  <text x="103.5" y="168" text-anchor="middle" font-size="13" fill="#1b2333">S자 · 범위 0~1</text>
+  <text x="103.5" y="184" text-anchor="middle" font-size="13" fill="#1b2333">x=0에서 0.5</text>
+  <rect x="206" y="28" width="135" height="105" fill="#fbfcfe" stroke="#d6dde8"/>
+  <line x1="206" y1="80.5" x2="341" y2="80.5" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="273.5" y1="28" x2="273.5" y2="133" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="206" y1="124.2" x2="341" y2="124.2" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="201" y="128.2" text-anchor="end" font-size="12" fill="#5d6b80">-1</text>
+  <line x1="206" y1="80.5" x2="341" y2="80.5" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="201" y="84.5" text-anchor="end" font-size="12" fill="#5d6b80">0</text>
+  <line x1="206" y1="36.7" x2="341" y2="36.7" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="201" y="40.7" text-anchor="end" font-size="12" fill="#5d6b80">1</text>
+  <text x="206.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">-5</text>
+  <text x="273.5" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">0</text>
+  <text x="341.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">5</text>
+  <polyline points="206.0,124.2 207.1,124.2 208.2,124.2 209.4,124.2 210.5,124.2 211.6,124.2 212.8,124.2 213.9,124.2 215.0,124.2 216.1,124.2 217.2,124.2 218.4,124.2 219.5,124.2 220.6,124.2 221.8,124.2 222.9,124.2 224.0,124.2 225.1,124.2 226.2,124.2 227.4,124.2 228.5,124.1 229.6,124.1 230.8,124.1 231.9,124.1 233.0,124.0 234.1,124.0 235.2,123.9 236.4,123.9 237.5,123.8 238.6,123.8 239.8,123.7 240.9,123.6 242.0,123.4 243.1,123.3 244.2,123.1 245.4,122.9 246.5,122.7 247.6,122.4 248.8,122.1 249.9,121.7 251.0,121.2 252.1,120.7 253.2,120.1 254.4,119.4 255.5,118.6 256.6,117.6 257.8,116.5 258.9,115.3 260.0,113.8 261.1,112.2 262.2,110.3 263.4,108.3 264.5,106.0 265.6,103.5 266.8,100.7 267.9,97.7 269.0,94.6 270.1,91.2 271.2,87.7 272.4,84.1 273.5,80.5 274.6,76.9 275.8,73.3 276.9,69.8 278.0,66.4 279.1,63.3 280.2,60.3 281.4,57.5 282.5,55.0 283.6,52.7 284.8,50.7 285.9,48.8 287.0,47.2 288.1,45.7 289.2,44.5 290.4,43.4 291.5,42.4 292.6,41.6 293.8,40.9 294.9,40.3 296.0,39.8 297.1,39.3 298.2,38.9 299.4,38.6 300.5,38.3 301.6,38.1 302.8,37.9 303.9,37.7 305.0,37.6 306.1,37.4 307.2,37.3 308.4,37.2 309.5,37.2 310.6,37.1 311.8,37.1 312.9,37.0 314.0,37.0 315.1,36.9 316.2,36.9 317.4,36.9 318.5,36.9 319.6,36.8 320.8,36.8 321.9,36.8 323.0,36.8 324.1,36.8 325.2,36.8 326.4,36.8 327.5,36.8 328.6,36.8 329.8,36.8 330.9,36.8 332.0,36.8 333.1,36.8 334.2,36.8 335.4,36.8 336.5,36.8 337.6,36.8 338.8,36.8 339.9,36.8 341.0,36.8" fill="none" stroke="#16a34a" stroke-width="3"/>
+  <text x="273.5" y="19" text-anchor="middle" font-size="16" font-weight="bold" fill="#1b2333">Tanh</text>
+  <text x="273.5" y="168" text-anchor="middle" font-size="13" fill="#1b2333">S자 · 범위 −1~1</text>
+  <text x="273.5" y="184" text-anchor="middle" font-size="13" fill="#1b2333">원점을 지나감</text>
+  <rect x="376" y="28" width="135" height="105" fill="#fbfcfe" stroke="#d6dde8"/>
+  <line x1="376" y1="115.5" x2="511" y2="115.5" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="443.5" y1="28" x2="443.5" y2="133" stroke="#8a97ab" stroke-width="1"/>
+  <line x1="376" y1="115.5" x2="511" y2="115.5" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="371" y="119.5" text-anchor="end" font-size="12" fill="#5d6b80">0</text>
+  <line x1="376" y1="28.0" x2="511" y2="28.0" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="371" y="32.0" text-anchor="end" font-size="12" fill="#5d6b80">5</text>
+  <text x="376.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">-5</text>
+  <text x="443.5" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">0</text>
+  <text x="511.0" y="148" text-anchor="middle" font-size="12" fill="#5d6b80">5</text>
+  <polyline points="376.0,115.5 377.1,115.5 378.2,115.5 379.4,115.5 380.5,115.5 381.6,115.5 382.8,115.5 383.9,115.5 385.0,115.5 386.1,115.5 387.2,115.5 388.4,115.5 389.5,115.5 390.6,115.5 391.8,115.5 392.9,115.5 394.0,115.5 395.1,115.5 396.2,115.5 397.4,115.5 398.5,115.5 399.6,115.5 400.8,115.5 401.9,115.5 403.0,115.5 404.1,115.5 405.2,115.5 406.4,115.5 407.5,115.5 408.6,115.5 409.8,115.5 410.9,115.5 412.0,115.5 413.1,115.5 414.2,115.5 415.4,115.5 416.5,115.5 417.6,115.5 418.8,115.5 419.9,115.5 421.0,115.5 422.1,115.5 423.2,115.5 424.4,115.5 425.5,115.5 426.6,115.5 427.8,115.5 428.9,115.5 430.0,115.5 431.1,115.5 432.2,115.5 433.4,115.5 434.5,115.5 435.6,115.5 436.8,115.5 437.9,115.5 439.0,115.5 440.1,115.5 441.2,115.5 442.4,115.5 443.5,115.5 444.6,114.0 445.8,112.6 446.9,111.1 448.0,109.7 449.1,108.2 450.2,106.8 451.4,105.3 452.5,103.8 453.6,102.4 454.8,100.9 455.9,99.5 457.0,98.0 458.1,96.5 459.2,95.1 460.4,93.6 461.5,92.2 462.6,90.7 463.8,89.2 464.9,87.8 466.0,86.3 467.1,84.9 468.2,83.4 469.4,82.0 470.5,80.5 471.6,79.0 472.8,77.6 473.9,76.1 475.0,74.7 476.1,73.2 477.2,71.8 478.4,70.3 479.5,68.8 480.6,67.4 481.8,65.9 482.9,64.5 484.0,63.0 485.1,61.5 486.2,60.1 487.4,58.6 488.5,57.2 489.6,55.7 490.8,54.2 491.9,52.8 493.0,51.3 494.1,49.9 495.2,48.4 496.4,47.0 497.5,45.5 498.6,44.0 499.8,42.6 500.9,41.1 502.0,39.7 503.1,38.2 504.2,36.8 505.4,35.3 506.5,33.8 507.6,32.4 508.8,30.9 509.9,29.5 511.0,28.0" fill="none" stroke="#ea580c" stroke-width="3"/>
+  <text x="443.5" y="19" text-anchor="middle" font-size="16" font-weight="bold" fill="#1b2333">ReLU</text>
+  <text x="443.5" y="168" text-anchor="middle" font-size="13" fill="#1b2333">음수는 0</text>
+  <text x="443.5" y="184" text-anchor="middle" font-size="13" fill="#1b2333">양수는 그대로</text>
+  <text x="270" y="208" text-anchor="middle" font-size="12.5" fill="#5d6b80">가로 = 가중합 z(넣는 값), 세로 = 활성화 함수가 내놓는 값</text>
+  </svg></div>
+<div class="tw"><table>
+  <tr><th style="width:15%"></th><th>Sigmoid</th><th>Tanh</th><th>ReLU</th></tr>
+  <tr><td><b>식</b></td><td>1 / (1 + e<sup>−x</sup>)</td><td>(eˣ − e⁻ˣ) / (eˣ + e⁻ˣ)</td><td>max(0, x)</td></tr>
+  <tr><td><b>범위</b></td><td>(0, 1)</td><td>(−1, 1)</td><td>[0, ∞)</td></tr>
+  <tr><td><b>x = 0일 때</b></td><td>0.5</td><td>0</td><td>0</td></tr>
+  <tr><td><b><a class="w" href="words.html#w22" data-w="22">기울기</a></b></td><td>최대 0.25 (σ′ ≤ 0.25)</td><td>최대 1 (<a class="w" href="words.html#w87" data-w="87">tanh</a>′ ≤ 1)</td><td>양수 구간 1, 음수 구간 0</td></tr>
+  <tr><td><b>모양</b></td><td>S자, 양끝이 평평</td><td>S자, 양끝이 평평, 0 중심</td><td>음수는 평평(0), 양수는 직선</td></tr>
+  <tr><td><b>장점</b></td><td>확률처럼 해석 가능</td><td><a class="w" href="words.html#w86" data-w="86">Sigmoid</a>보다 학습이 조금 유리(0 중심)</td><td>계산이 간단하고 학습이 빠름, 현업 기본값</td></tr>
+  <tr><td><b>단점</b></td><td>양끝에서 <a class="w" href="words.html#w90" data-w="90">기울기 소실</a>, 0 중심이 아님(학습 느림)</td><td>큰 |x|에서 <a class="w" href="words.html#w91" data-w="91">포화</a>되어 기울기 소실</td><td>음수 구간 기울기 0 → <a class="w" href="words.html#w92" data-w="92">죽은 ReLU</a></td></tr>
+  <tr><td><b>쓰임</b></td><td><a class="w" href="words.html#w37" data-w="37">출력층</a>(이진·<a class="w" href="words.html#w55" data-w="55">멀티라벨</a>), RNN 게이트</td><td>RNN 은닉 상태, 범위가 제한된 표현</td><td><a class="w" href="words.html#w38" data-w="38">MLP</a> <a class="w" href="words.html#w36" data-w="36">은닉층</a>의 기본값</td></tr>
+</table></div>
+<p><b>구분 요령 3단계</b></p>
+<ul>
+  <li>곡선이 <b>S자</b>이면 Sigmoid 아니면 Tanh이고, <b>꺾인 직선</b>이면 <a class="w" href="words.html#w88" data-w="88">ReLU</a>예요.</li>
+  <li>S자일 때는 세로축 눈금을 봐요. <b>0에서 1</b>까지이고 x=0에서 0.5이면 Sigmoid, <b>−1에서 1</b>까지이고 원점을 지나면 Tanh예요.</li>
+  <li>ReLU는 "음수일 때 0, 양수일 때 y = x"라서 왼쪽은 납작하고 오른쪽은 위로 올라가요. 위쪽 한계가 없는 것도 ReLU뿐이에요.</li>
+</ul>
+<div class="box eg"><span class="t">비유 — 문턱과 수도꼭지</span>
+<p>Sigmoid와 Tanh는 점점 열리다가 끝까지 열리면 더 안 나오는 수도꼭지예요. Sigmoid는 "잠김(0) ~ 활짝(1)", Tanh는 "뒤로(−1) ~ 앞으로(+1)"예요. ReLU는 문턱이 있는 문이에요. 음수 신호는 막고 양수 신호는 그대로 통과시켜요.</p>
+</div>
+<p>교수님은 "시그모이드는 x축 끝으로 가면 1 또는 0으로 가니까 <a class="w" href="words.html#w53" data-w="53">이진 분류</a>처럼 생겼다"고 했어요. 확률(0~1)처럼 읽기 좋은 이유예요. 그리고 ReLU는 우리가 쓰는 MLP의 <a class="w" href="words.html#w43" data-w="43">Dense</a> 층 기본값이라고 강조했어요.</p>
+<figure class="slide"><img src="slides/b_act_sigtanh.jpg" alt="Sigmoid와 Tanh의 식, 범위, 장단점 표"><figcaption>교수님 슬라이드 — Sigmoid와 Tanh의 식(σ′ ≤ 0.25 포함), 범위, 장단점</figcaption></figure>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>범위를 숫자 세 쌍으로 외워요. <b>Sigmoid 0~1, Tanh −1~1, ReLU 0~무한</b>이에요. 기울기 최대값은 <b>Sigmoid 0.25, Tanh 1, ReLU 1(양수 구간)</b>이고요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>Sigmoid는 출력 범위가 (0, 1)이고 확률 해석에 적합하지만 양끝에서 기울기가 소실된다. Tanh는 범위가 (−1, 1)이고 0 중심이다. ReLU는 max(0, x)로 양의 구간 기울기가 1이고 음의 구간 기울기가 0이며 은닉층 기본값이다. (객관식 요령) 그래프가 S자이면 세로축 범위로, 꺾인 직선이면 ReLU로 고른다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — x = 0에서 0.5를 지나는 S자 곡선은 무엇인가요?</summary>
+<p>Sigmoid예요. 1/(1+e⁰) = 1/2이라서 x=0에서 0.5가 돼요. Tanh는 x=0에서 0이에요.</p></details>
+
+<div class="done"><a class="go" href="c6-03.html">다음 카드 → 포화와 기울기 소실 ★</a><div class="pn"><a href="c6-01.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c6"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 3주차 · 머신러닝2_chapter2_student_ver.pdf(PART 5, p.29–33, p.48) · 머신러닝03.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

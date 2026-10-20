@@ -1,0 +1,47 @@
+[
+ {
+  "id": "c5",
+  "title": "혼동행렬과 평가지표",
+  "sub": "TP·FP·FN·TN 읽기, 정밀도·재현율·F1 정수 계산, 정확도의 함정과 오류 비용",
+  "groups": [
+   "metric"
+  ],
+  "srcs": "4주차 · 머신러닝2_chapter2_student_ver.pdf(PART 3, p.18–21) · 머신러닝04.txt, 머신러닝07.txt(10/19 중간고사 복습)"
+ },
+ {
+  "id": "c6",
+  "title": "활성화 함수",
+  "sub": "선형∘선형=선형, Sigmoid·Tanh·ReLU 그래프 구분, 기울기 소실, 죽은 ReLU, 출력층 세트",
+  "groups": [
+   "act"
+  ],
+  "srcs": "3주차 · 머신러닝2_chapter2_student_ver.pdf(PART 5, p.29–33, p.48) · 머신러닝03.txt, 머신러닝07.txt(10/19 중간고사 복습)"
+ },
+ {
+  "id": "c7",
+  "title": "역전파(개념) · 과적합 · 정규화",
+  "sub": "역전파 한 문장, 학습·검증 곡선 네 패턴 진단과 처방, 조기 종료, L1·L2, Dropout 등",
+  "groups": [
+   "overfit"
+  ],
+  "srcs": "3~4주차 · 머신러닝2_chapter2_student_ver.pdf(PART 6 p.35–36, PART 7 p.55–57) · 머신러닝03.txt, 머신러닝04.txt, 머신러닝07.txt(10/19 중간고사 복습)"
+ },
+ {
+  "id": "c8",
+  "title": "Keras로 MLP 만들기",
+  "sub": "NumPy↔Keras 대응, MNIST 코드 한 줄씩, 손실 문자열 고르기, 파라미터 수, 코드 빈칸 연습",
+  "groups": [
+   "keras"
+  ],
+  "srcs": "6주차 · 머신러닝2_chapter3_redesign.pdf(p.1–17) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)"
+ },
+ {
+  "id": "c9",
+  "title": "batch · epoch · step과 EarlyStopping",
+  "sub": "step 수 계산, EarlyStopping 시뮬레이션, fit 연결, Dropout 동작, val_loss, 옵티마이저",
+  "groups": [
+   "knob"
+  ],
+  "srcs": "6주차 · 머신러닝2_chapter3_redesign.pdf(p.18–28) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)"
+ }
+]

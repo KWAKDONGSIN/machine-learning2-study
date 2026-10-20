@@ -1,0 +1,361 @@
+<!-- 9장: batch·epoch·step과 EarlyStopping. step 수 계산, EarlyStopping 인자와 시뮬레이션, fit 연결, Dropout 동작, val_loss와 val_accuracy, 옵티마이저와 학습률 -->
+<h2>batch · epoch · step과 EarlyStopping — 학습을 조절하는 손잡이</h2>
+<p class="lead">학습 로그의 "430/430"이 무슨 뜻인지, 조기 종료가 언제 멈추고 어느 가중치를 남기는지를 손으로 계산할 수 있어야 해요. 교수님이 "시험에 내기 편한 요소"라고 한 부분이에요. 이 장에서는 정수 계산 규칙과 EarlyStopping 시뮬레이션, 그리고 Dropout·val_loss·옵티마이저 같은 나머지 손잡이를 정리해요.</p>
+
+<h3>9-1. batch · step · epoch — 한 바퀴를 세는 세 단위 ★★★</h3>
+<p>세 낱말은 모두 "학습 데이터를 어떻게 나눠서 몇 번 공부하는가"를 말해요. 교수님이 "학생들이 되게 헷갈린다, 취업 면접에도 나올지 모른다"며 가장 길게 설명한 부분이에요.</p>
+<table>
+  <tr><th style="width:18%">낱말</th><th>뜻</th></tr>
+  <tr><td><b>batch</b> (배치)</td><td>한 번에 모델에 넣는 샘플 묶음이에요. 묶음 크기가 <code>batch_size</code>(예 128장)예요.</td></tr>
+  <tr><td><b>step</b> (스텝)</td><td>배치 <b>하나</b>로 순전파 → 손실 → 역전파 → 가중치 갱신을 <b>한 번</b> 하는 것이에요.</td></tr>
+  <tr><td><b>epoch</b> (에포크)</td><td>학습 데이터 <b>전체를 한 바퀴</b> 다 쓴 것이에요. 배치를 끝까지 소진하면 1 epoch이에요.</td></tr>
+</table>
+<div class="box eg"><span class="t">비유 — 문제집 풀기</span>
+<p>문제집에 문제가 55,000개 있어요. 한 번에 128문제씩 풀고 채점해서 오답을 고치는 것이 <b>1 step</b>이에요. 128문제 묶음이 <b>batch</b>예요. 문제집 한 권을 끝까지 다 풀면 <b>1 epoch</b>이고, 같은 문제집을 20번 반복하면 20 epoch이에요. 교수님은 "갔다가 돌아오는 한 번을 1 epoch이라고 하면 틀리고, 그건 1 step이에요"라고 강조했어요.</p>
+</div>
+<svg viewBox="0 0 520 170" width="130mm" role="img" aria-label="배치, step, epoch 관계">
+  <rect x="8" y="30" width="92" height="52" rx="6" fill="#cfeedd" stroke="#7fb59a"/>
+  <text x="54.0" y="53" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b2333">배치 1</text>
+  <text x="54.0" y="72" text-anchor="middle" font-size="13" fill="#1b2333">128장</text>
+  <rect x="111" y="30" width="92" height="52" rx="6" fill="#cfeedd" stroke="#7fb59a"/>
+  <text x="157.0" y="53" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b2333">배치 2</text>
+  <text x="157.0" y="72" text-anchor="middle" font-size="13" fill="#1b2333">128장</text>
+  <rect x="214" y="30" width="92" height="52" rx="6" fill="#ffffff" stroke="#7fb59a"/>
+  <text x="260.0" y="53" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b2333">…</text>
+  <text x="260.0" y="72" text-anchor="middle" font-size="13" fill="#1b2333"></text>
+  <rect x="317" y="30" width="92" height="52" rx="6" fill="#cfeedd" stroke="#7fb59a"/>
+  <text x="363.0" y="53" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b2333">배치 429</text>
+  <text x="363.0" y="72" text-anchor="middle" font-size="13" fill="#1b2333">128장</text>
+  <rect x="420" y="30" width="92" height="52" rx="6" fill="#ffe7b8" stroke="#7fb59a"/>
+  <text x="466.0" y="53" text-anchor="middle" font-size="14" font-weight="bold" fill="#1b2333">배치 430</text>
+  <text x="466.0" y="72" text-anchor="middle" font-size="13" fill="#1b2333">88장</text>
+  <path d="M8,92 L8,101 L512,101 L512,92" fill="none" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="260" y="122" text-anchor="middle" font-size="15" font-weight="bold" fill="#1d4ed8">배치 하나 = 1 step · 430 step = 1 epoch</text>
+  <text x="260" y="143" text-anchor="middle" font-size="13" fill="#1b2333">55,000 ÷ 128 = 429.7 → 올림해서 430</text>
+  <text x="260" y="162" text-anchor="middle" font-size="13" fill="#5d6b80">(마지막 배치는 55,000 − 429×128 = 88장)</text>
+  <text x="260" y="18" text-anchor="middle" font-size="14" fill="#1b2333">학습 데이터 55,000장 (batch_size = 128)</text>
+  </svg>
+<div class="box def"><span class="t">한 줄 정의</span>
+<p><b>1 epoch의 step 수 = ⌈ 학습 샘플 수 ÷ batch_size ⌉</b> (소수가 나오면 <b>올림</b>)</p>
+</div>
+<p><b>왜 올림일까요?</b> 나누어떨어지지 않으면 마지막에 batch_size보다 적은 자투리 배치가 남는데, 이것도 버리지 않고 한 step으로 쓰기 때문이에요. 55,000 ÷ 128 = 429.69이고, 429개의 꽉 찬 배치(54,912장) 뒤에 88장이 남아서 430번째 step이 돼요.</p>
+<p>그래서 학습 로그에 나오는 <code>430/430</code>은 "<b>이번 epoch의 전체 step 430개 중 430번째까지 끝났다</b>"는 뜻이에요. 분모 430이 1 epoch의 step 수이고, 진행 중에는 <code>215/430</code>처럼 보여요. 20 epoch이면 총 갱신 횟수는 430 × 20 = 8,600번이에요.</p>
+<table>
+  <tr><th style="width:18%">batch_size</th><th style="width:22%">step/epoch</th><th style="width:22%">20 epoch 총 갱신</th><th>특징</th></tr>
+  <tr><td>32</td><td>⌈55,000/32⌉ = 1,719</td><td>34,380</td><td>갱신이 잦고 기울기가 들쭉날쭉해요(노이즈가 큼). epoch이 느려요.</td></tr>
+  <tr><td><b>128</b> (이 수업)</td><td>⌈55,000/128⌉ = <b>430</b></td><td>8,600</td><td>균형이 좋고 GPU 활용이 좋아요.</td></tr>
+  <tr><td>512</td><td>⌈55,000/512⌉ = 108</td><td>2,160</td><td>갱신이 적고 매끈해요. 같은 epoch에서는 덜 학습돼서 학습률을 올려야 할 수 있어요.</td></tr>
+</table>
+<figure class="slide"><img src="slides/b_batch_step.jpg" alt="배치 하나가 1 step이고 430 step이 1 epoch"><figcaption>교수님 슬라이드 — model.fit 인자와 batch · epoch · step의 관계, 로그의 430/430</figcaption></figure>
+<p><b>배치를 키우면 어떻게 될까요?</b> epoch당 step 수가 줄어서 <b>갱신 횟수가 줄어요</b>. 같은 epoch 수로는 덜 학습하는 셈이라, 배치·학습률·epoch은 함께 조정해야 해요.</p>
+<p>배치 크기를 128, 256, 512처럼 2의 거듭제곱으로 쓰는 것은 컴퓨터(GPU)의 연산 단위가 2의 n승이라 효율적이기 때문이에요. 250이나 300을 써도 틀린 것은 아니에요(교수님이 "시험에는 안 나온다"고 한 참고 내용이에요).</p>
+<p><b>함정을 조심해요.</b> "학습 샘플 수"는 <b>학습 세트의 크기</b>예요. MNIST 전체 70,000장이나 학습 60,000장이 아니라, 검증 5,000장을 떼고 남은 <b>55,000장</b>이에요. 문제에서 어느 숫자를 쓰라는지 읽고 계산해요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>계산 순서는 "<b>① 학습 샘플 수 확인 → ② batch_size로 나눔 → ③ 소수면 올림</b>"이에요. 올림이 헷갈리면 "나머지가 조금이라도 있으면 자투리 배치가 하나 더 생긴다"고 떠올려요.</p>
+</div>
+<p><b>연습 문제</b> (정답은 눌러서 확인해요)</p>
+<table>
+  <tr><th style="width:8%">번호</th><th>문제</th></tr>
+  <tr><td>①</td><td>학습 샘플 60,000개, batch_size 100이면 1 epoch의 step 수는?</td></tr>
+  <tr><td>②</td><td>학습 샘플 45,000개, batch_size 64이면 1 epoch의 step 수는?</td></tr>
+  <tr><td>③</td><td>학습 샘플 50,000개, batch_size 128로 10 epoch 학습하면 총 갱신(step) 횟수는?</td></tr>
+  <tr><td>④</td><td>전체 데이터 70,000장에서 테스트 10,000장과 검증 5,000장을 떼고 batch_size 128로 학습하면 1 epoch은 몇 step?</td></tr>
+</table>
+<details class="check"><summary>정답 보기</summary>
+<p>① 60,000 ÷ 100 = 600 → <b>600 step</b>이에요. ② 45,000 ÷ 64 = 703.125 → 올림해서 <b>704 step</b>이에요. ③ 50,000 ÷ 128 = 390.6 → 391 step/epoch, 391 × 10 = <b>3,910번</b>이에요. ④ 학습 샘플은 70,000 − 10,000 − 5,000 = 55,000이므로 ⌈55,000 ÷ 128⌉ = <b>430 step</b>이에요.</p></details>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>step은 미니배치 하나로 순전파·역전파·가중치 갱신을 한 번 수행하는 단위이고, epoch은 학습 데이터 전체를 한 번 모두 사용한 것이다. 1 epoch의 step 수는 ⌈학습 샘플 수 / batch_size⌉이며, 55,000개를 batch 128로 학습하면 ⌈429.7⌉ = 430 step이다. 배치를 키우면 epoch당 갱신 횟수가 줄어든다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 로그의 "430/430"은 무슨 뜻인가요?</summary>
+<p>이번 epoch이 총 430 step이고, 그 430 step을 모두 마쳤다는 뜻이에요(분모 = 1 epoch의 step 수 = ⌈55,000/128⌉).</p></details>
+
+<h3>9-2. EarlyStopping 인자와 동작 시뮬레이션 ★★★</h3>
+<p>epoch을 무한정 돌린다고 좋아지지 않아요(7장). 검증 지표가 더 이상 좋아지지 않으면 자동으로 멈추게 하는 장치가 <b>EarlyStopping 콜백</b>이에요. 콜백(callback)은 "학습 중 정해진 순간(epoch 끝 등)에 자동으로 불리는 도우미 함수"예요.</p>
+<div class="code">early_stop = tf.keras.callbacks.EarlyStopping(
+    monitor='val_accuracy',
+    patience=3,
+    restore_best_weights=True
+)</div>
+<table>
+  <tr><th style="width:26%">인자</th><th>뜻</th></tr>
+  <tr><td><code>monitor</code></td><td>매 epoch 끝에 <b>볼 지표</b>의 이름(문자열)이에요. <code>'val_loss'</code>, <code>'val_accuracy'</code> 등. 정확도 계열은 "클수록 좋다", loss는 "작을수록 좋다"로 자동 판단해요.</td></tr>
+  <tr><td><code>patience</code></td><td>최고 기록을 <b>갱신하지 못한 채 연속으로 몇 epoch</b>을 참을지예요. 그 횟수가 되면 정지해요.</td></tr>
+  <tr><td><code>restore_best_weights</code></td><td><code>True</code>이면 멈출 때 <b>가장 좋았던 epoch의 가중치</b>로 되돌려요. <code>False</code>이면 멈춘 시점(마지막 epoch)의 가중치가 그대로 남아요.</td></tr>
+  <tr><td><code>mode</code></td><td>좋은 방향을 직접 정해요. <code>'max'</code>(클수록 좋음, 정확도), <code>'min'</code>(작을수록 좋음, 손실), 기본 <code>'auto'</code>(이름을 보고 자동)예요.</td></tr>
+  <tr><td><code>min_delta</code> (참고)</td><td>"개선"으로 인정할 <b>최소 변화량</b>이에요(기본 0). 0이면 0.0002처럼 아주 작은 상승도 개선으로 쳐서 멈추지 않아요.</td></tr>
+  <tr><td><code>baseline</code> (참고)</td><td>이 기준선을 못 넘으면 개선으로 보지 않겠다는 출발선이에요.</td></tr>
+</table>
+<p>mode를 직접 적으면 이렇게 돼요. 정확도를 보면 <code>EarlyStopping(monitor='val_accuracy', mode='max', ...)</code>, 손실을 보면 <code>EarlyStopping(monitor='val_loss', mode='min', ...)</code>이에요.</p>
+<div class="box eg"><span class="t">비유 — 기록 갱신이 멈춘 선수</span>
+<p>달리기 코치가 "새 최고 기록이 <b>3번 연속</b> 안 나오면 훈련을 끝내자(patience=3). 그리고 몸 상태를 <b>가장 기록이 좋았던 날</b>로 되돌려 놓자(restore_best_weights=True)"라고 정했어요. 마지막 훈련일의 기록이 아니라 최고 기록의 날 상태가 남는 것이 포인트예요.</p>
+</div>
+<p><b>동작 규칙 세 가지</b>를 외워요.</p>
+<ul>
+  <li><b>① "개선"은 지금까지의 최고 기록을 넘는 것</b>이에요. 같은 값이거나 낮으면 개선이 아니에요(min_delta가 기본 0일 때).</li>
+  <li><b>② 개선이 없는 epoch이 연속 patience번 쌓이면 정지</b>해요. 중간에 새 최고가 나오면 세던 횟수가 0으로 돌아가요.</li>
+  <li><b>③ 멈추는 epoch = 최고 epoch + patience</b>예요. 그리고 restore_best_weights=True이면 <b>최고 epoch의 가중치</b>가 최종 모델이에요. (단, epochs로 정한 최대 epoch보다 크면 최대 epoch에서 먼저 끝나요.)</li>
+</ul>
+<p>슬라이드의 시뮬레이션 표예요(patience=3).</p>
+<table>
+  <tr><th>epoch</th><th>val_accuracy</th><th>지금까지 최고</th><th>개선?</th><th>연속 무개선</th></tr>
+  <tr><td>1</td><td>0.979</td><td>0.979</td><td>O</td><td>0</td></tr>
+  <tr><td>2</td><td>0.978</td><td>0.979</td><td>X</td><td>1</td></tr>
+  <tr><td>3</td><td><b>0.981</b></td><td><b>0.981</b></td><td>O</td><td>0 (새 최고라 초기화)</td></tr>
+  <tr><td>4</td><td>0.980</td><td>0.981</td><td>X</td><td>1</td></tr>
+  <tr><td>5</td><td>0.979</td><td>0.981</td><td>X</td><td>2</td></tr>
+  <tr><td>6</td><td>0.980</td><td>0.981</td><td>X</td><td>3 → <b>종료</b>, 가중치는 epoch 3</td></tr>
+</table>
+<p>epoch 3이 최고였고(0.981), 그 뒤 3번(4, 5, 6)을 못 넘어서 epoch 6 끝에 멈추고 epoch 3의 가중치로 복원해요. 3 + 3 = 6이에요.</p>
+<figure class="slide"><img src="slides/b_es_sim.jpg" alt="EarlyStopping 인자 해설과 시뮬레이션 표"><figcaption>교수님 슬라이드 — EarlyStopping 세 인자와 판단 시뮬레이션, 확인 문제(patience=3, epoch 7이 최고이면 10 epoch 끝에 멈춤)</figcaption></figure>
+<p>아래 그림은 같은 규칙을 그래프로 본 거예요. 최고는 epoch 6(0.976)이고, 그 뒤 epoch 7, 8, 9가 최고를 못 넘어 "못 넘음 3"이 쌓인 epoch 9에서 멈춰요. 남는 가중치는 epoch 6의 것이에요.</p>
+<svg viewBox="0 0 400 260" width="110mm" role="img" aria-label="EarlyStopping 시뮬레이션 그래프">
+  <rect x="48" y="22" width="320" height="150" fill="#fbfcfe" stroke="#d6dde8"/>
+  <line x1="48" y1="147.0" x2="368" y2="147.0" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="43" y="151.0" text-anchor="end" font-size="12" fill="#5d6b80">0.95</text>
+  <line x1="48" y1="105.3" x2="368" y2="105.3" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="43" y="109.3" text-anchor="end" font-size="12" fill="#5d6b80">0.96</text>
+  <line x1="48" y1="63.7" x2="368" y2="63.7" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="43" y="67.7" text-anchor="end" font-size="12" fill="#5d6b80">0.97</text>
+  <line x1="48" y1="22.0" x2="368" y2="22.0" stroke="#e4e9f1" stroke-dasharray="3 3"/>
+  <text x="43" y="26.0" text-anchor="end" font-size="12" fill="#5d6b80">0.98</text>
+  <line x1="48" y1="38.7" x2="368" y2="38.7" stroke="#16a34a" stroke-dasharray="6 4"/>
+  <text x="58" y="32.7" font-size="13" font-weight="bold" fill="#16a34a">최고 0.976 (epoch 6)</text>
+  <polyline points="65.8,147.0 101.3,105.3 136.9,63.7 172.4,42.8 208.0,51.2 243.6,38.7 279.1,47.0 314.7,42.8 350.2,55.3" fill="none" stroke="#c2335a" stroke-width="2.5"/>
+  <circle cx="65.8" cy="147.0" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="65.8" y="189" text-anchor="middle" font-size="13" fill="#1b2333">1</text>
+  <circle cx="101.3" cy="105.3" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="101.3" y="189" text-anchor="middle" font-size="13" fill="#1b2333">2</text>
+  <circle cx="136.9" cy="63.7" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="136.9" y="189" text-anchor="middle" font-size="13" fill="#1b2333">3</text>
+  <circle cx="172.4" cy="42.8" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="172.4" y="189" text-anchor="middle" font-size="13" fill="#1b2333">4</text>
+  <circle cx="208.0" cy="51.2" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="208.0" y="189" text-anchor="middle" font-size="13" fill="#1b2333">5</text>
+  <circle cx="243.6" cy="38.7" r="5.5" fill="#16a34a" stroke="#16a34a" stroke-width="2"/>
+  <text x="243.6" y="189" text-anchor="middle" font-size="13" fill="#1b2333">6</text>
+  <circle cx="279.1" cy="47.0" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="279.1" y="189" text-anchor="middle" font-size="13" fill="#1b2333">7</text>
+  <circle cx="314.7" cy="42.8" r="5.5" fill="#fff" stroke="#c2335a" stroke-width="2"/>
+  <text x="314.7" y="189" text-anchor="middle" font-size="13" fill="#1b2333">8</text>
+  <circle cx="350.2" cy="55.3" r="5.5" fill="#c2335a" stroke="#c2335a" stroke-width="2"/>
+  <text x="350.2" y="189" text-anchor="middle" font-size="13" fill="#1b2333">9</text>
+  <text x="279.1" y="208" text-anchor="middle" font-size="14" font-weight="bold" fill="#c2335a">1</text>
+  <text x="314.7" y="208" text-anchor="middle" font-size="14" font-weight="bold" fill="#c2335a">2</text>
+  <text x="350.2" y="208" text-anchor="middle" font-size="14" font-weight="bold" fill="#c2335a">3</text>
+  <text x="52" y="208" font-size="13" font-weight="bold" fill="#c2335a">못 넘은 횟수 →</text>
+  <text x="208.0" y="228" text-anchor="middle" font-size="13" fill="#5d6b80">가로 = epoch</text>
+  <text x="208.0" y="247" text-anchor="middle" font-size="13" fill="#1b2333">patience=3 → 못 넘음이 3번 쌓인 epoch 9에서 정지</text>
+  <text x="12" y="97.0" font-size="13" fill="#5d6b80" transform="rotate(-90 12 97.0)" text-anchor="middle">val_accuracy</text>
+  </svg>
+<div class="box def"><span class="t">한 줄 정의</span>
+<p><b>EarlyStopping = monitor한 지표가 연속 patience epoch 동안 최고 기록을 못 넘으면 학습을 멈추고, restore_best_weights=True이면 최고 epoch의 가중치로 되돌리는 콜백.</b></p>
+</div>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>교수님이 정리한 퀴즈를 그대로 외워요. "patience=3, epoch 7에 최고, 이후 개선 없음 → <b>10 epoch 끝에 멈춤, 가중치는 epoch 7</b>". 풀이는 7 + 3 = 10이에요. 교수님 화면 예(6주차)도 같은 방식이에요. 최고 val_accuracy 0.9834 뒤로 0.9824, 0.9816, 0.9812가 3번 연속 못 넘어 정지했고, 마지막 값은 0.9812인데 최종 모델은 <b>0.9834</b>예요.</p>
+</div>
+<div class="box eg"><span class="t">잠깐 — 슬라이드 정정</span>
+<p>3장 17쪽 슬라이드에는 "조기 종료 발동 안 함"이라고 적혀 있지만, 교수님이 10/19 수업에서 "잘못 적었다, 발동했다"고 정정했어요. 슬라이드의 epoch 번호(12, 15, 18)를 외우지 말고 "<b>최고 epoch + patience</b>" 규칙으로 직접 계산하세요. 시험에는 최고 epoch과 patience를 숫자로 줘요.</p>
+</div>
+<p><b>시뮬레이션 연습</b> (정답은 눌러서 확인해요)</p>
+<ul>
+  <li><b>문제 1.</b> patience=3, restore_best_weights=True, epochs=20. epoch 7에 최고 val_accuracy가 나오고 이후 개선이 없다면, 몇 epoch 끝에 멈추고 어느 epoch의 가중치가 남나요?</li>
+  <li><b>문제 2.</b> patience=2, restore_best_weights=True, epochs=20. epoch 4가 최고이고 이후 개선이 없다면 몇 epoch 끝에 멈추고 어느 가중치가 남나요? restore_best_weights=False라면 어느 가중치가 남나요?</li>
+  <li><b>문제 3.</b> patience=3, monitor='val_accuracy'. epoch 1~9의 val_accuracy가 0.950, 0.960, 0.970, 0.975, 0.973, 0.976, 0.974, 0.975, 0.972이면 몇 epoch 끝에 멈추고, 최종 모델의 val_accuracy는?</li>
+  <li><b>문제 4.</b> patience=2, monitor='val_loss'. epoch 1~9의 val_loss가 0.40, 0.30, 0.25, 0.22, 0.23, 0.21, 0.215, 0.22, 0.225이면 몇 epoch 끝에 멈추고 어느 epoch의 가중치가 남나요?</li>
+  <li><b>문제 5.</b> patience=5, epochs=20. epoch 17이 최고이고 이후 개선이 없다면 어떻게 되나요?</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p><b>1.</b> 7 + 3 = <b>10 epoch 끝</b>에 멈추고 <b>epoch 7</b>의 가중치가 남아요. <b>2.</b> 4 + 2 = <b>6 epoch 끝</b>에 멈춰요. True이면 <b>epoch 4</b>의 가중치, False이면 멈춘 <b>epoch 6</b>의 가중치가 남아요. <b>3.</b> epoch 6(0.976)이 최고이고 7(0.974), 8(0.975), 9(0.972)가 모두 0.976을 못 넘어요(8의 0.975도 최고보다 낮아서 개선이 아니에요). 6 + 3 = <b>9 epoch 끝</b>에 멈추고 최종 모델은 epoch 6이라 <b>val_accuracy 0.976</b>이에요. <b>4.</b> 손실은 작을수록 좋아서 epoch 6(0.21)이 최고예요. 7(0.215), 8(0.22)이 못 넘어 6 + 2 = <b>8 epoch 끝</b>에 멈추고 <b>epoch 6</b>의 가중치가 남아요. <b>5.</b> 17 + 5 = 22인데 최대치가 20이라서, 정지 조건이 채워지기 전에 <b>20 epoch을 다 돌고</b> 학습이 끝나요. (이런 문제는 최고 epoch + patience가 epochs를 넘는지 먼저 확인해요.)</p></details>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>EarlyStopping은 monitor로 지정한 지표가 patience번 연속으로 최고 기록을 갱신하지 못하면 학습을 멈추는 콜백이며, restore_best_weights=True이면 가장 성능이 좋았던 epoch의 가중치로 복원한다. 예를 들어 patience=3이고 epoch 7에서 최고였다면 epoch 10 끝에 멈추고 epoch 7의 가중치가 남는다. callbacks=[early_stop]으로 fit에 연결하고, validation_data를 주어야 val_* 지표가 계산되어 monitor할 수 있다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — patience=4이고 epoch 9가 최고였다면 멈추는 epoch은? (epochs=30)</summary>
+<p>9 + 4 = 13이므로 epoch 13 끝에 멈추고, restore_best_weights=True이면 epoch 9의 가중치가 남아요.</p></details>
+
+<h3>9-3. fit에 연결하기 — 인자와 로그 읽기 ★★</h3>
+<p>콜백만 만들어서는 아무 일도 안 일어나요. <code>fit</code>의 <code>callbacks=[…]</code>에 <b>리스트로 묶어</b> 넘겨야 연결돼요. 콜백이 여러 개면 <code>callbacks=[early_stop, reduce_lr, ckpt]</code>처럼 쓰고, 순서는 상관없이 매 epoch 끝에 모두 불려요.</p>
+<div class="code">history = model.fit(
+    x_trn, y_trn,
+    validation_data=(x_val, y_val),
+    epochs=20,
+    batch_size=128,
+    callbacks=[early_stop],
+    verbose=1
+)</div>
+<table>
+  <tr><th style="width:30%">인자</th><th>의미</th></tr>
+  <tr><td><code>validation_data=(x_val, y_val)</code></td><td>epoch이 끝날 때마다 검증 세트로 <code>val_loss</code>, <code>val_accuracy</code>를 계산해요. <b>이것을 주지 않으면 val_* 지표가 만들어지지 않아서</b>, <code>monitor='val_accuracy'</code>인 EarlyStopping이 볼 대상이 없어요(경고만 뜨고 작동하지 못해요).</td></tr>
+  <tr><td><code>epochs=20</code></td><td><b>최대</b> epoch 수예요. EarlyStopping이 먼저 멈출 수 있어요.</td></tr>
+  <tr><td><code>batch_size=128</code></td><td>한 번에 128장으로 1회 갱신(= 1 step)해요.</td></tr>
+  <tr><td><code>callbacks=[early_stop]</code></td><td>epoch이나 배치 경계마다 불리는 도우미들의 리스트예요.</td></tr>
+  <tr><td><code>verbose</code></td><td>1은 진행 막대, 2는 epoch당 한 줄, 0은 조용히 해요.</td></tr>
+</table>
+<p>학습 로그 한 줄은 이렇게 읽어요. <code>Epoch 1/20</code>은 "20 epoch 중 1번째"이고, <code>430/430</code>은 이번 epoch의 step 진행도예요. 뒤에 <code>accuracy</code>, <code>loss</code>(학습 지표)와 <code>val_accuracy</code>, <code>val_loss</code>(검증 지표)가 따라 나와요. <b>val_가 붙으면 검증 세트로 잰 값</b>이에요.</p>
+<p><code>fit</code>이 돌려주는 <code>history</code>에는 epoch마다 모은 값이 리스트로 남아요. <code>history.history['accuracy']</code>, <code>['val_accuracy']</code>, <code>['loss']</code>, <code>['val_loss']</code> 네 개예요. 이것을 그리면 7장의 학습·검증 곡선이 돼요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>fit에 validation_data를 전달하면 epoch마다 val_loss와 val_accuracy가 계산되고, callbacks=[early_stop]으로 콜백을 연결하면 EarlyStopping이 이 값을 보고 학습을 중단한다. epochs는 최대치이며 조기 종료가 먼저 발동하면 그보다 일찍 끝난다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — validation_data 없이 monitor='val_loss'를 쓰면 어떻게 되나요?</summary>
+<p>val_loss가 계산되지 않아 EarlyStopping이 볼 지표가 없어요. 그래서 조기 종료가 작동하지 못해요.</p></details>
+
+<h3>9-4. Dropout 동작 — 학습 때만 끄고 추론 때는 모두 켜요 ★★</h3>
+<p>Dropout은 7장에서 정규화 기법으로 만났어요. 이번에는 "어느 때 켜지고 꺼지는가"를 봐요. 시험에는 로그에서 보이는 이상한 숫자를 Dropout으로 설명하는 문제가 나와요. 교수님도 "이건 조금 어려운 문제로 나온다"고 했어요.</p>
+<ul>
+  <li><b>학습할 때</b> — step마다 은닉 뉴런을 확률 p로 무작위로 0(끔)으로 만들어요. 특정 뉴런에 의존하는 습관을 깨요.</li>
+  <li>꺼지지 않은 뉴런의 출력은 <b>1/(1−p)배로 키워서</b> 전체 합의 기대값을 맞춰요(inverted dropout). 그래서 추론 때는 보정 없이 그냥 다 써요.</li>
+  <li><b>추론할 때</b> (<code>evaluate</code>, <code>predict</code>) — <b>모든 뉴런을 켜요.</b> Keras가 <code>fit</code>은 학습 모드, <code>evaluate</code>·<code>predict</code>는 추론 모드로 자동 전환해요.</li>
+  <li>Dropout은 <b>파라미터를 버리는 것이 아니에요.</b> 껐다 켰다 할 뿐이라 학습할 파라미터는 0개예요.</li>
+</ul>
+<figure class="slide"><img src="slides/b_dropout.jpg" alt="학습 때 일부 뉴런을 끄는 그림과 추론 때 모두 켜는 그림"><figcaption>교수님 슬라이드 — 학습 때는 매 step 무작위로 끄고(왼쪽), 추론 때는 모두 켠다(오른쪽)</figcaption></figure>
+<p><b>왜 첫 epoch에서 학습 정확도 &lt; 검증 정확도가 나올까요?</b> 실제 로그에서 첫 epoch의 학습 정확도는 0.901인데 검증 정확도는 0.956이었어요. 이상해 보이지만 정상이에요.</p>
+<ul>
+  <li>학습 정확도는 <b>일부 뉴런이 꺼진 "약한 모델"</b>로 잰 값이에요.</li>
+  <li>검증 정확도는 <b>모든 뉴런을 켠 "온전한 모델"</b>로 잰 값이에요.</li>
+  <li>(참고) 학습 지표는 epoch이 진행되는 동안의 평균이라서, 아직 덜 배운 초반 값이 섞이는 것도 한 이유예요.</li>
+</ul>
+<p>그래서 학습 초반에는 검증이 학습보다 높게 나올 수 있고, 과적합이 심해지면 결국 학습이 위로 올라가요. 교수님은 "에포크 7쯤에서 학습 곡선이 올라가 과적합이 되기 전 초반에는 학습보다 검증이 더 높을 수도 있다"고 설명했어요.</p>
+<div class="box eg"><span class="t">비유 — 한 손 묶고 연습하기</span>
+<p>평소 연습은 한 손을 묶고(일부 뉴런을 끄고) 해요. 그러면 연습 점수가 낮게 나와요. 실전(검증·추론)에서는 두 손을 다 써서 점수가 더 잘 나와요. 연습이 어려운 만큼 실전에서 안정적이고, 한 손에만 의존하는 버릇이 안 생겨요.</p>
+</div>
+<table>
+  <tr><th style="width:26%">위치</th><th style="width:18%">권장 p</th><th>메모</th></tr>
+  <tr><td>입력층 바로 뒤</td><td>0.1 ~ 0.2</td><td>너무 크면 입력 정보가 사라져 손실이 뒤 층으로 크게 번져요.</td></tr>
+  <tr><td>은닉층(Dense)</td><td>0.2 ~ 0.5</td><td>MNIST MLP는 0.2, 텍스트 단어 벡터(Bag-of-Words)처럼 희소하고 과적합이 심한 경우는 0.5</td></tr>
+  <tr><td>출력층 바로 앞</td><td>사용 안 함</td><td>softmax 입력을 흔들면 확률의 품질이 나빠져요.</td></tr>
+</table>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>Dropout은 학습 단계에서만 뉴런을 확률적으로 끄고, evaluate와 predict 같은 추론 단계에서는 모든 뉴런을 사용한다. 첫 epoch에서 학습 정확도가 검증 정확도보다 낮게 나오는 것은 학습 지표는 일부 뉴런이 꺼진 상태로, 검증 지표는 모든 뉴런이 켜진 상태로 측정되기 때문이며 정상적인 현상이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — Dropout(0.2)을 쓴 모델에서 model.predict를 호출하면 뉴런이 꺼지나요?</summary>
+<p>꺼지지 않아요. predict는 추론 모드라서 모든 뉴런을 사용해요. 꺼지는 것은 fit(학습) 중뿐이에요.</p></details>
+
+<h3>9-5. val_loss 대 val_accuracy — 무엇을 monitor할까 ★★</h3>
+<p>EarlyStopping의 monitor로 <code>val_accuracy</code>를 쓸까 <code>val_loss</code>를 쓸까요? 둘은 <b>보는 것이 달라요</b>.</p>
+<ul>
+  <li><b>정확도</b>는 "맞혔나 틀렸나"만 봐요. 확률이 0.51이어도, 0.99여도 맞히면 똑같이 1점이에요(순위, 즉 argmax만 봐요).</li>
+  <li><b>손실(−log p)</b>은 정답 확률의 <b>품질</b>까지 봐요. 자신 있게 틀릴수록 벌점이 급격히 커져요.</li>
+</ul>
+<table>
+  <tr><th style="width:36%">상황 (정답 클래스 확률 p)</th><th style="width:20%">정확도</th><th>손실 −log p</th></tr>
+  <tr><td>맞춤, p = 0.978</td><td>1</td><td>0.022</td></tr>
+  <tr><td>맞춤, p = 0.772</td><td>1</td><td>0.259</td></tr>
+  <tr><td>아깝게 틀림, p = 0.49</td><td>0</td><td>0.71</td></tr>
+  <tr><td>자신 있게 틀림, p = 0.01</td><td>0</td><td>4.6</td></tr>
+</table>
+<p>위 표의 맞춘 두 샘플은 정확도로는 똑같이 1이지만 손실로는 0.022와 0.259로 달라요. 이 차이가 "정답 확률의 품질"이에요.</p>
+<p><b>왜 val_loss가 과적합을 더 일찍 드러낼까요?</b> 모델이 틀리는 샘플에 대해 <b>과신하기 시작하면 손실이 먼저 올라가기</b> 때문이에요. 정확도는 이미 98%쯤이면 더 오를 공간이 적어서 평평하게 보이는 동안에도 확률의 품질은 계속 변해요.</p>
+<p>슬라이드의 MNIST 실측에서 val_accuracy는 epoch 9 이후 0.98 근처에서 평평했는데, val_loss는 epoch 13에서 최소가 된 뒤 다시 올랐어요. 슬라이드 설명으로는 val_accuracy를 기준으로 하면 늦은 epoch(18)을 고르고, val_loss를 기준으로 하면 epoch 13을 골라요. 테스트 정확도는 거의 같지만 후자가 <b>확률이 더 정직한 모델</b>이에요. 그래서 Fashion과 IMDB 실습부터는 val_loss를 썼어요.</p>
+<figure class="slide"><img src="slides/b_valloss.jpg" alt="val_accuracy는 평평하지만 val_loss는 epoch 13 이후 다시 오르는 그래프"><figcaption>교수님 슬라이드 — val_accuracy는 epoch 9 이후 평평, val_loss는 epoch 13이 최소이고 이후 되오름(틀린 샘플에 과신 시작)</figcaption></figure>
+<ul>
+  <li>일반적으로는 <b>val_loss가 더 안정적</b>인 monitor예요(mode는 <code>'min'</code>).</li>
+  <li>의료·금융처럼 확률 자체나 불확실성이 중요한 문제는 특히 val_loss를 봐요.</li>
+  <li>(참고) 클래스 불균형 데이터에서는 정확도 대신 val_f1이나 val_auc 같은 지표를 monitor하기도 해요.</li>
+</ul>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>정확도는 정답 클래스의 순위(argmax)만 반영하지만 손실(−log p)은 예측 확률의 품질, 즉 과신까지 반영한다. 틀린 샘플에 과신하기 시작하면 val_loss가 먼저 상승하므로 val_loss가 과적합을 더 일찍 드러내며, EarlyStopping의 monitor로 val_loss를 쓰는 것이 일반적으로 더 안정적이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — val_accuracy는 평평한데 val_loss가 다시 오르기 시작했다면 무슨 신호인가요?</summary>
+<p>과적합이 시작되었다는 신호예요. 정답을 맞히는 개수는 비슷해도 틀리는 샘플에 과신하기 시작해서 확률의 품질이 나빠졌어요.</p></details>
+
+<h3>9-6. 옵티마이저와 학습률 — 가장 중요한 손잡이 ★</h3>
+<p>compile의 <code>optimizer</code>가 정하는 것은 "기울기를 보고 가중치를 어떻게 움직일까"예요. 가장 단순한 SGD에서 출발해 약점을 하나씩 고친 순서로 외우면 쉬워요.</p>
+<table>
+  <tr><th style="width:15%">옵티마이저</th><th>핵심 아이디어 (한 줄)</th><th style="width:26%">Keras 코드</th></tr>
+  <tr><td><b>SGD</b></td><td>미니배치의 기울기 방향으로 한 걸음 가요. w ← w − lr·g. 단순하지만 학습률에 민감하고 골짜기에서 진동해요.</td><td><code>SGD(학습률)</code></td></tr>
+  <tr><td><b>Momentum</b></td><td>이전에 움직이던 방향을 <b>관성</b>으로 누적해요(v ← βv + g). 진동이 줄고 빨리 수렴해요.</td><td><code>SGD(학습률, momentum=0.9)</code></td></tr>
+  <tr><td>Adagrad (참고)</td><td>자주 갱신된 파라미터는 학습률을 줄여요. 학습률이 계속 줄어 멈추는 것이 약점이에요.</td><td><code>Adagrad(학습률)</code></td></tr>
+  <tr><td><b>RMSProp</b></td><td>Adagrad의 누적을 지수 이동평균으로 바꿔 학습률이 사라지는 문제를 해결해요. 파라미터마다 보폭을 자동으로 조절해요.</td><td><code>RMSprop(학습률)</code></td></tr>
+  <tr><td><b>Adam</b></td><td><b>Momentum(1차) + RMSProp(2차) + 편향 보정</b>. 대부분의 문제에서 기본값이에요.</td><td><code>Adam(learning_rate=1e-3)</code></td></tr>
+</table>
+<div class="box eg"><span class="t">비유 — 골짜기를 내려가는 공</span>
+<p>SGD는 발밑 경사만 보고 한 걸음씩 가는 사람이에요. 좌우로 흔들려요. Momentum은 굴러가는 공처럼 관성이 붙어서 작은 턱을 넘어가요. RMSProp은 가파른 방향은 조심스럽게, 완만한 방향은 성큼 가는 식으로 보폭을 조절해요. Adam은 둘을 다 갖춘 공이에요. 교수님도 "SGD의 랜덤한 흔들림 때문에 가장 낮은 지점을 못 찾는 경우가 있어서 Adam을 많이 쓴다"고 설명했어요.</p>
+</div>
+<p><b>학습률(learning rate)이 가장 중요한 하이퍼파라미터</b>예요. Adam의 기본값은 <code>1e-3</code>(= 0.001)이고, 이 값에서 시작해서 3e-4 ~ 3e-3 정도를 10배 단위로 바꿔 가며 찾아요. 너무 크면 손실이 튀거나 NaN이 되고, 너무 작으면 epoch을 많이 써도 제자리예요(곡선으로 진단하는 법은 7장의 학습률 과대 패턴이에요).</p>
+<p>교체는 코드 한 줄이에요. <code>opt = tf.keras.optimizers.SGD(1e-2, momentum=0.9)</code>로 만든 뒤 <code>model.compile(optimizer=opt, …)</code>에 넣어요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+<p>한 줄 요약은 "<b>SGD 기본 → Momentum은 관성 → RMSProp은 보폭 자동 조절 → Adam은 Momentum + RMSProp + 편향 보정</b>"이에요. 그리고 "<b>가장 중요한 하이퍼파라미터는 학습률, Adam 기본값은 1e-3</b>"이요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>SGD는 기울기 방향으로 한 걸음씩 이동하고, Momentum은 이전 이동 방향을 관성으로 누적하며, RMSProp은 기울기 제곱의 지수 이동평균으로 파라미터별 학습률을 조절한다. Adam은 Momentum과 RMSProp에 편향 보정을 더한 것으로 기본 학습률은 1e-3이다. 학습률은 가장 중요한 하이퍼파라미터이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — Adam은 어떤 두 아이디어를 합친 옵티마이저인가요?</summary>
+<p>Momentum(1차 정보, 관성)과 RMSProp(2차 정보, 보폭 자동 조절)을 합치고 편향 보정을 더한 것이에요.</p></details>
+
+<h3>9-7. 그 밖의 손잡이 — 콜백 세 가지와 하이퍼파라미터 실험 (참고)</h3>
+<p>EarlyStopping과 함께 쓰는 콜백이 두 개 더 있어요. 이름과 역할만 알아 두면 돼요.</p>
+<table>
+  <tr><th style="width:26%">콜백</th><th>하는 일</th></tr>
+  <tr><td><code>ReduceLROnPlateau</code></td><td>개선이 멈추면 학습률을 줄여요. 예 <code>monitor='val_loss', factor=0.5, patience=2, min_lr=1e-6</code>이면 2 epoch 개선이 없을 때 학습률을 절반으로 줄이고 1e-6까지 내려가요.</td></tr>
+  <tr><td><code>ModelCheckpoint</code></td><td>가장 좋은 모델을 파일로 저장해요. 예 <code>save_best_only=True</code>. 학습이 중단돼도 이어서 쓸 수 있어요.</td></tr>
+  <tr><td><code>EarlyStopping</code></td><td>개선이 멈추면 학습을 끝내요(위에서 배운 것).</td></tr>
+</table>
+<p>세 콜백은 함께 써도 돼요. <code>callbacks=[early_stop, reduce_lr, ckpt]</code>처럼 리스트로 묶어요. 학습률을 줄이는 콜백과 같이 쓰면 개선 폭이 작아져서 min_delta를 낮추거나 patience를 늘리는 것이 좋아요.</p>
+<p>하이퍼파라미터를 바꿔 가며 비교한 슬라이드의 실험이에요(8 epoch).</p>
+<table>
+  <tr><th>은닉 유닛</th><th>Dropout</th><th>학습률</th><th>batch</th><th>파라미터</th><th>테스트 정확도</th></tr>
+  <tr><td>128</td><td>0.0</td><td>1e-3</td><td>128</td><td>101,770</td><td>0.9752</td></tr>
+  <tr><td>256</td><td>0.2</td><td>1e-3</td><td>128</td><td>203,530</td><td>0.9795</td></tr>
+  <tr><td>512</td><td>0.3</td><td>5e-4</td><td>64</td><td>407,050</td><td>0.9794</td></tr>
+</table>
+<p>파라미터가 4배가 돼도 정확도는 0.4%p밖에 안 올랐어요. 0.1~0.2%p 차이는 시드 노이즈 범위라서 2~3번 반복해 평균으로 판단해요. 또 한 번에 하나만 바꿔야 어느 손잡이 때문인지 알 수 있어요.</p>
+
+<details class="check"><summary>잠깐 확인 — ReduceLROnPlateau(factor=0.5)는 개선이 멈추면 무엇을 하나요?</summary>
+<p>학습률을 절반(0.5배)으로 줄여요. 학습이 정체됐을 때 보폭을 줄여 더 세밀하게 최저점을 찾게 하는 거예요.</p></details>
+
+<h3>9-8. 종합 모의 문제</h3>
+<p><b>문제 1.</b> 학습 샘플 20,000개, batch_size 64로 학습할 때 1 epoch의 step 수는?</p>
+<ul>
+  <li>① 312</li>
+  <li>② 313</li>
+  <li>③ 320</li>
+  <li>④ 64</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 20,000 ÷ 64 = 312.5이고 올림하면 313이에요(마지막 배치는 32장).</p></details>
+<p><b>문제 2.</b> EarlyStopping(monitor='val_loss', patience=4, restore_best_weights=True)에서 val_loss가 epoch 6에서 최소였고 이후 개선이 없었다. 옳은 설명은?</p>
+<ul>
+  <li>① epoch 6 끝에 멈추고 epoch 6의 가중치가 남는다</li>
+  <li>② epoch 10 끝에 멈추고 epoch 6의 가중치가 남는다</li>
+  <li>③ epoch 10 끝에 멈추고 epoch 10의 가중치가 남는다</li>
+  <li>④ epoch 4 끝에 멈추고 epoch 4의 가중치가 남는다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 6 + 4 = 10 epoch 끝에 멈추고, restore_best_weights=True라 가장 좋았던 epoch 6의 가중치로 복원돼요.</p></details>
+<p><b>문제 3.</b> Dropout을 쓴 모델에서 첫 epoch의 학습 정확도가 검증 정확도보다 낮게 나왔다. 가장 알맞은 설명은?</p>
+<ul>
+  <li>① 모델이 과적합되었다</li>
+  <li>② 검증 데이터가 학습 데이터에 섞였다</li>
+  <li>③ 학습 때는 일부 뉴런이 꺼진 상태로, 검증 때는 모든 뉴런을 켠 상태로 측정되기 때문이다</li>
+  <li>④ 학습률이 너무 크다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>③이에요. 학습 지표는 Dropout으로 약해진 모델에서, 검증 지표는 전부 켠 모델에서 나와서 정상적으로 생기는 현상이에요.</p></details>
+<p><b>문제 4.</b> EarlyStopping의 monitor로 val_accuracy보다 val_loss를 일반적으로 더 선호하는 이유로 알맞은 것은?</p>
+<ul>
+  <li>① val_loss는 계산 속도가 더 빠르다</li>
+  <li>② val_loss는 예측 확률의 품질(과신)까지 반영해 과적합을 더 일찍 드러낸다</li>
+  <li>③ val_accuracy는 검증 세트가 필요 없다</li>
+  <li>④ val_loss는 항상 증가한다</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 정확도는 순위만 보지만 손실은 확률의 품질까지 보기 때문에 틀린 샘플에 대한 과신을 먼저 포착해요.</p></details>
+<p><b>문제 5.</b> 학습 코드에서 EarlyStopping 객체를 만들고도 학습이 일찍 멈추지 않았다. 가장 먼저 의심할 곳은?</p>
+<ul>
+  <li>① 은닉 유닛 수</li>
+  <li>② fit에 callbacks=[early_stop]을 넘겼는지, validation_data를 줬는지</li>
+  <li>③ Flatten 층의 위치</li>
+  <li>④ 데이터의 정규화</li>
+</ul>
+<details class="check"><summary>정답 보기</summary>
+<p>②예요. 콜백은 만들기만 해서는 작동하지 않고 fit의 callbacks에 연결해야 해요. 또 validation_data가 없으면 val_* 지표가 없어서 monitor할 수 없어요.</p></details>
+<p><b>문제 6 (서술).</b> 아래 상황에서 "현상 → 근거 → 멈출 epoch → EarlyStopping 설정 → 완화 방법"을 쓰세요. 상황 — 학습 손실은 20 epoch 내내 줄고, 검증 손실은 epoch 9에서 최소였다가 이후 계속 올랐다.</p>
+<details class="check"><summary>모범 답안 보기</summary>
+<p>(현상) 과적합이에요. (근거) 학습 손실은 계속 감소하는데 검증 손실은 epoch 9 이후 증가해 두 곡선의 간격이 벌어져요. 모델이 훈련 데이터를 암기하고 있어요. (멈출 epoch) 검증 손실이 최소인 epoch 9예요. (설정) <code>EarlyStopping(monitor='val_loss', mode='min', patience=3, restore_best_weights=True)</code>로 연결하면 epoch 12 끝에 멈추고 epoch 9의 가중치가 남아요. (완화) Dropout 비율을 높이고, L2를 적용하고, 데이터 증강이나 유닛 수 축소를 해요.</p></details>
+
+<div class="box tip"><span class="t">이 장 3줄 요약</span>
+<ul>
+  <li>step은 배치 하나로 한 번 갱신, epoch은 학습 데이터 한 바퀴예요. 1 epoch의 step 수 = ⌈학습 샘플 수 / batch_size⌉이고 55,000 / 128이면 430, 로그의 430/430은 그 step 수예요(배치를 키우면 갱신 횟수가 줄어요).</li>
+  <li>EarlyStopping(monitor, patience, restore_best_weights, mode)은 최고 기록을 연속 patience epoch 못 넘으면 멈추고, 최고 epoch 가중치로 복원해요(멈춤 = 최고 epoch + patience). fit의 <code>callbacks=[…]</code>로 연결하고 <code>validation_data</code>가 있어야 val_*가 생겨요.</li>
+  <li>Dropout은 학습 때만 끄고 추론 때는 전부 켜서 첫 epoch에 학습 정확도 &lt; 검증 정확도가 나오고, val_loss는 확률의 품질까지 봐서 과적합을 더 일찍 드러내요. 옵티마이저는 SGD → Momentum → RMSProp → Adam(기본 lr 1e-3)이에요.</li>
+</ul>
+</div>

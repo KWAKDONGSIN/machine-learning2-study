@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>val_loss 대 val_accuracy — 무엇을 monitor할까 ★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k9"><a href="index.html#c9">← 보드</a><span>batch · epoch · step과 EarlyStopping · 5/9</span></div><h1>val_loss 대 val_accuracy — 무엇을 monitor할까 ★★</h1>
+<p><a class="w" href="words.html#w126" data-w="126">EarlyStopping</a>의 <a class="w" href="words.html#w128" data-w="128">monitor</a>로 <code>val_accuracy</code>를 쓸까 <code>val_loss</code>를 쓸까요? 둘은 <b>보는 것이 달라요</b>.</p>
+<ul>
+  <li><b><a class="w" href="words.html#w79" data-w="79">정확도</a></b>는 "맞혔나 틀렸나"만 봐요. 확률이 0.51이어도, 0.99여도 맞히면 똑같이 1점이에요(순위, 즉 <a class="w" href="words.html#w117" data-w="117">argmax</a>만 봐요).</li>
+  <li><b><a class="w" href="words.html#w51" data-w="51">손실</a>(−<a class="w" href="words.html#w20" data-w="20">log</a> p)</b>은 정답 확률의 <b>품질</b>까지 봐요. 자신 있게 틀릴수록 벌점이 급격히 커져요.</li>
+</ul>
+<div class="tw"><table>
+  <tr><th style="width:36%">상황 (정답 클래스 확률 p)</th><th style="width:20%">정확도</th><th>손실 −log p</th></tr>
+  <tr><td>맞춤, p = 0.978</td><td>1</td><td>0.022</td></tr>
+  <tr><td>맞춤, p = 0.772</td><td>1</td><td>0.259</td></tr>
+  <tr><td>아깝게 틀림, p = 0.49</td><td>0</td><td>0.71</td></tr>
+  <tr><td>자신 있게 틀림, p = 0.01</td><td>0</td><td>4.6</td></tr>
+</table></div>
+<p>위 표의 맞춘 두 샘플은 정확도로는 똑같이 1이지만 손실로는 0.022와 0.259로 달라요. 이 차이가 "정답 확률의 품질"이에요.</p>
+<p><b>왜 <a class="w" href="words.html#w133" data-w="133">val_loss</a>가 <a class="w" href="words.html#w97" data-w="97">과적합</a>을 더 일찍 드러낼까요?</b> 모델이 틀리는 샘플에 대해 <b><a class="w" href="words.html#w60" data-w="60">과신</a>하기 시작하면 손실이 먼저 올라가기</b> 때문이에요. 정확도는 이미 98%쯤이면 더 오를 공간이 적어서 평평하게 보이는 동안에도 확률의 품질은 계속 변해요.</p>
+<p>슬라이드의 <a class="w" href="words.html#w120" data-w="120">MNIST</a> 실측에서 <a class="w" href="words.html#w134" data-w="134">val_accuracy</a>는 <a class="w" href="words.html#w122" data-w="122">epoch</a> 9 이후 0.98 근처에서 평평했는데, val_loss는 epoch 13에서 최소가 된 뒤 다시 올랐어요. 슬라이드 설명으로는 val_accuracy를 기준으로 하면 늦은 epoch(18)을 고르고, val_loss를 기준으로 하면 epoch 13을 골라요. 테스트 정확도는 거의 같지만 후자가 <b>확률이 더 정직한 모델</b>이에요. 그래서 Fashion과 IMDB 실습부터는 val_loss를 썼어요.</p>
+<figure class="slide"><img src="slides/b_valloss.jpg" alt="val_accuracy는 평평하지만 val_loss는 epoch 13 이후 다시 오르는 그래프"><figcaption>교수님 슬라이드 — val_accuracy는 epoch 9 이후 평평, val_loss는 epoch 13이 최소이고 이후 되오름(틀린 샘플에 과신 시작)</figcaption></figure>
+<ul>
+  <li>일반적으로는 <b>val_loss가 더 안정적</b>인 monitor예요(<a class="w" href="words.html#w131" data-w="131">mode</a>는 <code>'min'</code>).</li>
+  <li>의료·금융처럼 확률 자체나 불확실성이 중요한 문제는 특히 val_loss를 봐요.</li>
+  <li>(참고) <a class="w" href="words.html#w85" data-w="85">클래스 불균형</a> 데이터에서는 정확도 대신 val_f1이나 val_auc 같은 지표를 monitor하기도 해요.</li>
+</ul>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+<p>정확도는 정답 클래스의 순위(argmax)만 반영하지만 손실(−log p)은 예측 확률의 품질, 즉 과신까지 반영한다. 틀린 샘플에 과신하기 시작하면 val_loss가 먼저 상승하므로 val_loss가 과적합을 더 일찍 드러내며, EarlyStopping의 monitor로 val_loss를 쓰는 것이 일반적으로 더 안정적이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — val_accuracy는 평평한데 val_loss가 다시 오르기 시작했다면 무슨 신호인가요?</summary>
+<p>과적합이 시작되었다는 신호예요. 정답을 맞히는 개수는 비슷해도 틀리는 샘플에 과신하기 시작해서 확률의 품질이 나빠졌어요.</p></details>
+
+<div class="done"><a class="go" href="c9-06.html">다음 카드 → 옵티마이저와 학습률 — 가장 중요한 손잡이 ★</a><div class="pn"><a href="c9-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c9"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 6주차 · 머신러닝2_chapter3_redesign.pdf(p.18–28) · 머신러닝06.txt, 머신러닝07.txt(10/19 중간고사 복습)</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

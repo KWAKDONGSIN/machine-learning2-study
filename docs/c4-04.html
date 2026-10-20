@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>코드로 읽기 — 한 스텝과 200번 반복 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k4"><a href="index.html#c4">← 보드</a><span>경사하강과 학습률 · 4/6</span></div><h1>코드로 읽기 — 한 스텝과 200번 반복</h1>
+<p><a class="w" href="words.html#w63" data-w="63">경사하강</a>의 한 <a class="w" href="words.html#w125" data-w="125">스텝</a>을 코드로 보면 이래요. 3장에서 본 <code>update_weights</code>의 마지막 두 줄이 <a class="w" href="words.html#w64" data-w="64">학습률</a>이 쓰이는 곳이에요.</p>
+<div class="code">w_grad = loss_grad * x
+b_grad = loss_grad
+w -= learning_rate * w_grad      # w ← w − η·기울기
+b -= learning_rate * b_grad      # b ← b − η·기울기</div>
+<div class="tw"><table>
+  <tr><th style="width:42%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>w_grad = loss_grad * x</code></td><td><a class="w" href="words.html#w25" data-w="25">가중치</a>의 <a class="w" href="words.html#w22" data-w="22">기울기</a>. 입력 x가 클수록 그 가중치가 더 많이 움직여요</td></tr>
+  <tr><td><code>b_grad = loss_grad</code></td><td><a class="w" href="words.html#w26" data-w="26">편향</a>의 기울기</td></tr>
+  <tr><td><code>w -= learning_rate * w_grad</code></td><td>기울기에 학습률을 곱해서 빼요. w ← w − η·∂L/∂w 그대로예요</td></tr>
+</table></div>
+<p>x = [2, 3, 1], 정답 [1, 0, 0], w = [0.5, −0.2, 0.8], b = 1, learning_rate = 0.1로 한 번 갱신하고 직접 실행한 결과예요.</p>
+<div class="code">업데이트된 가중치: [ 0.5199501  -0.47007485  0.70997505]
+업데이트된 편향:   [1.00997505 0.90997505 0.90997505]
+손실 기울기:       [-0.09975049  0.90024951  0.90024951]</div>
+<p>손으로 따라가면 <code>a = sigmoid(2.2) ≈ 0.900</code>이라서 <code>loss_grad = a − y ≈ [−0.10, 0.90, 0.90]</code>이고, <code>w_grad = loss_grad × x = [−0.2, 2.7, 0.9]</code>예요. 여기에 0.1을 곱해 빼면 w의 첫 칸은 0.5 − 0.1×(−0.2) = 0.52가 돼요. 강의자료 슬라이드에 적힌 결과 숫자는 이 코드의 실제 실행 결과와 달라 보여요(자료에도 "다르면 직접 실행해 확인"이라는 주석이 있어요). 이 코드는 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 하나에 3-클래스 정답을 넣은 교육용 단순화라서, 숫자보다 "예측 − 정답 → 학습률 곱하기 → 빼기" 순서만 기억하세요.</p>
+<p>한 스텝만으로는 변화가 작아요. 이것을 수백 번 반복하는 것이 학습이에요. 아이리스 <a class="w" href="words.html#w4" data-w="4">분류</a>기는 200번 반복해요.</p>
+<div class="code">lr = 0.1
+epochs = 200
+for ep in range(epochs):
+    Z = X_tr @ W + b                # 순전파: 가중합
+    P = softmax(Z)                  # 확률
+    loss = cross_entropy(Y_tr, P)   # 손실
+    dZ = (P - Y_tr) / X_tr.shape[0] # 기울기 (예측 − 정답)
+    dW = X_tr.T @ dZ
+    db = np.sum(dZ, axis=0, keepdims=True)
+    W -= lr * dW                    # 경사하강 업데이트
+    b -= lr * db</div>
+<p>이 루프에서 학습률은 <code>W -= lr * dW</code> 줄에서 쓰여요. 같은 모델을 <a class="w" href="words.html#w110" data-w="110">Keras</a>로 쓰면 아래처럼 대응돼요. 강의 Chapter 3의 "<a class="w" href="words.html#w121" data-w="121">NumPy</a> 줄과 Keras 객체 짝짓기" 문제와 연결돼요.</p>
+<div class="tw"><table>
+  <tr><th style="width:44%">NumPy (이 장)</th><th>Keras</th></tr>
+  <tr><td><code>cross_entropy(Y, P)</code></td><td><code>loss='categorical_crossentropy'</code> (<a class="w" href="words.html#w113" data-w="113">compile</a>)</td></tr>
+  <tr><td><code>W -= lr * dW</code> (경사하강 업데이트)</td><td><code>optimizer=SGD(learning_rate=0.1)</code> (compile)</td></tr>
+  <tr><td><code>dZ, dW, db</code> (기울기 계산)</td><td>자동 <a class="w" href="words.html#w21" data-w="21">미분</a> (<code>fit</code> 안에서 자동으로 해 줘요)</td></tr>
+  <tr><td><code>for ep in range(200)</code></td><td><code>fit(epochs=200)</code></td></tr>
+</table></div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>경사하강 코드에서 W -= lr * dW 줄이 w ← w − η·∂L/∂w에 해당한다. Keras에서는 compile의 <a class="w" href="words.html#w68" data-w="68">optimizer</a>가 이 갱신을 맡고, <a class="w" href="words.html#w114" data-w="114">fit</a>이 자동 미분과 반복(epochs)을 수행한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 코드에서 학습률은 어느 줄에 곱해지나요?</summary>
+  <p><code>W -= lr * dW</code> 줄이에요. 기울기 dW에 학습률 lr을 곱한 만큼 W에서 빼요.</p>
+</details>
+
+<div class="done"><a class="go" href="c4-05.html">다음 카드 → 실무에서는 optimizer 한 줄 — 그리고 step과 epoch</a><div class="pn"><a href="c4-03.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c4"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·4주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 5) · 머신러닝2_chapter3_redesign.pdf(p.21·27) · 머신02.txt · 머신러닝04.txt · 머신러닝06.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

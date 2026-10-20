@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>코드로 확인 — 뉴런 하나는 세 줄이에요 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k1"><a href="index.html#c1">← 보드</a><span>뉴런 하나와 편향 · 5/6</span></div><h1>코드로 확인 — 뉴런 하나는 세 줄이에요</h1>
+<p>강의자료의 손코딩을 한 줄씩 읽어 볼게요. 입력 <code>x = [2, 3, 1]</code>, <a class="w" href="words.html#w25" data-w="25">가중치</a> <code>w = [0.5, −0.2, 0.8]</code>, <a class="w" href="words.html#w26" data-w="26">편향</a> <code>b = 1</code>이에요.</p>
+<div class="code">import numpy as np
+
+x = np.array([2, 3, 1])         # 입력벡터
+w = np.array([0.5, -0.2, 0.8])  # 가중치
+b = 1                           # 편향
+
+z = np.dot(w, x) + b
+print(f'가중합(z): {z}')
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+a = sigmoid(z)
+print(f'활성화함수 출력(a): {a}')</div>
+<div class="tw"><table>
+  <tr><th style="width:42%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>x = np.array([2, 3, 1])</code></td><td>입력 <a class="w" href="words.html#w17" data-w="17">벡터</a> x를 만들어요 (숫자 3개)</td></tr>
+  <tr><td><code>w = np.array([0.5, -0.2, 0.8])</code></td><td>가중치 벡터 w예요. 같은 순서로 곱해질 짝이에요</td></tr>
+  <tr><td><code>b = 1</code></td><td>편향이에요</td></tr>
+  <tr><td><code>z = np.dot(w, x) + b</code></td><td><a class="w" href="words.html#w19" data-w="19">내적</a>(곱해서 더하기)을 하고 편향을 더해요. <a class="w" href="words.html#w27" data-w="27">가중합</a>이에요</td></tr>
+  <tr><td><code>def sigmoid(x): ...</code></td><td><a class="w" href="words.html#w86" data-w="86">시그모이드</a> 함수 1/(1+e⁻ˣ)를 정의해요</td></tr>
+  <tr><td><code>a = sigmoid(z)</code></td><td>가중합에 <a class="w" href="words.html#w28" data-w="28">활성화 함수</a>를 적용해요</td></tr>
+</table></div>
+<p>실행 결과예요.</p>
+<div class="code">가중합(z): 2.2
+활성화함수 출력(a): 0.9002495076311996</div>
+<p>손으로 따라가면 내적은 0.5×2 + (−0.2)×3 + 0.8×1 = 1.0 − 0.6 + 0.8 = 1.2이고, 편향 1을 더해 2.2예요. 시그모이드(2.2)는 약 0.900이에요. "내적 → 편향 → 활성화" 세 줄이 <a class="w" href="words.html#w2" data-w="2">신경망</a> <a class="w" href="words.html#w23" data-w="23">뉴런</a> 하나의 전부예요.</p>
+<p><a class="w" href="words.html#w110" data-w="110">Keras</a>(강의 Chapter 3)에서는 <code>Dense(1, activation='sigmoid')</code> 한 줄이 정확히 이 일을 해요. <a class="w" href="words.html#w121" data-w="121">NumPy</a> 코드의 줄이 Keras의 어느 부분인지 짝짓는 문제가 나올 수 있어요.</p>
+<div class="tw"><table>
+  <tr><th style="width:42%">NumPy 코드</th><th>Keras</th></tr>
+  <tr><td><code>z = np.dot(w, x) + b</code></td><td><code>Dense</code> 층 안의 가중합 (w, b는 층이 만들어요)</td></tr>
+  <tr><td><code>a = sigmoid(z)</code></td><td><code>activation='sigmoid'</code></td></tr>
+</table></div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>이 코드는 np.dot으로 가중합 z = wᵀx + b를 구한 뒤 sigmoid 함수로 활성화한다. Keras의 <a class="w" href="words.html#w43" data-w="43">Dense</a>(1, activation='sigmoid')가 같은 계산을 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — x = [1, 2], w = [0.3, −0.5], b = 0.2일 때 z는? (σ 값은 몰라도 돼요)</summary>
+  <p>z = 0.3×1 + (−0.5)×2 + 0.2 = 0.3 − 1.0 + 0.2 = −0.5예요. 이때 σ(−0.5)는 약 0.378이고, 강의자료 셀프체크 문제 Q1이에요.</p>
+</details>
+
+<div class="done"><a class="go" href="c1-06.html">다음 카드 → 이 장 3줄 요약</a><div class="pn"><a href="c1-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c1"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 1) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cross-Entropy — 정답 확률을 채점해요 ★★★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k3"><a href="index.html#c3">← 보드</a><span>출력층 설계 · Softmax · Cross-Entropy · 5/7</span></div><h1>Cross-Entropy — 정답 확률을 채점해요 ★★★</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w52" data-w="52">Cross-Entropy</a>(CE)</b>는 예측 확률이 정답을 얼마나 잘 맞혔는지를 재는 <a class="w" href="words.html#w51" data-w="51">손실</a>이에요. 식은 <code>L = −Σ yᵢ log(ŷᵢ)</code>이고, 정답이 원-핫이면 <b>L = −<a class="w" href="words.html#w20" data-w="20">log</a>(정답 클래스의 예측 확률)</b>이 돼요.</p>
+</div>
+<p><b>원-핫(<a class="w" href="words.html#w50" data-w="50">one-hot</a>) <a class="w" href="words.html#w17" data-w="17">벡터</a></b>는 정답 칸만 1이고 나머지는 모두 0인 벡터예요.</p>
+<p> 클래스가 3개이고 정답이 2번이면 <code>y = [0, 1, 0]</code>이에요. 0을 곱한 항은 사라지므로 합에서 정답 클래스 항 하나만 남아요. 그래서 CE는 <b>정답에 준 확률 하나만</b> 봐요.</p>
+<p>강의자료의 예예요. 예측이 <code>ŷ = [0.66, 0.24, 0.10]</code>이고 정답이 클래스 2번이에요.</p>
+<div class="code">L = −log(0.24) ≈ 1.427     (정답에 0.24밖에 안 줬으니 손실이 커요)
+정답이 1번이었다면  L = −log(0.66) ≈ 0.416</div>
+<figure class="slide"><img src="slides/a_c3_ce_curve.jpg" alt="정답 확률에 따른 손실 곡선 마이너스 로그 곡선"><figcaption>교수님 슬라이드 — 정답 확률이 낮을수록 벌점이 급격히 커져요 (로그의 성질)</figcaption></figure>
+<p><b>이 곡선이 왜 이런 모양인지</b>가 시험 포인트예요. 그래프를 읽는 법은 세 가지예요.</p>
+<ul>
+  <li>정답 확률 p가 <b>1에 가까우면</b> 손실이 0에 가까워요. 곡선 오른쪽 끝이 바닥에 붙어 있어요.</li>
+  <li>p가 <b>0에 가까워질수록</b> 손실이 급격히 커져요. 곡선 왼쪽이 하늘로 솟아요(p가 0이면 무한대).</li>
+  <li>곡선은 <b>직선이 아니에요</b>. 낮은 확률 구간이 훨씬 가팔라서 "자신 있게 틀릴수록" 벌점이 폭증해요.</li>
+</ul>
+<div class="tw"><table>
+  <tr><th>정답 확률 p</th><th>0.9</th><th>0.66</th><th>0.5</th><th>0.24</th><th>0.1</th></tr>
+  <tr><td>손실 −log p</td><td>0.105</td><td>0.416</td><td>0.693</td><td>1.427</td><td>2.303</td></tr>
+</table></div>
+<p>같은 "0.1만큼 올리기"라도 효과가 달라요. 확률을 0.1에서 0.2로 올리면 손실이 2.30에서 1.61로 0.69나 줄지만, 0.8에서 0.9로 올리면 0.22에서 0.11로 0.12만 줄어요. 모델은 "크게 틀린 샘플"을 먼저 고치게 돼요.</p>
+<p>정답에 0.9를 주면 0.105, 0.1을 주면 2.302로 <b>약 22배</b> 차이예요. 오답 클래스에 확률이 어떻게 나뉘어 있는지는 손실에 영향이 없고, 정답 확률 하나만 봐요. <a class="w" href="words.html#w123" data-w="123">배치</a> 전체의 손실은 샘플별 손실의 평균이에요.</p>
+<p>숫자를 이렇게 읽는 감각도 알아 두세요. 학습 로그의 손실값을 해석할 때 써요.</p>
+<div class="tw"><table>
+  <tr><th style="width:22%">손실 값</th><th style="width:22%">의미</th><th>읽는 법</th></tr>
+  <tr><td><b>ln 2 ≈ 0.693</b></td><td>정답 확률 0.5</td><td>두 개 중 반반 찍는 수준</td></tr>
+  <tr><td><b>ln 10 ≈ 2.303</b></td><td>정답 확률 0.1</td><td>10개 중 하나 찍는 수준 (10개 클래스를 아무렇게나 찍을 때의 손실)</td></tr>
+  <tr><td><b>0.105</b></td><td>정답 확률 0.9</td><td>정답에 90% 확신</td></tr>
+</table></div>
+<p>손실이 2.30 근처에서 안 내려가면 "아직 찍는 수준에서 못 벗어났다"는 뜻이에요. 입력 <a class="w" href="words.html#w100" data-w="100">정규화</a> 누락, <a class="w" href="words.html#w64" data-w="64">학습률</a> 문제, <a class="w" href="words.html#w28" data-w="28">활성화 함수</a> 누락 등을 의심해요.</p>
+<div class="box eg"><span class="t">비유 — 자신 있게 틀린 학생에게 큰 벌점</span>
+  <p>정답이 3번인데 "3번일 확률 10%"라고 쓴 학생과 "3번일 확률 70%"라고 쓴 학생이 있어요. 둘 다 최종 답은 3번이 아니었지만, 처음 학생이 훨씬 큰 감점을 받아요. <a class="w" href="words.html#w79" data-w="79">정확도</a>는 맞았나 틀렸나만 세지만, CE는 <b>얼마나 확신했는가</b>까지 채점해요.</p>
+</div>
+<p>정확도와 달리 CE는 <a class="w" href="words.html#w21" data-w="21">미분</a>이 가능해서 학습 신호로 쓸 수 있어요. 코드로 확인해 볼게요. 예측 <code>[0.66, 0.24, 0.10]</code>, 정답은 <code>y_true = [1, 0, 0]</code>(1번 클래스)이에요.</p>
+<div class="code">predictions = np.array([0.66, 0.24, 0.10])   # Softmax 출력
+y_true = np.array([1, 0, 0])                 # 정답: 1번 클래스 (원-핫)
+
+def cross_entropy(y_true, predictions):
+    return -np.sum(y_true * np.log(predictions))
+
+loss = cross_entropy(y_true, predictions)
+print(f'Cross-Entropy 손실: {loss}')</div>
+<div class="tw"><table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>y_true * np.log(predictions)</code></td><td>같은 칸끼리 곱해요. 결과는 [1×log 0.66, 0×log 0.24, 0×log 0.10]이라 정답 칸만 남아요</td></tr>
+  <tr><td><code>np.sum(...)</code></td><td>모두 더해요. 사실상 log 0.66 하나예요</td></tr>
+  <tr><td><code>-np.sum(...)</code></td><td>log 값은 음수라서 앞에 −를 붙여 양수 벌점으로 만들어요</td></tr>
+</table></div>
+<p>실행 결과는 <code>Cross-Entropy 손실: 0.4155</code> 정도예요(−log 0.66 ≈ 0.416). 강의자료에 적힌 0.427은 실제 실행 값과 조금 달라요. 정답 클래스에 0.66을 줬으니 0.9를 줬을 때(0.105)보다는 크고, 0.1을 줬을 때(2.30)보다는 훨씬 작아요.</p>
+<p>예측이 정확히 0이면 log(0)이 −∞가 돼요. 그래서 실무 코드는 <code>np.clip(P, eps, 1−eps)</code>로 아주 작은 수(eps) 아래로 내려가지 않게 막아요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>Cross-Entropy는 정답이 원-핫일 때 L = −log(정답 확률)이며, 정답 확률이 낮을수록 손실이 급격히 커지는 곡선이므로 자신 있게 틀릴수록 큰 벌점을 준다. 손실이 ln 2(0.693)면 두 개 중 반반 찍는 수준이고, ln 10(2.303)이면 열 개 중 하나를 찍는 수준이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 정답 확률이 0.5에서 0.1로 떨어지면 손실은 커질까요, 작아질까요? 얼마나 달라지나요?</summary>
+  <p>커져요. 0.693에서 2.303으로, 약 3배 이상 커져요. 정답 확률이 작을수록 곡선이 가파르게 올라가요.</p>
+</details>
+
+<div class="done"><a class="go" href="c3-06.html">다음 카드 → Softmax + CE의 기울기는 &quot;예측 − 정답&quot; ★★</a><div class="pn"><a href="c3-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c3"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 3·5) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

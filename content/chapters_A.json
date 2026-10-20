@@ -1,0 +1,47 @@
+[
+ {
+  "id": "c0",
+  "title": "왕초보 수학·머신러닝 기초",
+  "sub": "머신러닝, 벡터·행렬, 곱하고 더하기, 기울기, 로그를 비유로 먼저 익혀요",
+  "groups": [
+   "basic"
+  ],
+  "srcs": "2주차·7주차 · 머신러닝2_chapter1_student_ver.pdf(p.3–10 배경) · 머신02.txt · 머신러닝07.txt"
+ },
+ {
+  "id": "c1",
+  "title": "뉴런 하나와 편향",
+  "sub": "가중합 z=wᵀx+b, 활성화 σ, 선형회귀와의 같은 점·다른 점, 편향의 역할",
+  "groups": [
+   "neuron"
+  ],
+  "srcs": "2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 1) · 머신02.txt · 머신러닝07.txt"
+ },
+ {
+  "id": "c2",
+  "title": "MLP 구조와 파라미터 수",
+  "sub": "입력·은닉·출력층, 단층/MLP/DNN, 가중치 행렬 크기, 파라미터 수 세기",
+  "groups": [
+   "mlp"
+  ],
+  "srcs": "2주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 2) · 머신러닝2_chapter3_redesign.pdf(p.11) · 머신02.txt · 머신러닝06.txt · 머신러닝07.txt"
+ },
+ {
+  "id": "c3",
+  "title": "출력층 설계 · Softmax · Cross-Entropy",
+  "sub": "문제 유형별 출력층 세트, Softmax 성질, CE 곡선, 기울기 예측−정답",
+  "groups": [
+   "output"
+  ],
+  "srcs": "2주차 · 머신러닝2_chapter1_student_ver.pdf(PART 3·5) · 머신02.txt · 머신러닝07.txt"
+ },
+ {
+  "id": "c4",
+  "title": "경사하강과 학습률",
+  "sub": "w←w−η·기울기, 학습률 크기별 거동, 손실 곡선 진단과 처방",
+  "groups": [
+   "gd"
+  ],
+  "srcs": "2주차·4주차·6주차 · 머신러닝2_chapter1_student_ver.pdf(PART 5) · 머신러닝2_chapter3_redesign.pdf(p.21·27) · 머신02.txt · 머신러닝04.txt · 머신러닝06.txt · 머신러닝07.txt"
+ }
+]

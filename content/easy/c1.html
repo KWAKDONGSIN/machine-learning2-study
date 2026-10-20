@@ -1,0 +1,159 @@
+<!-- 1장: 뉴런 하나와 편향. 가중합 z=wᵀx+b, 활성화 σ, 선형회귀·로지스틱 회귀와의 같은 점과 다른 점, 편향(절편·결정경계 평행 이동)을 설명해요 -->
+<h2>뉴런 하나와 편향 — 선형회귀에 활성화 하나만 붙이면</h2>
+<p class="lead">딥러닝의 가장 작은 부품은 뉴런 하나예요. 뉴런 하나는 1학기에 배운 선형회귀·로지스틱 회귀와 거의 같은 계산이에요. 이 장에서는 가중합, 활성화, 그리고 교수님이 복습 시간에 일부러 짚은 편향(bias)을 익혀요.</p>
+
+<h3>1-1. 가중합 z = wᵀx + b — 선형회귀와 같은 뿌리</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>가중합(weighted sum)</b>은 입력마다 가중치를 곱해서 모두 더하고 편향을 더한 값이에요. 식은 <code>z = w₁x₁ + w₂x₂ + … + wₙxₙ + b = wᵀx + b</code>예요.</p>
+</div>
+<p>1학기의 선형회귀는 <code>y = w·x + b</code>였어요. 입력이 여러 개가 되면 <code>wᵀx + b</code>가 되고, 신경망에서는 이것을 가중합이라고 불러요. 계산 방법은 완전히 같아요.</p>
+<p><b>w(가중치)</b>는 그 입력이 얼마나 중요한지를 나타내요. 교수님이 특히 강조한 점은 w가 사람이 정해 주는 값이 아니라는 거예요. 손실이 크면 계속 고치면서 모델이 학습으로 찾아내는 파라미터예요.</p>
+<div class="box eg"><span class="t">비유 — 성적 환산</span>
+  <p>"중간 20%, 기말 30%, 프로젝트 25%…" 하고 각 점수에 비율을 곱해 더하는 성적 환산이 가중합이에요. 신경망은 이 비율(가중치)을 사람이 아니라 데이터로 찾아요.</p>
+</div>
+<svg viewBox="0 0 380 190" width="100%" role="img" aria-label="뉴런 하나의 계산 흐름 입력 가중치 가중합 활성화 출력"><rect x="0" y="0" width="380" height="190" rx="8" fill="#f8faff"/><defs><marker id="n1a" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker></defs><circle cx="38" cy="40" r="17" fill="#dbe6ff" stroke="#1d4ed8"/><text x="38" y="45" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">x1</text><line x1="56" y1="40" x2="158" y2="95" stroke="#1d4ed8" stroke-width="2" marker-end="url(#n1a)"/><text x="100" y="54" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">w1</text><circle cx="38" cy="95" r="17" fill="#dbe6ff" stroke="#1d4ed8"/><text x="38" y="100" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">x2</text><line x1="56" y1="95" x2="158" y2="95" stroke="#1d4ed8" stroke-width="2" marker-end="url(#n1a)"/><text x="100" y="90" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">w2</text><circle cx="38" cy="150" r="17" fill="#dbe6ff" stroke="#1d4ed8"/><text x="38" y="155" text-anchor="middle" font-size="13" fill="#1b2333" font-weight="bold">x3</text><line x1="56" y1="150" x2="158" y2="95" stroke="#1d4ed8" stroke-width="2" marker-end="url(#n1a)"/><text x="100" y="145" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">w3</text><circle cx="180" cy="95" r="26" fill="#e3f6ec" stroke="#0f7a4f" stroke-width="2"/><text x="180" y="92" text-anchor="middle" font-size="20" fill="#1b2333" font-weight="bold">Σ</text><text x="180" y="108" text-anchor="middle" font-size="12" fill="#0f7a4f" font-weight="bold">+ b</text><line x1="206" y1="95" x2="256" y2="95" stroke="#1d4ed8" stroke-width="2" marker-end="url(#n1a)"/><text x="231" y="86" text-anchor="middle" font-size="12" fill="#1b2333" font-weight="bold">z</text><rect x="258" y="73" width="52" height="44" rx="8" fill="#fff1d6" stroke="#b45309" stroke-width="2"/><text x="284" y="100" text-anchor="middle" font-size="14" fill="#1b2333" font-weight="bold">σ(z)</text><line x1="310" y1="95" x2="344" y2="95" stroke="#1d4ed8" stroke-width="2" marker-end="url(#n1a)"/><text x="358" y="100" text-anchor="middle" font-size="14" fill="#1b2333" font-weight="bold">a</text><text x="180" y="28" text-anchor="middle" font-size="12" fill="#0f7a4f" font-weight="bold">가중합 z = w₁x₁ + w₂x₂ + w₃x₃ + b</text><text x="284" y="140" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">활성화</text><text x="38" y="184" text-anchor="middle" font-size="11" fill="#5d6b80">입력</text><text x="180" y="142" text-anchor="middle" font-size="11" fill="#5d6b80">곱하고 더하기</text></svg>
+<figure class="slide"><img src="slides/a_c1_linreg_neuron.jpg" alt="선형회귀와 신경망 뉴런 비교표"><figcaption>교수님 슬라이드 — 선형회귀(1학기)와 신경망 뉴런(이 장)의 비교</figcaption></figure>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>뉴런 하나의 가중합은 z = wᵀx + b이며, 입력 각각에 가중치를 곱해 더하고 편향을 더한 값이다. 이 계산은 선형회귀와 같고, 가중치 w와 편향 b는 사람이 정하지 않고 학습으로 최적화되는 파라미터이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 가중치 w는 누가 정하나요?</summary>
+  <p>사람이 정하지 않아요. 손실을 줄이는 방향으로 모델이 학습하면서 계속 고쳐 가는 값이에요.</p>
+</details>
+
+<h3>1-2. 활성화 함수 σ — 신호가 선을 넘어야 전달돼요</h3>
+<p>가중합 뒤에 <b>활성화 함수(activation function) σ</b>를 붙이면 신경망의 뉴런이 돼요. 식으로는 <code>a = σ(z)</code>예요. z를 σ에 넣어서 나온 a가 이 뉴런의 출력이에요.</p>
+<div class="box eg"><span class="t">비유 — 교수님이 든 생물학적 뉴런</span>
+  <p>우리 몸의 뉴런은 신호가 쌓여서 일정한 선(임계점)을 넘어야 다음 뉴런으로 신호를 보내요. 활성화 함수가 바로 이 "선을 넘었나"를 판단하는 역할이에요.</p>
+</div>
+<p>대표적인 활성화 함수인 <b>시그모이드(sigmoid)</b>는 <code>σ(z) = 1 / (1 + e⁻ᶻ)</code>예요. 어떤 실수를 넣어도 0과 1 사이로 눌러 줘서 "활성화 정도" 또는 "확률"로 읽을 수 있어요. 그래프는 S자 모양이고, 양쪽 끝이 평평해져요.</p>
+<p>z가 0이면 a는 정확히 0.5이고, z가 커지면 1에, 작아지면 0에 가까워져요. 양쪽 끝이 평평(포화)하면 기울기가 거의 0이라 학습이 느려져요. 이 문제는 활성화 함수 장에서 다시 나와요.</p>
+<p>가장 오래된 <b>퍼셉트론(Perceptron = perception + neuron)</b>은 가중합 → 활성화 → 출력의 구조예요. 1958년 원조는 계단함수로 −1 또는 1을 냈어요.</p>
+<p> 요즘은 미분이 가능한 시그모이드와 ReLU를 써요. 미분이 되어야 경사하강으로 학습할 수 있기 때문이에요.</p>
+<p>강의자료의 예로 따라가 볼게요. <code>x = [2, 3]</code>, <code>w = [0.5, −0.2]</code>, <code>b = 1</code>이에요.</p>
+<div class="code">z = (0.5 × 2) + (−0.2 × 3) + 1 = 1.0 − 0.6 + 1 = 1.4
+a = σ(1.4) = 1 / (1 + e⁻¹·⁴) ≈ 1 / (1 + 0.2466) ≈ 0.802</div>
+<p>가중합이 1.4이고, 시그모이드를 통과하면 약 0.80이에요. 1에 가까우니 "활성화됐다"고 읽어요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>활성화 함수 σ는 가중합 z를 비선형으로 변환하는 함수이며, 시그모이드는 모든 실수를 (0, 1) 구간으로 눌러 활성화 정도나 확률로 해석하게 한다. 퍼셉트론은 가중합 → 활성화 → 출력으로 이루어진 이진 분류용 지도학습 알고리즘이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 퍼셉트론의 세 단계를 순서대로 말해 보세요</summary>
+  <p>가중합 → 활성화 → 출력이에요. 곱해서 더하고, 임계점을 넘었는지 보고, 값을 내요.</p>
+</details>
+
+<h3>1-3. 선형회귀·로지스틱 회귀와 무엇이 같고 무엇이 다른가 ★</h3>
+<p>키워드 표에 "선형회귀와 신경망 뉴런의 계산에서 무엇이 같고 무엇이 다른지 말한다"가 있어요. 교수님은 "너무 많이 말하면 답을 다 말하는 거라 이만큼만 한다"며 아껴 둔 문제예요.</p>
+<table>
+  <tr><th style="width:22%"></th><th>선형회귀 (1학기)</th><th>뉴런 (이 장)</th></tr>
+  <tr><td><b>가중합</b></td><td><code>y = wᵀx + b</code></td><td><code>z = wᵀx + b</code> (똑같아요)</td></tr>
+  <tr><td><b>활성화 함수</b></td><td>없어요</td><td><code>a = σ(z)</code>를 붙여요</td></tr>
+  <tr><td><b>비선형성</b></td><td>없어요 (직선)</td><td>활성화 함수 덕분에 생겨요</td></tr>
+  <tr><td><b>개수</b></td><td>모델 1개</td><td>층마다 뉴런 여러 개, 층을 여러 개 쌓아요</td></tr>
+  <tr><td><b>w, b를 정하는 법</b></td><td>데이터로 학습 (경사하강)</td><td>똑같이 데이터로 학습 (경사하강)</td></tr>
+</table>
+<p>정리하면 <b>같은 점</b>은 "가중합 wᵀx + b를 계산하고, w와 b를 데이터로 학습한다"예요. <b>다른 점</b>은 딱 두 가지로, "가중합 뒤에 활성화 함수 σ를 붙인다"와 "이런 뉴런을 여러 개, 여러 층으로 쌓는다"예요.</p>
+<p>로지스틱 회귀와의 관계도 알아 두세요. 로지스틱 회귀는 "가중합 + 시그모이드"인데, 이것이 곧 <b>뉴런 하나(시그모이드)</b>예요.</p>
+<p> 그래서 실무에서 "뉴런 하나 = 로지스틱 회귀"라고 말해요. 반대로 활성화 함수를 쓰지 않으면(항등) 선형회귀와 같아요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>"뉴런 = 선형회귀 + 활성화 함수(+ 여러 개 쌓기)". 차이를 물으면 활성화 함수와 쌓기, 두 가지만 답하세요.</p>
+</div>
+<p>실무에서는 출력 a를 확률로 읽고 임계값으로 자르면 바로 의사결정이 돼요. 임계값 0.5는 기본값일 뿐이고, 틀렸을 때의 비용에 따라 달라져요.</p>
+<table>
+  <tr><th style="width:20%">문제</th><th>입력 → 출력 → 결정</th></tr>
+  <tr><td>신용카드 승인</td><td>소득·연체 횟수·이용액 → 연체 확률 a → a &gt; 0.3이면 거절. 놓친 연체가 더 비싸서 0.5보다 낮게 잡아요</td></tr>
+  <tr><td>스팸 필터</td><td>단어 빈도 → 스팸 확률 → 0.9 이상만 차단. 정상 메일을 막는 비용이 커서 높게 잡아요</td></tr>
+  <tr><td>고객 이탈</td><td>접속 일수·문의 횟수·요금 → 이탈 확률 → 상위 10%에게만 쿠폰</td></tr>
+  <tr><td>공정 이상 감지</td><td>센서 12개 → 이상 확률 → 0.5 초과 시 알람과 사람 확인</td></tr>
+</table>
+<p>입력의 단위가 다르면(예 소득은 원, 횟수는 번) 가중치를 비교할 수 없어요. 그래서 표준화를 먼저 해요. 가중치의 부호와 크기를 보면 "어떤 입력이 결과를 올리고 내리는지"를 말할 수 있어서, 뉴런 하나는 해석하기 쉬운 모델이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>선형회귀와 신경망 뉴런은 가중합 wᵀx + b를 계산하고 w, b를 데이터로 학습한다는 점이 같다. 차이는 뉴런이 가중합 뒤에 활성화 함수 σ를 적용해 비선형성을 더하고, 이런 뉴런을 여러 개 여러 층으로 쌓는다는 것이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 뉴런 하나에 시그모이드를 쓰면 1학기의 어떤 모델과 같은 계산인가요?</summary>
+  <p>로지스틱 회귀예요. 가중합에 시그모이드를 씌워 확률을 내는 구조가 같아요.</p>
+</details>
+
+<h3>1-4. 편향(bias) — 결정경계를 평행 이동시켜요 ★</h3>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b>편향(bias, b)</b>은 직선 <code>y = wx + b</code>의 <b>절편</b>처럼 결정경계를 평행 이동시켜, 입력이 0이어도 출력을 조정할 자유도를 주는 값이에요.</p>
+</div>
+<p>교수님이 설명한 그림은 이래요. 직선에서 기울기가 변하면 <b>가중치 w</b>가 달라진 거예요.</p>
+<p> 기울기는 그대로인데 위아래로 올라가고 내려가면 <b>b</b>가 달라진 거예요. 그래서 "결정경계의 평행 이동"이라고 불러요.</p>
+<svg viewBox="0 0 380 215" width="100%" role="img" aria-label="편향 b가 바뀌면 결정경계 직선이 평행 이동하는 그림"><rect x="0" y="0" width="380" height="215" rx="8" fill="#f8faff"/><line x1="30" y1="110" x2="350" y2="110" stroke="#5d6b80" stroke-width="1.2"/><line x1="190" y1="14" x2="190" y2="200" stroke="#5d6b80" stroke-width="1.2"/><text x="344" y="126" text-anchor="middle" font-size="11" fill="#5d6b80">x₁</text><text x="204" y="22" text-anchor="middle" font-size="11" fill="#5d6b80">x₂</text><text x="198" y="126" text-anchor="start" font-size="10" fill="#5d6b80">원점</text><line x1="90" y1="180" x2="290" y2="40" stroke="#d6264a" stroke-width="3"/><line x1="90" y1="135" x2="261" y2="15" stroke="#1d4ed8" stroke-width="3" stroke-dasharray="7 4"/><line x1="140" y1="190" x2="290" y2="85" stroke="#0f7a4f" stroke-width="3" stroke-dasharray="7 4"/><circle cx="190" cy="110" r="4" fill="#d6264a"/><text x="296" y="46" text-anchor="start" font-size="12" fill="#d6264a" font-weight="bold">b = 0</text><text x="268" y="20" text-anchor="start" font-size="12" fill="#1d4ed8" font-weight="bold">① b를 바꾼 직선</text><text x="372" y="106" text-anchor="end" font-size="12" fill="#0f7a4f" font-weight="bold">② 또 바꾼 직선</text><text x="190" y="208" text-anchor="middle" font-size="11" fill="#1b2333">빨간 선은 원점 통과 · 기울기는 그대로 평행 이동</text></svg>
+<div class="box eg"><span class="t">비유 — 합격선</span>
+  <p>시험 문제의 난이도는 그대로인데 합격 기준점만 올리거나 내리는 걸 떠올려 보세요. 점수를 계산하는 방식(w)은 안 바뀌고, 합격선이 움직이는 거예요. 활성화 함수의 임계값을 높이거나 낮추는 효과가 있다고 교수님이 말했어요.</p>
+</div>
+<p>강의자료의 숫자 예로 효과를 볼게요. 같은 입력과 가중치에서 b만 달라졌어요.</p>
+<table>
+  <tr><th style="width:24%">편향</th><th>가중합 z</th><th>시그모이드 a</th><th>해석</th></tr>
+  <tr><td><b>b = 1</b></td><td>1.4</td><td>약 0.80</td><td>활성화됨</td></tr>
+  <tr><td><b>b = 0</b></td><td>0.4</td><td>약 0.60</td><td>0.5 근처라 거의 활성화되지 않음</td></tr>
+</table>
+<p>참고로 강의자료 슬라이드에는 b = 0일 때를 "z = 0.2, a ≈ 0.55"로 적어 놨어요.</p>
+<p> 직접 계산하면 0.5×2 + (−0.2)×3 = 0.4이고 σ(0.4) ≈ 0.60이에요. 어느 쪽이든 "0.5 근처에서 거의 활성화되지 않는다"는 결론이 같으니, 숫자보다 결론을 기억하세요. 시험은 시그모이드 수치 계산을 내지 않아요.</p>
+<figure class="slide"><img src="slides/a_c1_bias_sigmoid.jpg" alt="편향의 역할과 시그모이드 곡선"><figcaption>교수님 슬라이드 — 편향 b에 따라 z와 a가 달라져요 (오른쪽은 시그모이드 곡선)</figcaption></figure>
+<p>교수님이 목요일 분반에서 이해를 못 한 학생이 있어서 일부러 넣었다고 한 부분이 있어요. 바로 <b>편향은 뉴런마다 하나씩</b>이라는 거예요.</p>
+<ul>
+  <li>가중치 W는 표(행렬)지만 편향 b는 층 전체에 똑같이 적용되는 숫자 하나가 아니에요.</li>
+  <li>뉴런이 5개면 편향도 5개예요. 이것을 <b>편향 벡터 b</b>라고 불러요.</li>
+  <li>그래서 한 모델 안에 편향이 여러 개 들어 있어요.</li>
+</ul>
+<p><b>편향이 없으면</b> 어떤 제약이 생기는지가 시험 포인트예요. 편향이 없으면 가중합이 <code>z = wᵀx</code>뿐이라서 입력이 모두 0일 때 항상 z = 0이 돼요. 즉 모든 결정경계가 <b>원점을 지나야</b> 해서 표현력이 크게 제한돼요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>편향 = 절편 = 평행 이동 = 뉴런마다 하나. 편향이 없으면 "원점을 지나는 경계만 가능"이라고 한 문장으로 끝내요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>편향은 직선 방정식의 절편처럼 결정경계를 평행 이동시켜 입력이 0이어도 출력을 조정할 자유도를 준다. 편향이 없으면 모든 결정경계가 원점을 지나야 하므로 모델의 표현력이 크게 제한된다. 편향은 층 전체에 하나가 아니라 뉴런마다 하나씩 있어 편향 벡터를 이룬다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 은닉층에 뉴런이 256개라면 이 층의 편향은 몇 개인가요?</summary>
+  <p>256개예요. 편향은 뉴런마다 하나씩이라서 뉴런 수와 같아요. 이 숫자가 2장의 파라미터 수 세기에서 "+ 이번 층 수"가 돼요.</p>
+</details>
+
+<h3>1-5. 코드로 확인 — 뉴런 하나는 세 줄이에요</h3>
+<p>강의자료의 손코딩을 한 줄씩 읽어 볼게요. 입력 <code>x = [2, 3, 1]</code>, 가중치 <code>w = [0.5, −0.2, 0.8]</code>, 편향 <code>b = 1</code>이에요.</p>
+<div class="code">import numpy as np
+
+x = np.array([2, 3, 1])         # 입력벡터
+w = np.array([0.5, -0.2, 0.8])  # 가중치
+b = 1                           # 편향
+
+z = np.dot(w, x) + b
+print(f'가중합(z): {z}')
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+a = sigmoid(z)
+print(f'활성화함수 출력(a): {a}')</div>
+<table>
+  <tr><th style="width:42%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>x = np.array([2, 3, 1])</code></td><td>입력 벡터 x를 만들어요 (숫자 3개)</td></tr>
+  <tr><td><code>w = np.array([0.5, -0.2, 0.8])</code></td><td>가중치 벡터 w예요. 같은 순서로 곱해질 짝이에요</td></tr>
+  <tr><td><code>b = 1</code></td><td>편향이에요</td></tr>
+  <tr><td><code>z = np.dot(w, x) + b</code></td><td>내적(곱해서 더하기)을 하고 편향을 더해요. 가중합이에요</td></tr>
+  <tr><td><code>def sigmoid(x): ...</code></td><td>시그모이드 함수 1/(1+e⁻ˣ)를 정의해요</td></tr>
+  <tr><td><code>a = sigmoid(z)</code></td><td>가중합에 활성화 함수를 적용해요</td></tr>
+</table>
+<p>실행 결과예요.</p>
+<div class="code">가중합(z): 2.2
+활성화함수 출력(a): 0.9002495076311996</div>
+<p>손으로 따라가면 내적은 0.5×2 + (−0.2)×3 + 0.8×1 = 1.0 − 0.6 + 0.8 = 1.2이고, 편향 1을 더해 2.2예요. 시그모이드(2.2)는 약 0.900이에요. "내적 → 편향 → 활성화" 세 줄이 신경망 뉴런 하나의 전부예요.</p>
+<p>Keras(강의 Chapter 3)에서는 <code>Dense(1, activation='sigmoid')</code> 한 줄이 정확히 이 일을 해요. NumPy 코드의 줄이 Keras의 어느 부분인지 짝짓는 문제가 나올 수 있어요.</p>
+<table>
+  <tr><th style="width:42%">NumPy 코드</th><th>Keras</th></tr>
+  <tr><td><code>z = np.dot(w, x) + b</code></td><td><code>Dense</code> 층 안의 가중합 (w, b는 층이 만들어요)</td></tr>
+  <tr><td><code>a = sigmoid(z)</code></td><td><code>activation='sigmoid'</code></td></tr>
+</table>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>이 코드는 np.dot으로 가중합 z = wᵀx + b를 구한 뒤 sigmoid 함수로 활성화한다. Keras의 Dense(1, activation='sigmoid')가 같은 계산을 한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — x = [1, 2], w = [0.3, −0.5], b = 0.2일 때 z는? (σ 값은 몰라도 돼요)</summary>
+  <p>z = 0.3×1 + (−0.5)×2 + 0.2 = 0.3 − 1.0 + 0.2 = −0.5예요. 이때 σ(−0.5)는 약 0.378이고, 강의자료 셀프체크 문제 Q1이에요.</p>
+</details>
+
+<div class="box tip"><span class="t">이 장 3줄 요약</span>
+  <ul>
+    <li>뉴런 하나는 가중합 z = wᵀx + b 뒤에 활성화 σ를 붙인 a = σ(z)이고, 선형회귀와 다른 점은 "활성화 함수"와 "여러 개 쌓기" 두 가지뿐이에요.</li>
+    <li>뉴런 하나에 시그모이드를 쓰면 로지스틱 회귀와 같은 계산이고, w와 b는 학습으로 정해지는 파라미터예요.</li>
+    <li>편향은 절편처럼 결정경계를 평행 이동시키고 뉴런마다 하나씩 있어요. 없으면 결정경계가 모두 원점을 지나야 해요.</li>
+  </ul>
+</div>

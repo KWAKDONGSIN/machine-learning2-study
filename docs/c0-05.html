@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>기울기(경사)를 &quot;산 내려가기&quot;로 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=693adac3">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="index.html" class=on>보드</a><a href="b.html">최소코스</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c0">← 보드</a><span>왕초보 수학·머신러닝 기초 · 5/8</span></div><h1>기울기(경사)를 &quot;산 내려가기&quot;로</h1>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p><b><a class="w" href="words.html#w22" data-w="22">기울기</a>(<a class="w" href="words.html#w21" data-w="21">미분</a>)</b>는 "지금 서 있는 이 자리가 오르막인지 내리막인지, 얼마나 가파른지"를 알려 주는 숫자예요. 교수님은 "순간 기울기"라고 불렀어요.</p>
+</div>
+<p>학습은 <b><a class="w" href="words.html#w51" data-w="51">손실</a>(틀린 정도)</b>이 가장 낮은 곳을 찾는 일이에요. 손실을 산의 높이라고 생각하면 학습은 "산에서 가장 낮은 골짜기까지 내려가기"예요.</p>
+<div class="paper"><svg viewBox="0 0 380 205" width="100%" role="img" aria-label="손실 곡선 위에서 기울기의 반대 방향으로 내려가는 그림"><rect x="0" y="0" width="380" height="205" rx="8" fill="#f8faff"/><defs><marker id="m0a" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d6264a"/></marker></defs><path d="M30,30 Q190,270 350,30" fill="none" stroke="#5d6b80" stroke-width="3"/><circle cx="78" cy="91" r="7" fill="#1d4ed8"/><line x1="86" y1="99" x2="122" y2="133" stroke="#d6264a" stroke-width="3" marker-end="url(#m0a)"/><circle cx="190" cy="150" r="6" fill="#0f7a4f"/><text x="94" y="82" text-anchor="start" font-size="12" fill="#1d4ed8" font-weight="bold">지금 위치</text><text x="190" y="176" text-anchor="middle" font-size="12" fill="#0f7a4f" font-weight="bold">가장 낮은 곳 = 손실이 최소</text><text x="160" y="112" text-anchor="start" font-size="11" fill="#d6264a" font-weight="bold">이쪽으로 한 걸음</text><text x="190" y="66" text-anchor="middle" font-size="11" fill="#5d6b80">위쪽일수록 손실이 커요</text><text x="62" y="196" text-anchor="start" font-size="11" fill="#5d6b80">가중치 w를 바꾸는 방향</text></svg></div>
+<div class="box eg"><span class="t">비유 — 안개 낀 산</span>
+  <p>짙은 안개 때문에 산 전체는 안 보이고 발밑의 기울기만 느낄 수 있어요. 발밑이 오른쪽으로 내리막이면 오른쪽으로 한 걸음, 왼쪽으로 내리막이면 왼쪽으로 한 걸음 가요. 이걸 반복하면 골짜기에 도착해요.</p>
+</div>
+<p>기울기가 <b>양수(+)</b>면 오른쪽이 오르막이라서 값을 줄여야 하고, <b>음수(−)</b>면 오른쪽이 내리막이라서 값을 늘려야 해요. 그래서 식이 <code>w ← w − η × 기울기</code>예요. 빼기 기호 하나가 "기울기의 반대 방향으로 간다"는 뜻을 모두 담고 있어요.</p>
+<p>여기서 <b>η(에타)</b>는 <a class="w" href="words.html#w64" data-w="64">학습률</a>이에요. "한 걸음을 얼마나 크게 뗄까"를 정하는 숫자이고, 자세한 내용은 4장에서 다뤄요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p><a class="w" href="words.html#w63" data-w="63">경사하강</a>은 손실의 기울기를 구해 그 반대 방향으로 <a class="w" href="words.html#w25" data-w="25">가중치</a>를 조금씩 이동시켜 손실을 줄여 나가는 방법이다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 기울기가 양수일 때 w는 커져야 할까요, 작아져야 할까요?</summary>
+  <p>작아져야 해요. 양수는 오르막이라는 뜻이라서 내리막 쪽(값이 작은 쪽)으로 가요.</p>
+</details>
+
+<div class="done"><a class="go" href="c0-06.html">다음 카드 → 로그와 지수 — &quot;작을수록 크게 벌주는 함수&quot;</a><div class="pn"><a href="c0-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c0"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 2주차·7주차 · 머신러닝2_chapter1_student_ver.pdf(p.3–10 배경) · 머신02.txt · 머신러닝07.txt</p></div>
+</main>
+<script src="assets/words.js?v=693adac3"></script>
+<script src="assets/app.js?v=693adac3"></script>
+</body>
+</html>

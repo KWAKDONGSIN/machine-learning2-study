@@ -1,0 +1,6 @@
+{
+  "name": "ml2-study-w3n9",
+  "compatibility_date": "2026-09-11",
+  // build_site.py가 만든 docs/만 올린다 (원본·.git 노출 방지)
+  "assets": { "directory": "./docs" }
+}
