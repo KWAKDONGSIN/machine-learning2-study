@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>규제 — 릿지(L2)와 라쏘(L1) ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=9af8e7c9">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="plan.html">내 일정</a><a href="index.html" class=on>보드</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a><a href="research.html">왜 이렇게?</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c10">← 보드</a><span>머신러닝1 다리 — 꼭 필요한 기초만 · 9/11</span></div><h1>규제 — 릿지(L2)와 라쏘(L1) ★</h1>
+<p><a class="w" href="words.html#w97" data-w="97">과적합</a>은 보통 <a class="w" href="words.html#w25" data-w="25">가중치</a> w가 지나치게 커지면서 생겨요. <b><a class="w" href="words.html#w100" data-w="100">규제</a>(regularization)</b>는 "w가 커지면 벌점"을 <a class="w" href="words.html#w51" data-w="51">손실</a>에 더해 모델이 얌전해지게 하는 방법이에요.</p>
+<div class="code">새 손실 = 원래 손실 + λ × (w에 대한 벌점)       λ(람다)가 클수록 벌점이 세서 모델이 단순해져요</div>
+<p>벌점을 매기는 방식이 두 가지예요.</p>
+<div class="tw"><table>
+  <tr><th style="width:22%"></th><th>릿지 (Ridge) = L2</th><th>라쏘 (Lasso) = L1</th></tr>
+  <tr><td><b>벌점</b></td><td>w를 <b>제곱</b>해서 더한 값 (Σw²)</td><td>w의 <b>절댓값</b>을 더한 값 (Σ|w|)</td></tr>
+  <tr><td><b>w의 변화</b></td><td>모두 작아지지만 정확히 0은 거의 안 돼요</td><td>일부가 <b>정확히 0</b>이 돼요</td></tr>
+  <tr><td><b>효과</b></td><td>모든 <a class="w" href="words.html#w6" data-w="6">특성</a>을 조금씩 쓰며 안정적</td><td>필요 없는 특성이 사라져서 <b>변수 선택</b></td></tr>
+  <tr><td><b>잘 맞는 상황</b></td><td>모든 특성이 조금씩 의미 있을 때</td><td>특성이 아주 많고 중요한 것만 남기고 싶을 때</td></tr>
+</table></div>
+<div class="box eg"><span class="t">비유 — 짐 줄이기</span>
+  <p><a class="w" href="words.html#w102" data-w="102">릿지</a>는 가방 속 모든 물건을 조금씩 덜어 내는 방식이고, <a class="w" href="words.html#w101" data-w="101">라쏘</a>는 필요 없는 물건을 아예 가방에서 빼 버리는 방식이에요. 라쏘(Lasso)는 올가미라는 뜻이라서 안 쓰는 걸 잘라 내는 모습으로 떠올리면 쉬워요.</p>
+</div>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p><b>L</b>asso는 <b>L</b>1 — 둘 다 L로 시작해요. 그러면 릿지는 자동으로 L2예요. 교수님도 이 둘을 바꿔 외우는 학생이 많다고 경고했어요.</p>
+</div>
+<p>정규화(<a class="w" href="words.html#w12" data-w="12">normalization</a>)와 규제(regularization)는 이름이 비슷하지만 달라요. 정규화·<a class="w" href="words.html#w13" data-w="13">표준화</a>는 <b>입력 X의 크기를 맞추는 전처리</b>이고, 규제는 <b>모델의 w가 커지지 않게 하는 학습 장치</b>예요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>L2 규제(릿지)는 가중치 제곱합을 벌점으로 더해 가중치 크기를 줄이고, L1 규제(라쏘)는 가중치 절댓값 합을 벌점으로 더해 일부 가중치를 0으로 만들어 변수 선택 효과를 낸다. 규제 강도 λ가 클수록 모델이 단순해진다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 일부 계수를 정확히 0으로 만들어 변수를 골라 주는 규제는?</summary>
+  <p>라쏘(L1)예요. 릿지(L2)는 계수를 작게는 만들지만 0으로 만들지는 않아요.</p></details>
+<div class="box tip"><span class="t">머신러닝2에서는 이렇게 이어져요</span>
+  <p>7장에서 L1 대 L2와 정규화 기법 표(<a class="w" href="words.html#w104" data-w="104">Dropout</a>, <a class="w" href="words.html#w105" data-w="105">BatchNorm</a>, <a class="w" href="words.html#w106" data-w="106">데이터 증강</a>, <a class="w" href="words.html#w107" data-w="107">조기 종료</a>, <a class="w" href="words.html#w108" data-w="108">Label Smoothing</a>)로 그대로 나와요. L2는 <a class="w" href="words.html#w1" data-w="1">딥러닝</a>에서 <a class="w" href="words.html#w103" data-w="103">Weight Decay</a>라고도 불러요.</p>
+</div>
+
+<div class="recall"><b>덮고 10초 — 말해 보기</b><p>화면을 가리고 <b>"규제 — 릿지(L2)와 라쏘(L1) ★"</b>을(를) 친구에게 설명하듯 한 문장으로 말해 보세요. 막히면 위의 빨간 칸만 다시 보고 넘어가요.</p></div><div class="done"><a class="go" href="c10-10.html">다음 카드 → 이 장 요약 — 머신러닝1에서 2로 가는 길</a><div class="pn"><a href="c10-08.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c10"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 머신러닝1 중간 완벽정리·기초입문편·강의 텍스트</p></div>
+</main>
+<script src="assets/words.js?v=9af8e7c9"></script>
+<script src="assets/app.js?v=9af8e7c9"></script>
+</body>
+</html>

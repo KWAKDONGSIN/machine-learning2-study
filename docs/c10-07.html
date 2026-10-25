@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>분류 평가 — 정확도, 정밀도, 재현율 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=9af8e7c9">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="plan.html">내 일정</a><a href="index.html" class=on>보드</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a><a href="research.html">왜 이렇게?</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c10">← 보드</a><span>머신러닝1 다리 — 꼭 필요한 기초만 · 7/11</span></div><h1>분류 평가 — 정확도, 정밀도, 재현율 ★</h1>
+<p><a class="w" href="words.html#w4" data-w="4">분류</a> 결과는 <b><a class="w" href="words.html#w74" data-w="74">혼동행렬</a></b>이라는 네 칸 표에 담아요. 행은 실제, 열은 예측이에요.</p>
+<div class="tw"><table>
+  <tr><th style="width:24%"></th><th>예측 양성</th><th>예측 음성</th></tr>
+  <tr><td><b>실제 양성</b></td><td><a class="w" href="words.html#w75" data-w="75">TP</a> (맞게 양성)</td><td><a class="w" href="words.html#w78" data-w="78">FN</a> (놓쳤어요)</td></tr>
+  <tr><td><b>실제 음성</b></td><td><a class="w" href="words.html#w77" data-w="77">FP</a> (헛경보)</td><td><a class="w" href="words.html#w76" data-w="76">TN</a> (맞게 음성)</td></tr>
+</table></div>
+<p>앞 글자 T/F는 <b>예측이 맞았나 틀렸나</b>, 뒤 글자 P/N은 <b>모델이 뭐라고 했나</b>예요. 세 지표는 분모만 다르니 분모를 먼저 보세요.</p>
+<div class="tw"><table>
+  <tr><th style="width:24%">지표</th><th style="width:26%">식</th><th>분모가 뜻하는 것</th></tr>
+  <tr><td><b><a class="w" href="words.html#w79" data-w="79">정확도</a>(Accuracy)</b></td><td>(TP + TN) / 전체</td><td>전체 샘플</td></tr>
+  <tr><td><b><a class="w" href="words.html#w80" data-w="80">정밀도</a>(Precision)</b></td><td>TP / (TP + FP)</td><td>모델이 "양성"이라고 한 것</td></tr>
+  <tr><td><b><a class="w" href="words.html#w81" data-w="81">재현율</a>(Recall)</b></td><td>TP / (TP + FN)</td><td>실제 양성</td></tr>
+</table></div>
+<p>예를 들어 100명 중 <code>TP = 8, FP = 2, FN = 4, TN = 86</code>이면 정확도는 <code>(8 + 86) / 100 = 0.94</code>, 정밀도는 <code>8 / (8 + 2) = 0.8</code>, 재현율은 <code>8 / (8 + 4) = 약 0.67</code>이에요.</p>
+<p><b>정확도의 함정</b>도 꼭 알아 두세요. 환자가 10%뿐인 데이터에서 "모두 정상"이라고만 답해도 정확도는 90%예요. 하지만 환자를 한 명도 못 찾으니 재현율은 0이에요. 암 검진처럼 놓치면 큰일인 문제는 재현율, 스팸 차단처럼 정상 메일을 잘못 막으면 곤란한 문제는 정밀도를 더 봐요.</p>
+<div class="box tip"><span class="t">외우기 팁</span>
+  <p>정밀도는 "<b>내가 한 말</b> 중 맞은 비율"이라 분모가 모델의 양성 판정이고, 재현율은 "<b>진짜 양성</b> 중 찾아낸 비율"이라 분모가 실제 양성이에요. 분모가 FP를 포함하면 정밀도, FN을 포함하면 재현율이에요.</p>
+</div>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>정밀도는 TP / (TP + FP)로 양성 예측 중 실제 양성의 비율이고, 재현율은 TP / (TP + FN)로 실제 양성 중 찾아낸 비율이다. <a class="w" href="words.html#w85" data-w="85">불균형 데이터</a>에서는 정확도만으로 모델을 판단하면 안 되며, 암 검진처럼 FN의 비용이 크면 재현율을 우선한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — TP = 3, FP = 1, FN = 3일 때 정밀도와 재현율은?</summary>
+  <p>정밀도 3 / (3 + 1) = 0.75, 재현율 3 / (3 + 3) = 0.5예요.</p></details>
+<div class="box tip"><span class="t">머신러닝2에서는 이렇게 이어져요</span>
+  <p>5장이 이 표 전체를 다뤄요. 정수로 끝나는 계산, 3×3 혼동행렬에서 클래스 하나씩 계산하기, 오류 비용에 따른 지표 선택이 시험에 나오는 부분이에요. 5장 계산 연습이 가장 점수가 잘 나와요.</p>
+</div>
+
+<div class="recall"><b>덮고 10초 — 말해 보기</b><p>화면을 가리고 <b>"분류 평가 — 정확도, 정밀도, 재현율 ★"</b>을(를) 친구에게 설명하듯 한 문장으로 말해 보세요. 막히면 위의 빨간 칸만 다시 보고 넘어가요.</p></div><div class="done"><a class="go" href="c10-08.html">다음 카드 → 과소적합과 과적합 ★</a><div class="pn"><a href="c10-06.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c10"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 머신러닝1 중간 완벽정리·기초입문편·강의 텍스트</p></div>
+</main>
+<script src="assets/words.js?v=9af8e7c9"></script>
+<script src="assets/app.js?v=9af8e7c9"></script>
+</body>
+</html>

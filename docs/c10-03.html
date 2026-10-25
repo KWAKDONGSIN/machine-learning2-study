@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>스케일링(표준화) — 숫자 크기를 맞춰 줘요 · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=9af8e7c9">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="plan.html">내 일정</a><a href="index.html" class=on>보드</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a><a href="research.html">왜 이렇게?</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c10">← 보드</a><span>머신러닝1 다리 — 꼭 필요한 기초만 · 3/11</span></div><h1>스케일링(표준화) — 숫자 크기를 맞춰 줘요</h1>
+<p><a class="w" href="words.html#w6" data-w="6">특성</a>마다 숫자 크기가 달라요. 키는 170 정도, 시력은 1.0 정도라면, 모델은 큰 숫자 쪽에 끌려가기 쉬워요. 그래서 학습 전에 크기를 맞춰 줘요. 가장 흔한 방법이 <b><a class="w" href="words.html#w13" data-w="13">표준화</a>(Z-score)</b>예요.</p>
+<div class="box def"><span class="t">한 줄 정의</span>
+  <p>표준화는 각 값에서 평균(μ)을 빼고 표준편차(σ)로 나눠, 특성의 평균을 0, 표준편차를 1로 맞추는 일이에요. 식은 <code>z = (x − μ) / σ</code>예요.</p>
+</div>
+<p>손으로 해 볼게요. 8명의 값이 <code>2, 4, 4, 4, 5, 5, 7, 9</code>이면 평균 μ = 5이고 표준편차 σ = 2예요. 값 9는 <code>(9 − 5) / 2 = 2</code>로, 평균보다 표준편차 2칸만큼 위라는 뜻이에요. 값 4는 <code>(4 − 5) / 2 = −0.5</code>예요.</p>
+<div class="box eg"><span class="t">비유 — 환율</span>
+  <p>원화와 달러를 그대로 더하면 이상하죠. 같은 단위(환율)로 맞춘 뒤 비교하는 것처럼, 표준화는 특성들을 같은 자로 재게 해 줘요.</p>
+</div>
+<p>누수를 막으려면 순서가 중요해요. <b>평균과 표준편차는 <a class="w" href="words.html#w8" data-w="8">학습 데이터</a>에서만 계산(<a class="w" href="words.html#w114" data-w="114">fit</a>)</b>하고, 그 기준으로 학습과 테스트를 <b>모두 변환(transform)</b>해요.</p>
+<div class="code">from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)   # 학습 데이터로 평균·표준편차를 구하고 변환
+X_test_s  = scaler.transform(X_test)        # 테스트는 변환만 (fit 금지)</div>
+<div class="tw"><table>
+  <tr><th style="width:44%">코드 줄</th><th>무슨 뜻</th></tr>
+  <tr><td><code>train_test_split(X, y, test_size=0.2, ...)</code></td><td>전체의 20%를 테스트용으로 떼어 놓아요</td></tr>
+  <tr><td><code>random_state=42</code></td><td>섞는 방법을 고정해서 누가 돌려도 같은 결과가 나오게 해요</td></tr>
+  <tr><td><code>scaler.fit_transform(X_train)</code></td><td>학습 데이터의 평균·표준편차를 배우고(fit) 바로 변환해요</td></tr>
+  <tr><td><code>scaler.transform(X_test)</code></td><td>테스트는 이미 구한 기준으로 변환만 해요</td></tr>
+</table></div>
+<p>이 코드는 출력 없이 변수만 만들어요. 결과는 학습용 특성들이 평균 약 0, 표준편차 약 1로 바뀐 숫자 표예요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>표준화는 z = (x − μ) / σ로 평균 0, 표준편차 1이 되게 하는 전처리이다. 평균과 표준편차는 학습 데이터에만 fit하고 학습·테스트 모두 transform해야 <a class="w" href="words.html#w11" data-w="11">데이터 누수</a>를 막을 수 있다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — StandardScaler를 전체 데이터에 fit한 뒤 나누면 왜 문제일까요?</summary>
+  <p><a class="w" href="words.html#w10" data-w="10">테스트 데이터</a>의 평균·표준편차가 학습에 섞이기 때문이에요. 이것이 데이터 누수예요.</p></details>
+<div class="box tip"><span class="t">머신러닝2에서는 이렇게 이어져요</span>
+  <p>8장 <a class="w" href="words.html#w120" data-w="120">MNIST</a> 코드에서 픽셀을 255.0으로 나누는 것이 같은 뜻의 크기 맞추기예요. 6장에서 입력이 너무 크거나 작으면 <a class="w" href="words.html#w86" data-w="86">Sigmoid</a>가 <a class="w" href="words.html#w91" data-w="91">포화</a>되어 <a class="w" href="words.html#w22" data-w="22">기울기</a>가 사라지는 이유도 이어서 볼 수 있어요.</p>
+</div>
+
+<div class="recall"><b>덮고 10초 — 말해 보기</b><p>화면을 가리고 <b>"스케일링(표준화) — 숫자 크기를 맞춰 줘요"</b>을(를) 친구에게 설명하듯 한 문장으로 말해 보세요. 막히면 위의 빨간 칸만 다시 보고 넘어가요.</p></div><div class="done"><a class="go" href="c10-04.html">다음 카드 → 선형회귀 — 가중치, 편향, 예측선</a><div class="pn"><a href="c10-02.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c10"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 머신러닝1 중간 완벽정리·기초입문편·강의 텍스트</p></div>
+</main>
+<script src="assets/words.js?v=9af8e7c9"></script>
+<script src="assets/app.js?v=9af8e7c9"></script>
+</body>
+</html>

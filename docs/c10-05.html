@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko" data-site="0f1ac6">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>손실(MSE)과 경사하강(SGD) 직관 ★ · 머신러닝2 시험공부</title>
+<meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
+<link rel="stylesheet" href="assets/style.css?v=9af8e7c9">
+</head>
+<body>
+<header class="top"><div class="top-in">
+<a class="brand" href="index.html"><span class="bases"><i class="a">시</i><i class="t">험</i><i class="g">공</i><i class="c">부</i></span>머신러닝2</a>
+<nav class="nav" aria-label="메뉴"><a href="plan.html">내 일정</a><a href="index.html" class=on>보드</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a><a href="research.html">왜 이렇게?</a></nav>
+</div></header>
+<main>
+<div class="crumb k0"><a href="index.html#c10">← 보드</a><span>머신러닝1 다리 — 꼭 필요한 기초만 · 5/11</span></div><h1>손실(MSE)과 경사하강(SGD) 직관 ★</h1>
+<p>선이 좋은지 나쁜지는 어떻게 알까요? 예측과 정답이 얼마나 다른지를 숫자 하나로 만든 것이 <b><a class="w" href="words.html#w51" data-w="51">손실</a>(loss)</b>이에요. <a class="w" href="words.html#w5" data-w="5">회귀</a>에서 가장 흔한 손실이 <b><a class="w" href="words.html#w56" data-w="56">MSE</a>(평균제곱오차)</b>예요.</p>
+<div class="code">MSE = (1/n) × Σ (y − ŷ)²     ← 정답과 예측의 차이를 제곱해서 평균</div>
+<p>손으로 해 볼게요. 정답이 <code>70, 80</code>이고 예측이 <code>68, 84</code>면 차이는 <code>2, −4</code>예요. 제곱하면 <code>4, 16</code>이고 평균은 <code>(4 + 16) / 2 = 10</code>이에요. 제곱을 하는 이유는 세 가지예요. 플러스·마이너스가 서로 상쇄되지 않게, 큰 실수에 더 큰 벌을 주려고, <a class="w" href="words.html#w21" data-w="21">미분</a>하기 편해서예요.</p>
+<p>손실을 줄이는 방법이 <b><a class="w" href="words.html#w63" data-w="63">경사하강</a>(gradient descent)</b>이에요. 안개 낀 산에서 발밑의 <a class="w" href="words.html#w22" data-w="22">기울기</a>만 느끼며 내려가는 것과 같아요. 손실이 줄어드는 쪽으로 w와 b를 조금씩 옮겨요.</p>
+<div class="code">w ← w − η × (손실의 기울기)</div>
+<p>η(에타)는 <b><a class="w" href="words.html#w64" data-w="64">학습률</a></b>, 즉 한 걸음의 크기예요. 예를 들어 w = 5, 기울기 = 2, η = 0.1이면 새 w는 <code>5 − 0.1 × 2 = 4.8</code>이에요. 걸음이 너무 작으면 느리고, 너무 크면 골짜기를 건너뛰어 손실이 오히려 커져요(<a class="w" href="words.html#w65" data-w="65">발산</a>).</p>
+<div class="box eg"><span class="t">비유 — 안개 낀 산 내려가기</span>
+  <p>눈을 가린 채 발끝의 경사만 느끼고, 내리막 쪽으로 한 걸음씩 가는 거예요. 한 걸음이 너무 작으면 하루 종일 걸리고, 너무 크면 계곡을 넘어 반대편 언덕으로 올라가 버려요.</p>
+</div>
+<p>데이터가 많을 때 몇 개를 보고 한 걸음 내딛을지에 따라 이름이 달라져요.</p>
+<div class="tw"><table>
+  <tr><th style="width:26%">방식</th><th style="width:30%">한 걸음에 쓰는 샘플</th><th>특징</th></tr>
+  <tr><td><b><a class="w" href="words.html#w123" data-w="123">배치</a> 경사하강</b></td><td>전부</td><td>매끈하지만 느리고 무거워요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w69" data-w="69">SGD</a></b> (확률적)</td><td>딱 1개</td><td>빠르지만 지그재그로 흔들려요</td></tr>
+  <tr><td><b><a class="w" href="words.html#w73" data-w="73">미니배치</a></b></td><td>32~512개 묶음</td><td>현실에서 가장 많이 써요</td></tr>
+</table></div>
+<p>한 번 걸음을 내딛는 것이 <b><a class="w" href="words.html#w125" data-w="125">step</a></b>, <a class="w" href="words.html#w8" data-w="8">학습 데이터</a> 전체를 한 바퀴 다 보는 것이 <b><a class="w" href="words.html#w122" data-w="122">epoch</a></b>이에요.</p>
+<div class="box exam"><span class="t">시험엔 이렇게 써요</span>
+  <p>MSE는 정답과 예측 차이의 제곱을 평균한 손실이다. 경사하강은 손실의 기울기 반대 방향으로 w ← w − η·기울기로 <a class="w" href="words.html#w15" data-w="15">파라미터</a>를 갱신하는 방법이며, 학습률이 너무 작으면 느리고 너무 크면 발산한다.</p>
+</div>
+<details class="check"><summary>잠깐 확인 — 학습률 η가 너무 크면 손실 곡선은 어떻게 될까요?</summary>
+  <p>손실이 줄지 않고 요동치거나 오히려 커져요(발산). 이럴 때는 η를 낮춰야 해요.</p></details>
+<div class="box tip"><span class="t">머신러닝2에서는 이렇게 이어져요</span>
+  <p>4장이 이 경사하강을 <a class="w" href="words.html#w67" data-w="67">손실 곡선</a> 그림으로 진단하는 장이에요. 9장에서 batch, step, epoch을 정수로 세는 문제(step 수 = 학습 샘플 수 ÷ <a class="w" href="words.html#w124" data-w="124">batch_size</a>를 올림)가 나오고, <a class="w" href="words.html#w68" data-w="68">옵티마이저</a>(SGD → <a class="w" href="words.html#w72" data-w="72">Adam</a>)도 여기서 이어져요.</p>
+</div>
+
+<div class="recall"><b>덮고 10초 — 말해 보기</b><p>화면을 가리고 <b>"손실(MSE)과 경사하강(SGD) 직관 ★"</b>을(를) 친구에게 설명하듯 한 문장으로 말해 보세요. 막히면 위의 빨간 칸만 다시 보고 넘어가요.</p></div><div class="done"><a class="go" href="c10-06.html">다음 카드 → 로지스틱 회귀 — 시그모이드, 확률, 임계값 ★</a><div class="pn"><a href="c10-04.html"><b>← 이전</b>이전 카드</a><a class="next" href="quiz.html#c10"><b>연습</b>이 장 문제 풀기</a></div><p class="muted small">자료: 머신러닝1 중간 완벽정리·기초입문편·강의 텍스트</p></div>
+</main>
+<script src="assets/words.js?v=9af8e7c9"></script>
+<script src="assets/app.js?v=9af8e7c9"></script>
+</body>
+</html>

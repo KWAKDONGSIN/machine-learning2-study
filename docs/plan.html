@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>내 시간표 코스 · 머신러닝2 시험공부</title>
 <meta name="description" content="머신러닝2 중간고사를 전공 처음인 사람도 이해하게 정리한 공부 사이트">
-<link rel="stylesheet" href="assets/style.css?v=a57e6ad5">
+<link rel="stylesheet" href="assets/style.css?v=9af8e7c9">
 </head>
 <body>
 <header class="top"><div class="top-in">
@@ -13,9 +13,134 @@
 <nav class="nav" aria-label="메뉴"><a href="plan.html" class=on>내 일정</a><a href="index.html">보드</a><a href="bplus.html">B+코스</a><a href="quiz.html">퀴즈</a><a href="essay.html">서술형</a><a href="cards.html">암기카드</a><a href="words.html">낱말사전</a><a href="cheat.html">시험 전 1장</a><a href="research.html">왜 이렇게?</a></nav>
 </div></header>
 <main>
-<h1>내 시간표 코스</h1><p>준비 중</p>
+<h1>내 시간표 코스</h1>
+<p class="lead">오늘 약 2시간 30분, 내일 시험 직전 약 2시간으로 B+를 노리는 실행 계획이에요. 칸을 누르면 체크가 저장돼요. 위에서부터 순서대로만 하면 돼요.</p>
+
+<div class="box def"><span class="t">왜 이렇게 짰나</span>
+<p><b>읽기보다 떠올리기가 오래 남아요.</b> 그래서 모든 블록은 카드를 읽은 직후 바로 문제를 푸는 순서로 짰고, 공부 전에 5분 사전 시험으로 모르는 곳부터 확인해요.</p>
+<p><b>25분 공부 + 5분 휴식</b>이 한 블록이에요. 집중이 오래가지 않으니 짧게 끊고, 계산과 코드는 풀이를 본 뒤 가리고 직접 써 봐요.</p>
+<p><b>오늘 밤 한 번, 내일 한 번</b> 다시 떠올리면 기억이 굳어요. 밤새우지 말고 자세요. 잠이 낮에 본 것을 기억으로 만들어 줘요. 시험 직전에는 새 내용을 보지 않고 떠올리기만 해요.</p>
+</div>
+
+<h2>점수가 어디서 나오나 <span class="muted small">1분</span></h2>
+<div class="tw"><table>
+<tr><th style="width:20%">영역</th><th style="width:18%">배점</th><th>이 코스에서 맡는 곳</th></tr>
+<tr><td><b>객관식</b></td><td>25문항 50점</td><td>정수 계산 3종(<a class="w" href="words.html#w15" data-w="15">파라미터</a> 수 · <a class="w" href="words.html#w125" data-w="125">step</a> 수 · <a class="w" href="words.html#w74" data-w="74">혼동행렬</a>)을 확실히 + <a class="w" href="words.html#w37" data-w="37">출력층</a> 세트 · <a class="w" href="words.html#w64" data-w="64">학습률</a> 곡선 · <a class="w" href="words.html#w28" data-w="28">활성화</a> 그래프</td></tr>
+<tr><td><b>단답 (<a class="w" href="words.html#w110" data-w="110">Keras</a> 코드 빈칸)</b></td><td>2문항 20점</td><td>오늘 블록 4, 내일 블록 D에서 따옴표까지 손으로 써 보기</td></tr>
+<tr><td><b>주관식</b></td><td>2문항 30점</td><td>내일 블록 B~C에서 "현상 → 근거 → 처방"과 "상황 → 출력층 · 지표 · <a class="w" href="words.html#w34" data-w="34">임계값</a>" 틀을 가리고 쓰기</td></tr>
+</table></div>
+<p class="muted small">공식 학습키워드의 ★(단답 · 주관식과 직접 연결된 항목)을 먼저 하도록 순서를 정했어요. 0장 수학 장은 읽지 않고, 필요한 것은 10장 다리 장으로 대신해요.</p>
+
+<h2>오늘 2시간 30분 <span class="muted small">블록 5개 = (25분 공부 + 5분 휴식) × 5</span></h2>
+
+<h3>블록 1 &middot; 머신러닝1 다리 + 사전 시험 <span class="muted small">0:00~0:30</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일 (칸을 눌러 체크)</th><th style="width:26%">원칙</th></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t1"><span><b>사전 시험.</b> <a href="quiz.html">퀴즈 랜덤</a>에서 8문제만 풀어요. 틀려도 괜찮고, 틀린 문제의 주제를 종이에 적어요.</span></label></td><td>먼저 떠올리기</td></tr>
+<tr><td>15분</td><td><label><input type="checkbox" data-k="ml2-t2"><span><a href="c10-01.html">10장 머신러닝1 다리</a> 카드를 다음 버튼으로 이어서 넘겨요. 10-1, 10-2, 10-5, 10-6, 10-7은 천천히, 나머지는 훑기만 해요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t3"><span>바로 <a href="quiz.html#c10">10장 문제</a> 8문제를 풀어요.</span></label></td><td>읽은 직후 인출</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t4"><span>휴식. 자리에서 일어나 물 마시기, 폰은 보지 않아요.</span></label></td><td>짧게 끊기</td></tr>
+</table></div>
+
+<h3>블록 2 &middot; 정수 계산 첫째 — 파라미터 수, 그리고 출력층 세트 <span class="muted small">0:30~1:00</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>7분</td><td><label><input type="checkbox" data-k="ml2-t5"><span><a href="c2-04.html">2장 파라미터 수 세기</a>의 공식과 예제를 풀이까지 읽어요. 공식은 <code>입력 × 출력 + 출력</code>이에요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>6분</td><td><label><input type="checkbox" data-k="ml2-t6"><span><a href="c2-06.html">2장 연습 문제</a>를 풀이를 가리고 종이에 직접 풀어요.</span></label></td><td>혼자 풀기</td></tr>
+<tr><td>7분</td><td><label><input type="checkbox" data-k="ml2-t7"><span><a href="c3-01.html">3장 출력층 세트</a> 표를 읽어요. 이진 · 다중 · <a class="w" href="words.html#w55" data-w="55">멀티라벨</a> · <a class="w" href="words.html#w5" data-w="5">회귀</a>마다 <a class="w" href="words.html#w23" data-w="23">뉴런</a> 수, 활성화, <a class="w" href="words.html#w51" data-w="51">손실</a>을 한 줄씩 짝지어요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t8"><span><a href="quiz.html#c3">3장 문제</a> 풀기. 틀린 것은 해설만 읽어요.</span></label></td><td>읽은 직후 인출</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t9"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 3 &middot; 정수 계산 둘째 — step 수와 EarlyStopping <span class="muted small">1:00~1:30</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-t10"><span><a href="c9-01.html">9장 batch · step · epoch</a>를 풀이까지 읽어요. step 수는 <code>샘플 수 ÷ batch_size</code>를 올림해요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t11"><span>예제의 숫자를 바꿔서 종이에 직접 계산해 봐요. 정답은 카드를 다시 열어 확인해요.</span></label></td><td>혼자 풀기</td></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-t12"><span><a href="c9-02.html">9장 EarlyStopping 동작 시뮬레이션</a>. <a class="w" href="words.html#w127" data-w="127">patience</a>만큼 연속 개선이 없으면 멈추는 규칙을 손으로 따라가요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>4분</td><td><label><input type="checkbox" data-k="ml2-t13"><span><a href="quiz.html#c9">9장 문제</a> 풀기.</span></label></td><td>읽은 직후 인출</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t14"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 4 &middot; Keras 코드 빈칸 20점 <span class="muted small">1:30~2:00</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-t15"><span><a href="c8-03.html">8장 MNIST 코드 한 줄씩 읽기</a>. 층 이름과 순서를 눈으로 따라가요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t16"><span><a href="c8-04.html">8장 손실 문자열 고르기</a>. 정수 <a class="w" href="words.html#w7" data-w="7">라벨</a>이면 sparse, 원-핫이면 categorical이라는 기준만 잡아요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-t17"><span><a href="c8-06.html">8장 코드 빈칸 연습</a>. 정답을 가리고 따옴표 · 철자 · 대소문자를 종이에 직접 써요.</span></label></td><td>혼자 쓰기</td></tr>
+<tr><td>4분</td><td><label><input type="checkbox" data-k="ml2-t18"><span><a href="quiz.html#c8">8장 문제</a> 풀기.</span></label></td><td>읽은 직후 인출</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t19"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 5 &middot; 정수 계산 셋째 — 혼동행렬, 그리고 학습률 곡선 <span class="muted small">2:00~2:30</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t20"><span><a href="c5-02.html">5장 네 가지 지표</a>. 분모가 전부예요. <a class="w" href="words.html#w80" data-w="80">정밀도</a>의 분모는 <a class="w" href="words.html#w75" data-w="75">TP</a> + <a class="w" href="words.html#w77" data-w="77">FP</a>, <a class="w" href="words.html#w81" data-w="81">재현율</a>의 분모는 TP + <a class="w" href="words.html#w78" data-w="78">FN</a>이에요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-t21"><span><a href="c5-03.html">5장 계산 연습</a>을 풀이를 가리고 종이에 직접 계산해요.</span></label></td><td>혼자 풀기</td></tr>
+<tr><td>7분</td><td><label><input type="checkbox" data-k="ml2-t22"><span><a href="c4-02.html">4장 학습률</a>과 <a href="c4-03.html">손실 곡선 진단</a>. 느리면 올리고, <a class="w" href="words.html#w65" data-w="65">발산</a>하면 내리는 것만 확실히요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-t23"><span><a href="quiz.html#c5">5장 문제</a> 풀기.</span></label></td><td>읽은 직후 인출</td></tr>
+</table></div>
+<p class="muted small">시간이 모자라면 블록 5의 4장 부분을 내일로 미뤄도 돼요. 블록 1~4는 건너뛰지 마세요.</p>
+
+<h2>자기 전 10분 <span class="muted small">오늘 밤</span></h2>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>10분</td><td><label><input type="checkbox" data-k="ml2-n1"><span><a href="cards.html">암기카드</a>를 한 번 훑고, 외울 숫자와 Keras 문자열을 눈을 감고 말해 봐요. 오늘의 두 번째 떠올리기예요.</span></label></td><td>간격 반복 1회</td></tr>
+<tr><td>그 뒤</td><td><label><input type="checkbox" data-k="ml2-n2"><span>새 내용은 더 보지 않고 폰을 끄고 자요. 밤새우지 마세요. 잠이 오늘 본 것을 기억으로 굳혀 줘요.</span></label></td><td>잠이 기억을 굳힘</td></tr>
+</table></div>
+
+<h2>내일 시험 전 2시간 <span class="muted small">블록 4개 = (25분 + 5분) × 4</span></h2>
+<p class="muted small">앞 시험 두 개를 본 뒤 시작해요. 힘들면 5분 쉬고 시작하되, 순서는 그대로예요.</p>
+
+<h3>블록 A &middot; 섞어 풀기로 현재 실력 확인 <span class="muted small">0:00~0:30</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>15분</td><td><label><input type="checkbox" data-k="ml2-m1"><span><b>사전 시험.</b> <a href="quiz.html#core">핵심 30문제</a>를 장이 섞인 채로 풀어요. 틀린 문제의 장 이름을 적어요.</span></label></td><td>섞어 풀기 · 간격 반복 2회</td></tr>
+<tr><td>10분</td><td><label><input type="checkbox" data-k="ml2-m2"><span>틀린 문제가 모인 장의 카드만 골라 읽어요. 맞힌 곳은 다시 읽지 않아요.</span></label></td><td>다시 읽기 최소</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m3"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 B &middot; 그래프 해석 (객관식과 주관식 15점) <span class="muted small">0:30~1:00</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>8분</td><td><label><input type="checkbox" data-k="ml2-m4"><span><a href="c7-03.html">7장 학습 · 검증 곡선 네 패턴</a>. <a class="w" href="words.html#w98" data-w="98">과소적합</a> · 적절 · <a class="w" href="words.html#w97" data-w="97">과적합</a> · 학습률 과대를 곡선 모양과 처방으로 짝지어요.</span></label></td><td>풀이 예시 먼저</td></tr>
+<tr><td>10분</td><td><label><input type="checkbox" data-k="ml2-m5"><span><a href="c7-07.html">7장 모의 문제</a>를 답을 가리고 "현상 이름 → 그래프 근거 → 처방" 순서로 종이에 써요.</span></label></td><td>혼자 쓰기</td></tr>
+<tr><td>7분</td><td><label><input type="checkbox" data-k="ml2-m6"><span><a href="c6-02.html">6장 세 활성화 함수 그래프 구분</a>. <a class="w" href="words.html#w86" data-w="86">Sigmoid</a>(0~1), <a class="w" href="words.html#w87" data-w="87">Tanh</a>(−1~1), <a class="w" href="words.html#w88" data-w="88">ReLU</a>(음수 0)만 확실히요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m7"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 C &middot; 주관식 15점 두 문제 <span class="muted small">1:00~1:30</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>15분</td><td><label><input type="checkbox" data-k="ml2-m8"><span><a href="essay.html">서술형</a> 문제를 모범답안을 가리고 종이에 직접 써요. 두 문제 이상 쓰면 좋아요.</span></label></td><td>혼자 쓰기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m9"><span>내 답을 모범답안과 비교해서 빠진 키워드에 동그라미를 쳐요.</span></label></td><td>피드백</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m10"><span><a href="c5-06.html">5장 어떤 오류가 더 비싼가</a>. 암 검진은 재현율, 스팸 차단은 정밀도라는 근거 한 줄을 입으로 말해요.</span></label></td><td>짧게 끊기</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m11"><span>휴식.</span></label></td><td></td></tr>
+</table></div>
+
+<h3>블록 D &middot; 단답 빈칸과 마지막 섞어 풀기 <span class="muted small">1:30~2:00</span></h3>
+<div class="tw"><table>
+<tr><th style="width:15%">시간</th><th>할 일</th><th style="width:26%">원칙</th></tr>
+<tr><td>10분</td><td><label><input type="checkbox" data-k="ml2-m12"><span><a href="bplus.html">B+ 코스</a>의 ③ Keras 빈칸 정답표를 가리고, 두 코드 덩어리를 종이에 한 번 써 봐요.</span></label></td><td>혼자 쓰기</td></tr>
+<tr><td>12분</td><td><label><input type="checkbox" data-k="ml2-m13"><span><a href="quiz.html">퀴즈 랜덤</a>으로 장이 섞인 문제를 풀고, 끝나면 "틀린 문제만 다시"를 눌러요.</span></label></td><td>섞어 풀기</td></tr>
+<tr><td>3분</td><td><label><input type="checkbox" data-k="ml2-m14"><span><a href="cards.html">암기카드</a>의 외울 숫자만 훑어요.</span></label></td><td>마지막 인출</td></tr>
+<tr><td>5분</td><td><label><input type="checkbox" data-k="ml2-m15"><span>휴식. 이후 시험장까지는 새 내용을 보지 않고 <a href="cheat.html">시험 전 1장</a>을 읽기만 해요.</span></label></td><td>새 내용 금지</td></tr>
+</table></div>
+
+<h2>시험장 30초 체크</h2>
+<div class="box tip"><span class="t">앉자마자 이것만</span>
+<p><label><input type="checkbox" data-k="ml2-e1"><span>객관식은 정수 계산(파라미터 수 · step 수 · 혼동행렬)부터 풀어요. 곱하기와 나누기뿐이라 확실한 점수예요.</span></label></p>
+<p><label><input type="checkbox" data-k="ml2-e2"><span>모르는 객관식은 표시만 하고 넘어가요. 한 문제에 오래 붙들리지 않아요.</span></label></p>
+<p><label><input type="checkbox" data-k="ml2-e3"><span>단답은 층 이름 · 활성화 · 손실 문자열의 따옴표 · 철자 · 대소문자 · 밑줄을 마지막에 한 번 더 봐요.</span></label></p>
+<p><label><input type="checkbox" data-k="ml2-e4"><span>주관식은 "현상 이름 → 그래프 근거 → 처방" 또는 "상황 → 출력층 · 지표 · 임계값 → 이유" 순서로 쓰고, 모르면 아는 만큼이라도 써서 빈칸을 남기지 않아요.</span></label></p>
+<p><label><input type="checkbox" data-k="ml2-e5"><span>계산기가 없으니 정수 계산은 종이 귀퉁이에 식을 써서 풀고 마지막에 단위와 자릿수를 확인해요.</span></label></p>
+</div>
+<div class="box exam"><span class="t">딱 한 가지만 기억해야 한다면</span>
+<p>잠을 자고, 시험 직전엔 새로 보지 말고 떠올리기만 하세요. 오늘 한 만큼은 이미 머릿속에 들어 있어요.</p>
+</div>
+
 </main>
-<script src="assets/words.js?v=a57e6ad5"></script>
-<script src="assets/app.js?v=a57e6ad5"></script>
+<script src="assets/words.js?v=9af8e7c9"></script>
+<script src="assets/app.js?v=9af8e7c9"></script>
 </body>
 </html>
