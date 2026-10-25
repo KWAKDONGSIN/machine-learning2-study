@@ -1,8 +1,8 @@
 // 시험공부 사이트 공용 기능 — 낱말 뜻 창, 읽음 표시, 퀴즈 (세 과목 공용, 구형 폰 브라우저도 돌도록 단순한 문법만 쓴다)
 (function () {
   var KEY = 'study-' + (document.documentElement.getAttribute('data-site') || 'site') + '-v1';
-  var S = { read: {}, wrong: {}, right: {} };
-  try { var v = JSON.parse(localStorage.getItem(KEY) || 'null'); if (v) { S.read = v.read || {}; S.wrong = v.wrong || {}; S.right = v.right || {}; } } catch (e) {}
+  var S = { read: {}, wrong: {}, right: {}, chk: {} };
+  try { var v = JSON.parse(localStorage.getItem(KEY) || 'null'); if (v) { S.read = v.read || {}; S.wrong = v.wrong || {}; S.right = v.right || {}; S.chk = v.chk || {}; } } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function $(s) { return document.querySelector(s); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -29,6 +29,13 @@
     sh.hidden = false;
     $('#shx').onclick = function () { sh.hidden = true; };
   });
+
+  // 시간표 체크박스 — 체크한 칸을 기억한다
+  var boxes = document.querySelectorAll('input[type=checkbox][data-k]');
+  for (var bi = 0; bi < boxes.length; bi++) {
+    boxes[bi].checked = !!S.chk[boxes[bi].getAttribute('data-k')];
+    boxes[bi].onchange = function () { var k = this.getAttribute('data-k'); if (this.checked) S.chk[k] = 1; else delete S.chk[k]; save(); };
+  }
 
   // 장 읽음 표시
   var doneBtn = $('#markread');
@@ -80,6 +87,11 @@
   function norm(s) { return String(s).toLowerCase().replace(/[\s.,·\-_()'"~→]/g, ''); }
   function mark(q, ok) {
     if (ok) { Q.score++; S.right[q.id] = 1; delete S.wrong[q.id]; } else { S.wrong[q.id] = 1; delete S.right[q.id]; Q.missed.push(q); }
+    // 틀린 문제는 4문제 뒤에 한 번 더 나온다 — 잊을 만할 때 다시 떠올리게 (간격 인출)
+    if (!ok && !q.again) {
+      var c = {}; for (var k in q) c[k] = q[k]; c.again = true;
+      Q.list.splice(Math.min(Q.i + 5, Q.list.length), 0, c);
+    }
     save();
   }
   // 문제 첫 줄은 질문, 줄바꿈 뒤는 코드로 보고 코드 상자에 그대로 보여 준다
@@ -98,6 +110,7 @@
     if (q.type === 'short') body = '<input class="ans" id="sa" autocomplete="off" placeholder="답을 써 보세요"><button class="go" id="sc">확인</button><button class="go ghost" id="ss">모르겠어요</button>';
     box.innerHTML = '<div class="qmeta"><span>' + esc(Q.title) + '</span><span>' + (Q.i + 1) + ' / ' + Q.list.length + '</span></div>' +
       '<div class="bar"><i style="width:' + (Q.i / Q.list.length * 100) + '%"></i></div>' +
+      (q.again ? '<p class="cite">↻ 아까 틀린 문제예요. 답을 보기 전에 먼저 떠올려 보세요.</p>' : '') +
       qhtml(q.q) + body + '<div id="fb"></div>';
     function feedback(ok, extra) {
       $('#fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><div class="v">' + (ok ? '정답!' : '아쉬워요 — 정답: ' + esc(answerText(q))) + '</div><p>' + esc(q.explain || '') + '</p>' +

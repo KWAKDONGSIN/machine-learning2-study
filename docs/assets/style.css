@@ -1,7 +1,7 @@
 /* 시험공부 사이트 공용 스타일 — 폰 한 칼럼, 시스템 글꼴, 밝은/어두운 테마, 패들렛식 보드 (세 과목 공용) */
 /* 레이아웃: 위 사이트 이름+메뉴 줄, 가운데 읽기 칼럼(최대 680px), 장 끝에 큰 이전/다음 버튼. 염기 4색을 의미 색으로 쓴다 */
 :root{
-  --bg:#f6f7fa; --surface:#ffffff; --ink:#16233a; --muted:#5b6678; --line:#dde2ea;
+  --bg:#f8fafc; --surface:#ffffff; --ink:#111827; --muted:#4b5563; --line:#e2e8f0;
   --accent:#0d7a64; --accent-ink:#ffffff; --accent-soft:#e1f2ec;
   --A:#23955a; --T:#cf3f45; --G:#c58a12; --C:#2d63cc;
   --def:#e8eefc; --eg:#e4f4ea; --exam:#fdebed; --tip:#fdf3d7; --pro:#efe9fb; --gray:#eef1f5;
@@ -11,18 +11,9 @@
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root{
-  --bg:#0f141c; --surface:#18202b; --ink:#e5ebf3; --muted:#9aa6b6; --line:#2a3443;
-  --accent:#4fc3a1; --accent-ink:#06120e; --accent-soft:#183129;
-  --A:#5ccf8b; --T:#f27b7f; --G:#e8b54f; --C:#7ea6f6;
-  --def:#18243b; --eg:#162a20; --exam:#341b1f; --tip:#30290f; --pro:#251e39; --gray:#1f2835;
-  --code:#0a0f16;
-  --s-r:#263040; --s-m:#1f2d47; --s-x:#4b2329; --s-e:#443710; --s-g:#1c3b2a;
-  color-scheme:dark;
-}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17.5px;line-height:1.8;word-break:keep-all;overflow-wrap:anywhere}
 a{color:var(--C)}
 img{max-width:100%}
 :focus-visible{outline:3px solid var(--C);outline-offset:2px}
@@ -188,7 +179,6 @@ details.post table{font-size:12.5px}
 .k3{--tint:#2d63cc;background:#dfeafe}.k4{--tint:#7c5cd6;background:#ece5ff}.k5{--tint:#d64b8a;background:#ffe5f0}
 .k6{--tint:#159a9c;background:#daf3f3}.k7{--tint:#d9822b;background:#fde7cf}.k8{--tint:#6b8e23;background:#e9f0d8}
 .k9{--tint:#55607a;background:#e7e9f0}.kS{--tint:#16233a;background:#eef1f6}.kP{--tint:#0d7a64;background:#ddf1ea}
-@media (prefers-color-scheme: dark){.col{background:#19212c}.post.quiz{background:transparent}}
 .crumb{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13.5px;border-top:6px solid var(--tint);background:var(--surface);border-radius:12px;padding:8px 12px;margin-bottom:6px}
 .crumb a{font-weight:700;text-decoration:none;color:var(--ink)}
 .crumb span{color:var(--muted);text-align:right}
@@ -206,3 +196,14 @@ h2 .small{font-weight:600}
 /* 코드 문제: 보기에도 줄바꿈이 있으면 살린다 */
 .opt span{white-space:pre-wrap}
 .qtext + .code{margin-top:-6px}
+
+/* 학습과학 장치 — 덮고 말해 보기, 시간표 체크, 근거 */
+.recall{background:#fff7e6;border:2px dashed #f59e0b;border-radius:14px;padding:12px 15px;margin:22px 0 4px}
+.recall b{color:#b45309}
+.recall p{margin:4px 0}
+label{display:flex;gap:10px;align-items:flex-start;margin:6px 0;cursor:pointer}
+label input[type=checkbox]{width:22px;height:22px;flex:none;margin-top:3px;accent-color:var(--accent)}
+label input[type=checkbox]:checked + *{text-decoration:line-through;color:var(--muted)}
+.post.plan{background:#2563eb;color:#fff}
+.post.plan span{color:#fff;opacity:.92}
+.cite{font-size:14px;color:var(--muted)}
